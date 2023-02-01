@@ -1,0 +1,94 @@
+package swing.qr.kiarelemb.component.utils;
+
+import method.qr.kiarelemb.utils.QRFileUtils;
+import swing.qr.kiarelemb.component.basic.QRButton;
+import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+
+/**
+ * @author Kiarelemb QR
+ * @program: QR_Swing
+ * @description: 一个用来选择文件的按钮，可以设置文字，或设置图片
+ * @create 2022-11-22 15:28
+ **/
+public class QRFileSelectButton extends QRButton {
+	private final Window parent;
+	private final String fileType;
+	private final String[] extension;
+	private File selectedFile;
+
+	private String selectedFilePath;
+
+	public QRFileSelectButton(Window parent, String fileType, String... extension) {
+		super("...");
+		this.parent = parent;
+		this.extension = extension;
+		this.fileType = fileType;
+	}
+
+	@Override
+	protected void actionEvent(ActionEvent o) {
+		fileSelectAction();
+	}
+
+	public QRFileSelectButton(String text, Window parent, String fileType, String... extension) {
+		this(parent, fileType, extension);
+		setText(text);
+//		setIcon(new ImageIcon(Pngs.SELECT_PATH));
+	}
+
+	public QRFileSelectButton(Icon imageIcon, Window parent, String fileType, String... extension) {
+		this(parent, fileType, extension);
+		setIcon(imageIcon);
+	}
+
+	private void fileSelectAction() {
+		File file = QRFileUtils.fileSelect(this.parent, this.fileType, this.extension);
+		if (file == null || !QRFileUtils.fileExists(file.getAbsolutePath())) {
+			failedAction();
+			return;
+		}
+
+		if (this.selectedFilePath != null && this.selectedFilePath.equals(file.getAbsolutePath())) {
+			sameFileSelectedAction();
+			return;
+		}
+		this.selectedFile = file;
+		this.selectedFilePath = file.getAbsolutePath();
+		successAction();
+	}
+
+	protected void sameFileSelectedAction() {
+		String message = "该文件已被选中！";
+		QROpinionDialog.messageTellShow(this.parent, message);
+	}
+
+	protected void successAction() {
+	}
+
+	protected void failedAction() {
+
+	}
+
+	/**
+	 * 获取选择的文件路径
+	 */
+	public String selectedFilePath() {
+		return this.selectedFilePath;
+	}
+
+	/**
+	 * 获取选择的文件
+	 */
+	public File selectedFile() {
+		return this.selectedFile;
+	}
+
+	public void setSelectedFilePath(String selectedFilePath) {
+		this.selectedFilePath = selectedFilePath;
+	}
+}
