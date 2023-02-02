@@ -5,6 +5,7 @@ import swing.qr.kiarelemb.component.listener.QRGlobalKeyboardHookListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -276,40 +277,45 @@ public class QRSwing {
 		GLOBAL_PROP.remove(key);
 	}
 
+	/**
+	 * 可以动态设置当前主题。只消将项目中继承了 {@link swing.qr.kiarelemb.window.basic.QRFrame} 的子类，调用 {@link QRFrame#componentFresh()} 即可。
+	 *
+	 * @param value 主题名
+	 */
 	public static void setTheme(String value) {
 		QRSwing.theme = value;
-		GLOBAL_PROP.setProperty("window.theme", value);
+		GLOBAL_PROP.setProperty(WINDOW_THEME, value);
 		QRColorsAndFonts.loadTheme();
 	}
 
 	public static void setWindowBackgroundImagePath(String value) {
 		if (value == null) {
 			QRSwing.windowBackgroundImagePath = null;
-			GLOBAL_PROP.remove("window.image.path");
+			GLOBAL_PROP.remove(WINDOW_IMAGE_PATH);
 		} else {
 			QRSwing.windowBackgroundImagePath = value;
-			GLOBAL_PROP.setProperty("window.image.path", value);
+			GLOBAL_PROP.setProperty(WINDOW_IMAGE_PATH, value);
 		}
 	}
 
 	public static void setWindowRound(boolean value) {
 		QRSwing.windowRound = value;
-		GLOBAL_PROP.setProperty("window.round", String.valueOf(value));
+		GLOBAL_PROP.setProperty(WINDOW_ROUND, String.valueOf(value));
 	}
 
 	public static void setWindowAlwaysOnTop(boolean value) {
 		QRSwing.windowAlwaysOnTop = value;
-		GLOBAL_PROP.setProperty("window.always.top", String.valueOf(value));
+		GLOBAL_PROP.setProperty(WINDOW_ALWAYS_TOP, String.valueOf(value));
 	}
 
 	public static void setWindowScreenAdsorb(boolean value) {
 		QRSwing.windowScreenAdsorb = value;
-		GLOBAL_PROP.setProperty("window.absorb", String.valueOf(value));
+		GLOBAL_PROP.setProperty(WINDOW_ABSORB, String.valueOf(value));
 	}
 
 	public static void setWindowTransparency(float value) {
 		QRSwing.windowAlpha = value;
-		GLOBAL_PROP.setProperty("window.transparency", String.valueOf(value));
+		GLOBAL_PROP.setProperty(WINDOW_TRANSPARENCY, String.valueOf(value));
 	}
 
 	private static QRGlobalKeyboardHookListener keyboardHook;
