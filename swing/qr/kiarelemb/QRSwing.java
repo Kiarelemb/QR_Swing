@@ -257,7 +257,7 @@ public class QRSwing {
 	}
 
 	/**
-	 * 该文件的内容为：
+	 * 获取全局默认配置的资源文件，该文件的内容为：
 	 * <p>window.absorb=true
 	 * <p>window.always.top=false
 	 * <p>window.background.image.alpha=0.8
