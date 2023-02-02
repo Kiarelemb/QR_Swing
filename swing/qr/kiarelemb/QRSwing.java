@@ -251,10 +251,27 @@ public class QRSwing {
 	}
 
 	public static void globalPropBackToDefault() {
-		URL url = QRSwingInfo.loadUrl("default_settings.properties");
-		Properties prop = QRPropertiesUtils.loadProp(url);
+		Properties prop = getDefaultSettingsProp();
 		GLOBAL_PROP.putAll(prop);
 		globalPropSave();
+	}
+
+	/**
+	 * 该文件的内容为：
+	 * <p>window.absorb=true
+	 * <p>window.always.top=false
+	 * <p>window.background.image.alpha=0.8
+	 * <p>window.background.image.scale=true
+	 * <p>window.image.enable=true
+	 * <p>window.image.path=
+	 * <p>window.round=true
+	 * <p>window.theme=深色
+	 * <p>window.title.menu=false
+	 * <p>window.transparency=0.8
+	 */
+	public static Properties getDefaultSettingsProp() {
+		URL url = QRSwingInfo.loadUrl("default_settings.properties");
+		return QRPropertiesUtils.loadProp(url);
 	}
 
 	/**
