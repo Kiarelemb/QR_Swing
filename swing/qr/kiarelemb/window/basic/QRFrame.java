@@ -537,10 +537,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				int width = this.backgroundImage.getWidth(null);
 				this.imageRatio = (double) width / height;
 				this.backgroundBorder = new QRBackgroundBorder(this.backgroundImage);
-				this.backgroundBorder.setScale(true);
 				this.mainPanel.setBorder(this.backgroundBorder);
 				QRComponentUtils.loopComsForBackgroundSetting(this.mainPanel);
-				QRSwing.windowAlpha = 0.999f;
+				QRSwing.windowTransparency = 0.999f;
 				QRSystemUtils.setWindowNotTrans(this);
 			}
 		}
@@ -549,12 +548,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	public final void setBackgroundBorderScale(boolean scale) {
 		if (this.backgroundBorder != null) {
 			this.backgroundBorder.setScale(scale);
+			QRSwing.setWindowScale(scale);
+			QRComponentUtils.windowFresh(this.mainPanel);
 		}
 	}
 
 	public final void setBackgroundBorderAlpha(float alpha) {
 		if (this.backgroundBorder != null) {
 			this.backgroundBorder.setAlpha(alpha);
+			QRSwing.setWindowAlpha(alpha);
+			QRComponentUtils.windowFresh(this.mainPanel);
 		}
 	}
 
@@ -576,10 +579,19 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.originalWidth = getWidth();
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
+		windowStateUpdate();
+	}
+
+	private void windowStateUpdate() {
 		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowRound(this);
 		} else {
-			QRSystemUtils.setWindowTrans(this, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowNotRound(this);
+		}
+		if (backgroundImageSet) {
+			QRSystemUtils.setWindowNotTrans(this);
+		} else {
+			QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
 		}
 	}
 
@@ -600,7 +612,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		if (this.actionOnDispose.size() > 0) {
 			this.actionOnDispose.forEach(e -> e.action(null));
 		}
-		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowAlpha, systemExit);
+		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowTransparency, systemExit);
 	}
 
 	/**
@@ -698,11 +710,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				}
 			}
 			super.setBounds(x, y, Math.max(width, 100), Math.max(height, 50));
-			if (QRSwing.windowRound) {
-				QRSystemUtils.setWindowRound(this, QRSwing.windowAlpha);
-			} else {
-				QRSystemUtils.setWindowTrans(this, QRSwing.windowAlpha);
-			}
+			windowStateUpdate();
 		}
 	}
 

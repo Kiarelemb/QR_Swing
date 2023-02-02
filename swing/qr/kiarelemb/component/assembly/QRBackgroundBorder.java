@@ -1,6 +1,8 @@
 package swing.qr.kiarelemb.component.assembly;
 
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.border.Border;
 import java.awt.*;
@@ -12,14 +14,20 @@ import java.awt.geom.AffineTransform;
  * @description:
  * @create 2022-11-22 18:44
  **/
-public class QRBackgroundBorder implements Border , QRComponentUpdate {
+public class QRBackgroundBorder implements Border, QRComponentUpdate {
 	private final Image image;
 	private boolean scale = true;
-	private float alpha = 0.8f;
+	private float alpha;
 
 	public QRBackgroundBorder(Image image) {
 		this.image = image;
+		if (QRSwing.windowAlpha < 0.0f || QRSwing.windowAlpha > 1.0f) {
+			alpha = 0.8f;
+		} else {
+			alpha = QRSwing.windowAlpha;
+		}
 	}
+
 
 	@Override
 	public void paintBorder(Component component, Graphics graphics, int x, int y, int width, int height) {
@@ -52,7 +60,7 @@ public class QRBackgroundBorder implements Border , QRComponentUpdate {
 	}
 
 	public float alpha() {
-		return alpha;
+		return this.alpha;
 	}
 
 	public void setAlpha(float alpha) {

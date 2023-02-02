@@ -125,7 +125,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 		setLocation(x, y);
 		setSize(this.itemMaxLen + this.itemMaxTipLen + 30, this.itemNums * (22 + this.vgap));
 		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
 		}
 //		contentPane.setBorderPaint(QRSwing.windowRound);
 //		setAlwaysOnTop(QRSwing.windowAlwaysOnTop);

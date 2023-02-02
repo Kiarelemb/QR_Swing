@@ -70,7 +70,7 @@ public class QRFileSelectButton extends QRButton {
 		}
 		this.selectedFile = file;
 		this.selectedFilePath = file.getAbsolutePath();
-		successAction();
+		successAction(this.selectedFile, this.selectedFilePath);
 	}
 
 	protected void sameFileSelectedAction() {
@@ -78,7 +78,7 @@ public class QRFileSelectButton extends QRButton {
 		QROpinionDialog.messageTellShow(this.parent, message);
 	}
 
-	protected void successAction() {
+	protected void successAction(File selectedFile, String selectedFilePath) {
 	}
 
 	protected void failedAction() {

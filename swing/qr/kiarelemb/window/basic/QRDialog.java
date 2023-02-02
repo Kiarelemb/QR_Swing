@@ -352,7 +352,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	public final void setBounds(int x, int y, int width, int height) {
 		super.setBounds(Math.max(x, 0), Math.max(y, 0), width, height);
 		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
 		} else {
 			QRSystemUtils.setWindowNotRound(this);
 		}
@@ -361,7 +361,8 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	@Override
 	public void dispose() {
 		QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), this.disposeAction, false);
-		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowAlpha, false);
+		super.dispose();
+//		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowAlpha, false);
 	}
 
 	public void setCursorWait() {

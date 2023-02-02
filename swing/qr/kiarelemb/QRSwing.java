@@ -9,6 +9,7 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,8 @@ public class QRSwing {
 	public static final String WINDOW_ROUND = "window.round";
 	public static final String WINDOW_TITLE_MENU = "window.title.menu";
 	public static final String WINDOW_TRANSPARENCY = "window.transparency";
+	public static final String WINDOW_BACKGROUND_IMAGE_ALPHA = "window.background.image.alpha";
+	public static final String WINDOW_BACKGROUND_IMAGE_SCALE = "window.background.image.scale";
 	public static final String WINDOW_ALWAYS_TOP = "window.always.top";
 	public static final String WINDOW_ABSORB = "window.absorb";
 	/**
@@ -74,7 +77,15 @@ public class QRSwing {
 	/**
 	 * 窗体的透明度
 	 */
-	public static float windowAlpha;
+	public static float windowTransparency;
+	/**
+	 * 主窗体设置背景图时的透明度
+	 */
+	public static float windowAlpha = 0.8f;
+	/**
+	 * 主窗体设置背景图时是否让图片自适应
+	 */
+	public static boolean windowScale = true;
 
 	public static String windowBackgroundImagePath;
 	/**
@@ -119,6 +130,18 @@ public class QRSwing {
 		}));
 	}
 
+
+	/**
+	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
+	 *
+	 * <p>在调用本方法时，将使用默认的设置进行配置，其文件 {@link QRSwing#GLOBAL_PROP_PATH} 和 {@link QRSwing#WINDOW_PROP_PATH} 将会创立在程序的根目录下</p>
+	 */
+	public static void start() {
+		INSTANCE = new QRSwing("settings.properties");
+		//加载主题
+		QRColorsAndFonts.loadTheme();
+	}
+
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
@@ -150,8 +173,8 @@ public class QRSwing {
 	 */
 	private void loadProp(String propFilePath) {
 		if (!QRFileUtils.fileExists(propFilePath)) {
-			GLOBAL_PROP_PATH = "setting.properties";
-			QRPropertiesUtils.storeProp(GLOBAL_PROP, GLOBAL_PROP_PATH);
+			GLOBAL_PROP_PATH = "settings.properties";
+			globalPropBackToDefault();
 			return;
 		}
 		QRPropertiesUtils.loadProp(GLOBAL_PROP, propFilePath);
@@ -163,11 +186,21 @@ public class QRSwing {
 		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null);
 		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true);
 		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true);
-		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f);
+		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f);
+		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f);
+		windowScale = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_SCALE, true);
 		windowAlwaysOnTop = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ALWAYS_TOP, false);
 		windowScreenAdsorb = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ABSORB, true);
 		if (!QRFileUtils.fileExists(WINDOW_PROP_PATH)) {
 			windowPropBackToDefault();
+		}
+		if (windowAlpha < 0 || windowAlpha > 1) {
+			windowAlpha = 0.8f;
+			GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(windowAlpha));
+		}
+		if (windowAlpha < 0.5) {
+			windowAlpha = 1 - windowAlpha;
+			GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(windowAlpha));
 		}
 	}
 
@@ -212,7 +245,7 @@ public class QRSwing {
 				GLOBAL_PROP.setProperty(WINDOW_IMAGE, filePath);
 				QRPropertiesUtils.storeProp(GLOBAL_PROP, GLOBAL_PROP_PATH);
 			}
-			QRSwing.windowAlpha = 0.999f;
+			QRSwing.windowTransparency = 0.999f;
 		}
 	}
 
@@ -229,6 +262,13 @@ public class QRSwing {
 		prop.setProperty("Window.start.X", String.valueOf(width / 4));
 		prop.setProperty("Window.start.Y", String.valueOf(height / 4));
 		QRPropertiesUtils.storeProp(prop, WINDOW_PROP_PATH);
+	}
+
+	public static void globalPropBackToDefault() {
+		URL url = QRSwingInfo.loadUrl("default_settings.properties");
+		Properties prop = QRPropertiesUtils.loadProp(url);
+		GLOBAL_PROP.putAll(prop);
+		globalPropSave();
 	}
 
 	/**
@@ -314,8 +354,18 @@ public class QRSwing {
 	}
 
 	public static void setWindowTransparency(float value) {
-		QRSwing.windowAlpha = value;
+		QRSwing.windowTransparency = value;
 		GLOBAL_PROP.setProperty(WINDOW_TRANSPARENCY, String.valueOf(value));
+	}
+
+	public static void setWindowAlpha(float value) {
+		QRSwing.windowAlpha = value;
+		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(value));
+	}
+
+	public static void setWindowScale(boolean value) {
+		QRSwing.windowScale = value;
+		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_SCALE, String.valueOf(value));
 	}
 
 	private static QRGlobalKeyboardHookListener keyboardHook;

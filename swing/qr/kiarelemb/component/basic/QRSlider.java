@@ -27,6 +27,7 @@ public class QRSlider extends JSlider implements QRComponentUpdate {
 			g2.setColor(QRColorsAndFonts.BORDER_COLOR);
 			g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 		}
+
 	}
 
 	@Override

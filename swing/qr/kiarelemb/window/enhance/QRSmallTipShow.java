@@ -93,9 +93,9 @@ public final class QRSmallTipShow extends QREmptyDialog {
 		gns.setLocation(owner.getX() + owner.getWidth() / 2 - gns.getWidth() / 2,
 				owner.getY() + owner.getHeight() / 2 - gns.getHeight() / 2);
 		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(gns, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
 		} else {
-			QRSystemUtils.setWindowTrans(gns, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowTrans(gns, QRSwing.windowTransparency);
 		}
 		return gns;
 	}
@@ -112,9 +112,9 @@ public final class QRSmallTipShow extends QREmptyDialog {
 			gns.setLocation(owner.getX() + owner.getWidth() / 2 - gns.getWidth() / 2,
 					owner.getY() + owner.getHeight() / 2 - gns.getHeight() / 2);
 			if (QRSwing.windowRound) {
-				QRSystemUtils.setWindowRound(gns, QRSwing.windowAlpha);
+				QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
 			} else {
-				QRSystemUtils.setWindowTrans(gns, QRSwing.windowAlpha);
+				QRSystemUtils.setWindowTrans(gns, QRSwing.windowTransparency);
 			}
 			gns.setVisible(true);
 		});
@@ -127,9 +127,9 @@ public final class QRSmallTipShow extends QREmptyDialog {
 			gns.setLocationRelativeTo(null);
 			gns.pack();
 			if (QRSwing.windowRound) {
-				QRSystemUtils.setWindowRound(gns, QRSwing.windowAlpha);
+				QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
 			} else {
-				QRSystemUtils.setWindowTrans(gns, QRSwing.windowAlpha);
+				QRSystemUtils.setWindowTrans(gns, QRSwing.windowTransparency);
 			}
 			gns.setVisible(true);
 		});

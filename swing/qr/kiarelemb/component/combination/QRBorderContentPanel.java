@@ -51,4 +51,10 @@ public class QRBorderContentPanel extends QRPanel {
 	public void setBorderPaint(boolean borderPaint) {
 		this.borderPaint = borderPaint;
 	}
+
+	@Override
+	public void componentFresh() {
+		super.componentFresh();
+		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
+	}
 }

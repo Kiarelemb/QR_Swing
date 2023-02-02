@@ -63,7 +63,7 @@ public class QRComponentUtils {
 	}
 
 	/**
-	 * 如果设置背景图片，调用此方法
+	 * 如果设置背景图片，调用此方法。窗体刷新会延迟 30 毫秒
 	 *
 	 * @param com 窗体内的一控件
 	 */
@@ -72,8 +72,21 @@ public class QRComponentUtils {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				SwingUtilities.getWindowAncestor(com).repaint();
+				windowFreshRightNow(com);
 			}
 		}, 30L);
 	}
+
+	/**
+	 * 如果设置背景图片，调用此方法
+	 *
+	 * @param com 窗体内的一控件
+	 */
+	public static void windowFreshRightNow(JComponent com) {
+		Window w = SwingUtilities.getWindowAncestor(com);
+		if (w != null) {
+			w.repaint();
+		}
+	}
+
 }

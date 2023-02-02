@@ -78,7 +78,7 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 			}
 		}
 		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this, QRSwing.windowAlpha);
+			QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
 		}
 	}
 
