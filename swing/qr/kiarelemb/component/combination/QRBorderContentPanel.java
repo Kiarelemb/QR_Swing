@@ -20,9 +20,7 @@ public class QRBorderContentPanel extends QRPanel {
 
 	public QRBorderContentPanel() {
 		super();
-		if (QRSwing.windowRound) {
-			setBorder(null);
-		}
+		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class QRFilePathTextField extends QRTextField {
 		final char[] notAllowed = {'*', '?', '<', '>', '|', '"', '\\', '/', ':'};
 		addForbiddenChar(notAllowed);
 		setTextCenter();
-		//设置使得能够撤回
+		//设置使之能够撤回
 		addUndoManager();
 	}
 
