@@ -28,7 +28,7 @@ public class QRSwing {
 	 * {@link swing.qr.kiarelemb.window.basic.QRFrame} 的资源文件
 	 */
 	public static String WINDOW_PROP_PATH = "window.properties";
-	public static final String WINDOW_IMAGE = "window.image";
+	public static final String WINDOW_IMAGE_ENABLE = "window.image.enable";
 	public static final String WINDOW_THEME = "window.theme";
 	public static final String WINDOW_IMAGE_PATH = "window.image.path";
 	public static final String WINDOW_ROUND = "window.round";
@@ -62,6 +62,10 @@ public class QRSwing {
 	 * 窗体是否圆角
 	 */
 	public static boolean windowRound;
+	/**
+	 * 是否启用主窗体的背景图片
+	 */
+	public static boolean windowImageEnable;
 	/**
 	 * 菜单栏是否放置于窗体的标题栏
 	 */
@@ -185,6 +189,7 @@ public class QRSwing {
 		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "dark");
 		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null);
 		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true);
+		windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true);
 		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true);
 		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f);
 		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f);
@@ -228,25 +233,6 @@ public class QRSwing {
 	 */
 	public static void addActionAfterClose(QRActionRegister ar) {
 		actionAfterClose.add(ar);
-	}
-
-	/**
-	 * 设置主窗体的背景图片。
-	 *
-	 * @param filePath 如果为 {@code null} 则取消设置。文件路径所指的文件存在则设置生效。
-	 */
-	@Deprecated
-	public static void setBackgroundFilePath(String filePath) {
-		if (filePath == null) {
-			GLOBAL_PROP.remove(WINDOW_IMAGE);
-			QRPropertiesUtils.storeProp(GLOBAL_PROP, GLOBAL_PROP_PATH);
-		} else if (QRFileUtils.fileExists(filePath)) {
-			if (!filePath.equals(String.valueOf(GLOBAL_PROP.getProperty(WINDOW_IMAGE)))) {
-				GLOBAL_PROP.setProperty(WINDOW_IMAGE, filePath);
-				QRPropertiesUtils.storeProp(GLOBAL_PROP, GLOBAL_PROP_PATH);
-			}
-			QRSwing.windowTransparency = 0.999f;
-		}
 	}
 
 	/**
@@ -326,6 +312,11 @@ public class QRSwing {
 		QRSwing.theme = value;
 		GLOBAL_PROP.setProperty(WINDOW_THEME, value);
 		QRColorsAndFonts.loadTheme();
+	}
+
+	public static void setWindowImageEnable(boolean value) {
+		QRSwing.windowImageEnable = value;
+		GLOBAL_PROP.setProperty(WINDOW_IMAGE_ENABLE, String.valueOf(value));
 	}
 
 	public static void setWindowBackgroundImagePath(String value) {
