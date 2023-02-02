@@ -64,6 +64,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	protected QRMenuPanel titleMenuPanel;
 	private QRWindowListener windowListener;
 	private QRBackgroundBorder backgroundBorder;
+	private String imagePath;
 	private Image backgroundImage;
 	private double imageRatio;
 	private Dimension minimumSize;
@@ -519,14 +520,17 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 //			QRSwing.setBackgroundFilePath(null);
 			this.mainPanel.setBorder(null);
 			this.backgroundBorder = null;
+			imagePath = null;
 			this.backgroundImage = null;
 			this.backgroundImageSet = false;
 			QRSwing.setWindowBackgroundImagePath(null);
 			return;
 		}
 		if (QRFileUtils.fileExists(filePath)) {
-			this.backgroundImage = QRSwingInfo.loadImage(filePath);
-			if (this.backgroundImage != null) {
+			Image imageToSet = QRSwingInfo.loadImage(filePath);
+			if (imageToSet != null && filePath.equals(this.imagePath)) {
+				this.backgroundImage = imageToSet;
+				imagePath = filePath;
 				QRSwing.setWindowBackgroundImagePath(filePath);
 				this.backgroundImageSet = true;
 				int height = this.backgroundImage.getHeight(null);
@@ -535,15 +539,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				this.backgroundBorder = new QRBackgroundBorder(this.backgroundImage);
 				this.backgroundBorder.setScale(true);
 				this.mainPanel.setBorder(this.backgroundBorder);
-				//加强重绘！！
-//			Timer timer = new Timer(50, e -> {
-//				if (isVisible() && isFocused()) {
-//					mainPanel.repaint();
-//				}
-//			});
-//			timer.start();
 				QRComponentUtils.loopComsForBackgroundSetting(this.mainPanel);
-//			QRSwing.setBackgroundFilePath(filePath);
 				QRSwing.windowAlpha = 0.999f;
 				QRSystemUtils.setWindowNotTrans(this);
 			}
