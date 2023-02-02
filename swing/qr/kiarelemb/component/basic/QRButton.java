@@ -1,6 +1,5 @@
 package swing.qr.kiarelemb.component.basic;
 
-import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.adapter.QRButtonMouseListener;
 import swing.qr.kiarelemb.component.assembly.QRToolTip;
 import swing.qr.kiarelemb.component.combination.QRMenuButton;
@@ -13,6 +12,7 @@ import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.listener.add.QRActionListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
+import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
 
@@ -43,7 +43,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 			this.parent = parent;
 			this.toolTipText = toolTipText;
 			setToolTipText(toolTipText);
-			setIcon(QRSwing.introductionButtonIcon);
+			setIcon(new ImageIcon(QRSwingInfo.loadUrl("introduction.png")));
 			setSize(12, 12);
 		}
 

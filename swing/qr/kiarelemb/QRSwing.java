@@ -51,9 +51,8 @@ public class QRSwing {
 	 */
 	public static ImageIcon windowIcon;
 	/**
-	 * 提示按钮的图标
+	 * 窗体主题名
 	 */
-	public static ImageIcon introductionButtonIcon;
 	public static String theme;
 	/**
 	 * 窗体是否圆角
@@ -159,7 +158,6 @@ public class QRSwing {
 
 	private void load() {
 		windowIcon = iconLoadLead("window.icon.path", "QR.png");
-		introductionButtonIcon = iconLoadLead("button.introduction.icon.path", "introduction.png");
 		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "dark");
 		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null);
 		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true);
@@ -172,7 +170,7 @@ public class QRSwing {
 		}
 	}
 
-	private ImageIcon iconLoadLead(String key, String defaultFileName) {
+	public static ImageIcon iconLoadLead(String key, String defaultFileName) {
 		String iconPath = GLOBAL_PROP.getProperty(key);
 		if (iconPath != null) {
 			if (QRFileUtils.fileExists(iconPath)) {
