@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.component.utils;
 
 import method.qr.kiarelemb.utils.QRFileUtils;
 import swing.qr.kiarelemb.component.basic.QRButton;
+import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
 
 import javax.swing.*;
@@ -23,27 +24,37 @@ public class QRFileSelectButton extends QRButton {
 
 	private String selectedFilePath;
 
+	/**
+	 * 使用内置的选择图标作为默认，则推荐长宽的大小为 {@code 32}
+	 *
+	 * @param parent    父类窗体
+	 * @param fileType  文件类型的言语上的名称
+	 * @param extension 拓展名，可不加点
+	 */
 	public QRFileSelectButton(Window parent, String fileType, String... extension) {
-		super("...");
 		this.parent = parent;
 		this.extension = extension;
 		this.fileType = fileType;
-	}
-
-	@Override
-	protected void actionEvent(ActionEvent o) {
-		fileSelectAction();
+		setIcon(new ImageIcon(QRSwingInfo.loadUrl("select.png")));
 	}
 
 	public QRFileSelectButton(String text, Window parent, String fileType, String... extension) {
-		this(parent, fileType, extension);
+		this.parent = parent;
+		this.extension = extension;
+		this.fileType = fileType;
 		setText(text);
-//		setIcon(new ImageIcon(Pngs.SELECT_PATH));
 	}
 
 	public QRFileSelectButton(Icon imageIcon, Window parent, String fileType, String... extension) {
-		this(parent, fileType, extension);
+		this.parent = parent;
+		this.extension = extension;
+		this.fileType = fileType;
 		setIcon(imageIcon);
+	}
+
+	@Override
+	protected final void actionEvent(ActionEvent o) {
+		fileSelectAction();
 	}
 
 	private void fileSelectAction() {

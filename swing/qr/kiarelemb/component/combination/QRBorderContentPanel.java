@@ -23,24 +23,18 @@ public class QRBorderContentPanel extends QRPanel {
 		if (QRSwing.windowRound) {
 			setBorder(null);
 		}
-		componentFresh();
 	}
 
 	@Override
 	protected void paintBorder(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(QRColorsAndFonts.BORDER_COLOR);
 		if (QRSwing.windowRound && this.borderPaint) {
 			final int arc = 15;
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(QRColorsAndFonts.BORDER_COLOR);
 			g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
-//			super.paintBorder(g2);
 		} else if (this.borderPaint) {
-//			setBorder(new LineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
-			g.setColor(QRColorsAndFonts.BORDER_COLOR);
-			g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-//            g.drawRoundRect(0, 0, getWidth() - 1, ge tHeight() - 1, 0, 0);
-//			super.paintBorder(g);
+			g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 		}
 	}
 

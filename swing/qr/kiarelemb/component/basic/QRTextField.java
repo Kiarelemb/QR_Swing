@@ -46,7 +46,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	private QRMouseMotionListener mouseMotionListener;
 
 	public QRTextField() {
-		setFont(QRColorsAndFonts.STANDARD_FONT_TEXT);
 		setMargin(new Insets(10, 10, 10, 10));
 		this.fa = new FocusAdapter() {
 			@Override
@@ -440,6 +439,7 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 	@Override
 	public void componentFresh() {
+		setFont(QRColorsAndFonts.STANDARD_FONT_TEXT);
 		setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 		setCaretColor(QRColorsAndFonts.CARET_COLOR);

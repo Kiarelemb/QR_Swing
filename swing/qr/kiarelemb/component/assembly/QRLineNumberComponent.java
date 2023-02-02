@@ -49,9 +49,9 @@ public class QRLineNumberComponent extends JComponent {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		super.paintComponent(g2d);
 		int width = getWidth();
 		//背景颜色
 		g2d.setColor(QRColorsAndFonts.TEXT_COLOR_BACK);
@@ -61,7 +61,7 @@ public class QRLineNumberComponent extends JComponent {
 		g2d.setFont(this.textPane.textFont);
 		int allLines = this.textPane.allLines();
 
-		int textPaneMargin = QRTextPane.INSECT;
+		int textPaneMargin = this.textPane.getMargin().left;
 		for (int i = 1; i <= allLines; i++) {
 			Rectangle rect = this.textPane.positionRectangle(this.textPane.getLineStartOffset(i)).getBounds();
 			String text = String.valueOf(i);
