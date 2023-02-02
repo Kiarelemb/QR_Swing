@@ -20,7 +20,6 @@ public class QRToolTip extends JToolTip implements QRComponentUpdate {
 	public static int MARGIN = 5;
 
 	public QRToolTip() {
-		setBorder(new EmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
 		componentFresh();
 	}
 
@@ -35,6 +34,7 @@ public class QRToolTip extends JToolTip implements QRComponentUpdate {
 
 	@Override
 	public void componentFresh() {
+		setBorder(new EmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
 		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
 		setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
