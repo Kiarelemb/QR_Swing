@@ -186,16 +186,16 @@ public class QRSwing {
 
 	private void load() {
 		windowIcon = iconLoadLead("window.icon.path", "QR.png");
-		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "dark");
-		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null);
-		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true);
-		windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true);
-		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true);
-		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f);
-		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f);
-		windowScale = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_SCALE, true);
-		windowAlwaysOnTop = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ALWAYS_TOP, false);
-		windowScreenAdsorb = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ABSORB, true);
+		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "深色", true);
+		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null, true);
+		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true, true);
+		windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true, true);
+		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true, true);
+		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f, true);
+		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f, true);
+		windowScale = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_SCALE, true, true);
+		windowAlwaysOnTop = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ALWAYS_TOP, false, true);
+		windowScreenAdsorb = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ABSORB, true, true);
 		if (!QRFileUtils.fileExists(WINDOW_PROP_PATH)) {
 			windowPropBackToDefault();
 		}
