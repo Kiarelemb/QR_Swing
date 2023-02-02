@@ -528,7 +528,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		}
 		if (QRFileUtils.fileExists(filePath)) {
 			Image imageToSet = QRSwingInfo.loadImage(filePath);
-			if (imageToSet != null && filePath.equals(this.imagePath)) {
+			if (imageToSet != null && !filePath.equals(this.imagePath)) {
 				this.backgroundImage = imageToSet;
 				imagePath = filePath;
 				QRSwing.setWindowBackgroundImagePath(filePath);
