@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.basic;
 
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
@@ -16,6 +17,11 @@ public class QRSlider extends JSlider implements QRComponentUpdate {
 	public QRSlider() {
 		super();
 		componentFresh();
+	}
+
+	public void setBoundValue(int min, int max) {
+		setMinimum(min);
+		setMaximum(max);
 	}
 
 	@Override
