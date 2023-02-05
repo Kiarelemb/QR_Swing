@@ -32,8 +32,8 @@ public class QRContractiblePanel extends QRPanel {
 	private final Dimension DEFAULT_DIMENSION;
 
 	private static final int GAP = 5;
-	private final QRPanel mainPanel;
 	private final Map<Integer, Integer> columnMap = new TreeMap<>(Integer::compareTo);
+	private final QRPanel mainPanel;
 	private final QRScrollPane scrollPane;
 	private final int position;
 
@@ -150,12 +150,10 @@ public class QRContractiblePanel extends QRPanel {
 		 * 用于判断是否已展开，默认为折叠
 		 */
 		private boolean fold = true;
-
 		private final int index;
 		private static final int COLUMN_HEIGHT = 40;
 		private final int[] xRange = new int[2];
 		private static final int[] yRange = {8, 32};
-
 		private boolean collapsable = true;
 		private final ArrayList<QRActionRegister> actionList = new ArrayList<>();
 
@@ -271,6 +269,7 @@ public class QRContractiblePanel extends QRPanel {
 		public void componentFresh() {
 			super.componentFresh();
 			setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1, true));
+			contentPanel.componentFresh();
 		}
 	}
 

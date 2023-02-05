@@ -34,14 +34,13 @@ import java.util.LinkedList;
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
- * @create 2022-11-21 20:52
+ * @description: 所有控件中拓展最为丰富和强大的类。不出意外，我们推荐将 {@link QRTextArea} 替换为 {@link QRTextPane}。
+ * @create 2022-11-21 20:52D
  **/
 public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretListenerAdd, QRFocusListenerAdd,
-		QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd, QRTextSelectionEndListenerAdd, QRBackgroundUpdate {
+		QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd,
+		QRTextSelectionEndListenerAdd, QRBackgroundUpdate {
 
-	public static final Color SELECTED_TEXT_FORE = new Color(90, 174, 238);
-	public static final Color SELECTED_AREA_BACK = new Color(64, 72, 89);
 	public static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 	public static final Cursor EDIT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
 	public static final int INSECT = 10;
@@ -1673,6 +1672,10 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		pasteAction();
 	}
 
+	/**
+	 * 自动设置了光标的样式所需要的字体
+	 * @param font 字体
+	 */
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
