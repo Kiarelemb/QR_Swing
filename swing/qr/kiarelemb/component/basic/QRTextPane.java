@@ -547,6 +547,22 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
+	 * 在调用了 {@link #currentLineAndRow(int)} 方法之后，{@link #lineWords} 就会更新
+	 * @return 这一行的字数，或每行的字数
+	 */
+	public final int lineWords() {
+		return lineWords;
+	}
+
+	/**
+	 * 在调用了 {@link #indexesUpdate()} 方法之后，该变量的数据会更新
+	 * @return 每行的行高
+	 */
+	public int linePerHeight() {
+		return linePerHeight;
+	}
+
+	/**
 	 * 获取光标所在的行
 	 * <p>请及时在调用本方法前执行 {@link #freshCaretLineRow(int)} 方法
 	 *

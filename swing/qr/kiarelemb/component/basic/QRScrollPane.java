@@ -57,6 +57,18 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
 	}
 
 	/**
+	 * 各滚动条的位置复原
+	 */
+	public void locationFresh() {
+		if (vBar.isVisible()) {
+			vBar.setValue(0);
+		}
+		if (hBar.isVisible()) {
+			hBar.setValue(0);
+		}
+	}
+
+	/**
 	 * 设置平滑滚动
 	 */
 	public void setScrollSmoothly() {
