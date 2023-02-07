@@ -1,14 +1,11 @@
 package swing.qr.kiarelemb.component.utils;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
-import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.component.basic.QRComboBox;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 
 /**
@@ -18,8 +15,10 @@ import java.awt.*;
  * @create 2023-01-31 16:48
  **/
 public class QRFontComboBox extends QRComboBox {
+	protected static final String[] FONT_NAMES = QRFontUtils.getSystemFontNames();
+
 	public QRFontComboBox() {
-		super(QRFontUtils.getSystemFontNames());
+		super(FONT_NAMES);
 		setRenderer(new QRComboBoxRenderer());
 	}
 
