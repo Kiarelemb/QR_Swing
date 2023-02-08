@@ -2,12 +2,15 @@ package swing.qr.kiarelemb.component;
 
 import swing.qr.kiarelemb.component.combination.QRTabbedContentPanel;
 import swing.qr.kiarelemb.component.combination.QRTabbedPane;
+import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRBackgroundUpdate;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,6 +64,31 @@ public class QRComponentUtils {
 		StyleConstants.setBackground(sas, colorBack);
 		return sas;
 	}
+
+	/**
+	 * 将一个 {@link QRActionRegister} 列表使用 {@code null} 参数运行一下，会检查其内容是否为空的清况
+	 *
+	 * @param list 任务列表
+	 */
+	public static void runActions(List<QRActionRegister> list) {
+		if (list.size() > 0) {
+			ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+			temp.forEach(e -> e.action(null));
+		}
+	}
+
+	/**
+	 * 将一个 {@link QRActionRegister} 列表使用 {@code obj} 参数运行一下，会检查其内容是否为空的清况
+	 *
+	 * @param list 任务列表
+	 */
+	public static void runActions(List<QRActionRegister> list, Object obj) {
+		if (list.size() > 0) {
+			ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+			temp.forEach(e -> e.action(obj));
+		}
+	}
+
 
 	/**
 	 * 如果设置背景图片，调用此方法。窗体刷新会延迟 30 毫秒

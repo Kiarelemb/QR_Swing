@@ -34,6 +34,7 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 		GLOBAL_SHIFT_TO_KEY_EVENT.put(219, 91);
 		GLOBAL_SHIFT_TO_KEY_EVENT.put(220, 92);
 		GLOBAL_SHIFT_TO_KEY_EVENT.put(221, 93);
+		GLOBAL_SHIFT_TO_KEY_EVENT.put(222, 39);
 	}
 
 	List<QRActionRegister> press = new ArrayList<>();
