@@ -74,7 +74,7 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
 	public void addActionListener() {
 		if (this.clickListener == null) {
 			this.clickListener = new QRActionListener();
-			this.clickListener.add(e -> actionListener((ActionEvent) e));
+			this.clickListener.add(e -> actionEvent((ActionEvent) e));
 			addActionListener(this.clickListener);
 		}
 	}
@@ -82,7 +82,7 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
 	/**
 	 * 在实例化时直接重写
 	 */
-	protected void actionListener(ActionEvent o) {
+	protected void actionEvent(ActionEvent o) {
 	}
 
 	/**

@@ -271,6 +271,19 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 		QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, this.disposeAction, false);
 	}
 
+	public void setParentWindowNotFollowMove() {
+		this.parentWindowFollowMove = false;
+	}
+
+	private void windowStateUpdate() {
+		if (QRSwing.windowRound) {
+			QRSystemUtils.setWindowRound(this);
+		} else {
+			QRSystemUtils.setWindowNotRound(this);
+		}
+		QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
+	}
+
 	@Override
 	public void componentFresh() {
 		this.contentPane.componentFresh();
@@ -303,10 +316,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
 	@Override
 	public void ownerMoved() {
-	}
-
-	public void setParentWindowNotFollowMove() {
-		this.parentWindowFollowMove = false;
 	}
 
 	@Override
@@ -351,18 +360,13 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	@Override
 	public final void setBounds(int x, int y, int width, int height) {
 		super.setBounds(Math.max(x, 0), Math.max(y, 0), width, height);
-		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
-		} else {
-			QRSystemUtils.setWindowNotRound(this);
-		}
+		windowStateUpdate();
 	}
 
 	@Override
 	public void dispose() {
 		QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), this.disposeAction, false);
 		super.dispose();
-//		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowAlpha, false);
 	}
 
 	public void setCursorWait() {

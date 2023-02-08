@@ -1,7 +1,7 @@
 package swing.qr.kiarelemb.component.utils;
 
 import method.qr.kiarelemb.utils.QRFileUtils;
-import swing.qr.kiarelemb.component.basic.QRButton;
+import swing.qr.kiarelemb.component.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
@@ -15,45 +15,30 @@ import java.util.ArrayList;
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description: 一个用来选择文件的按钮，可以设置文字，或设置图片
- * @create 2022-11-22 15:28
+ * @description:
+ * @create 2023-02-08 15:33
  **/
-public class QRFileSelectButton extends QRButton {
+public class QRFileSelectRoundButton extends QRRoundButton {
 	private final Window parent;
 	private final String fileType;
 	private final String[] extension;
 	private File selectedFile;
-
 	private String selectedFilePath;
 	private final ArrayList<QRActionRegister> successes = new ArrayList<>();
 	private final ArrayList<QRActionRegister> failures = new ArrayList<>();
 
+
 	/**
-	 * 使用内置的选择图标作为默认，则推荐长宽的大小为 {@code 32}
-	 *
+	 * @param text      文本
 	 * @param parent    父类窗体
 	 * @param fileType  文件类型的言语上的名称
 	 * @param extension 拓展名，可不加点
 	 */
-	public QRFileSelectButton(Window parent, String fileType, String... extension) {
-		this.parent = parent;
-		this.extension = extension;
-		this.fileType = fileType;
-		setIcon(new ImageIcon(QRSwingInfo.loadUrl("select.png")));
-	}
-
-	public QRFileSelectButton(String text, Window parent, String fileType, String... extension) {
+	public QRFileSelectRoundButton(String text, Window parent, String fileType, String... extension) {
 		this.parent = parent;
 		this.extension = extension;
 		this.fileType = fileType;
 		setText(text);
-	}
-
-	public QRFileSelectButton(Icon imageIcon, Window parent, String fileType, String... extension) {
-		this.parent = parent;
-		this.extension = extension;
-		this.fileType = fileType;
-		setIcon(imageIcon);
 	}
 
 	@Override
