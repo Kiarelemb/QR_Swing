@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb;
 
 import method.qr.kiarelemb.utils.*;
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.component.listener.QRGlobalKeyboardHookListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
@@ -127,9 +128,7 @@ public class QRSwing {
 		QRFileUtils.dirCreate(TMP_DIRECTORY);
 		//在程序退出时自动保存配置文件
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			if (actionAfterClose.size() > 0) {
-				actionAfterClose.forEach(e -> e.action(null));
-			}
+			QRComponentUtils.runActions(actionAfterClose);
 			globalPropSave();
 		}));
 	}

@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.component.combination;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRScrollPane;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -204,9 +205,7 @@ public class QRContractiblePanel extends QRPanel {
 				} else {
 					expandColumn(this);
 				}
-				if (actionList.size() > 0) {
-					actionList.forEach(e -> e.action(this.fold));
-				}
+				QRComponentUtils.runActions(actionList, this.fold);
 			}
 		}
 

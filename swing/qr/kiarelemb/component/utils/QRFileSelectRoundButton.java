@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.component.utils;
 
 import method.qr.kiarelemb.utils.QRFileUtils;
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.component.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
@@ -50,10 +51,7 @@ public class QRFileSelectRoundButton extends QRRoundButton {
 		File file = QRFileUtils.fileSelect(this.parent, this.fileType, this.extension);
 		if (file == null || !QRFileUtils.fileExists(file.getAbsolutePath())) {
 			failedAction();
-			if (failures.size() > 0) {
-				ArrayList<QRActionRegister> list = new ArrayList<>(failures);
-				list.forEach(e -> e.action(null));
-			}
+			QRComponentUtils.runActions(failures);
 			return;
 		}
 
@@ -64,10 +62,7 @@ public class QRFileSelectRoundButton extends QRRoundButton {
 		this.selectedFile = file;
 		this.selectedFilePath = file.getAbsolutePath();
 		successAction(this.selectedFile, this.selectedFilePath);
-		if (successes.size() > 0) {
-			ArrayList<QRActionRegister> list = new ArrayList<>(successes);
-			list.forEach(e -> e.action(this.selectedFile));
-		}
+		QRComponentUtils.runActions(this.successes,this.selectedFile);
 	}
 
 	/**

@@ -609,9 +609,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
 	public final void dispose(boolean systemExit) {
 		dispose();
-		if (this.actionOnDispose.size() > 0) {
-			this.actionOnDispose.forEach(e -> e.action(null));
-		}
+		QRComponentUtils.runActions(this.actionOnDispose);
 		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowTransparency, systemExit);
 	}
 
