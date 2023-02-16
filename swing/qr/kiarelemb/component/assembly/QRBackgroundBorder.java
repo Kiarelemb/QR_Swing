@@ -28,7 +28,6 @@ public class QRBackgroundBorder implements Border, QRComponentUpdate {
 		}
 	}
 
-
 	@Override
 	public void paintBorder(Component component, Graphics graphics, int x, int y, int width, int height) {
 		Graphics2D g2 = (Graphics2D) graphics;

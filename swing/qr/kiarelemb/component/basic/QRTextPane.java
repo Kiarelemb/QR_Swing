@@ -548,6 +548,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 	/**
 	 * 在调用了 {@link #currentLineAndRow(int)} 方法之后，{@link #lineWords} 就会更新
+	 *
 	 * @return 这一行的字数，或每行的字数
 	 */
 	public final int lineWords() {
@@ -556,6 +557,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 	/**
 	 * 在调用了 {@link #indexesUpdate()} 方法之后，该变量的数据会更新
+	 *
 	 * @return 每行的行高
 	 */
 	public int linePerHeight() {
@@ -1078,6 +1080,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 	public final void removeText(int offset, int length) {
 		try {
+			if (length <= 0) {
+				return;
+			}
 			getDocument().remove(offset, length);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -1690,6 +1695,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 	/**
 	 * 自动设置了光标的样式所需要的字体
+	 *
 	 * @param font 字体
 	 */
 	@Override
