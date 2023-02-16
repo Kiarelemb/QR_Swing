@@ -30,7 +30,6 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 	private QRWindowListener windowListener;
 
 	private final Point p = new Point();
-	protected Rectangle r;
 	private boolean windowCanMove = true;
 
 	/**
@@ -123,6 +122,9 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 		this.windowCanMove = false;
 	}
 
+	/**
+	 * 父窗体移动时将自动更新此位置
+	 */
 	public void updateLocation() {
 	}
 
