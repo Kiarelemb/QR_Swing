@@ -75,13 +75,15 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
 		this.vBar.setUnitIncrement(0);
 		this.hBar.setUnitIncrement(0);
 		getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-		this.mouseWheelListener = new QRMouseWheelListener();
-		this.mouseWheelListener.add(e -> {
-			MouseWheelEvent ev = (MouseWheelEvent) e;
-			ev.consume();
-			mouseWheelMove(ev);
-		});
-		addMouseWheelListener(this.mouseWheelListener);
+		if (this.mouseWheelListener == null) {
+			this.mouseWheelListener = new QRMouseWheelListener();
+			this.mouseWheelListener.add(e -> {
+				MouseWheelEvent ev = (MouseWheelEvent) e;
+				ev.consume();
+				mouseWheelMove(ev);
+			});
+			addMouseWheelListener(this.mouseWheelListener);
+		}
 	}
 
 	public void addMouseWheelListener(QRActionRegister ar) {
