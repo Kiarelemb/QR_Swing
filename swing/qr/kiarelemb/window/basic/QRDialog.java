@@ -195,6 +195,17 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 		this(parent, true);
 	}
 
+	/**
+	 * 创建一个默认标题居中、窗体大小不可调整、可用父窗体的对话框，
+	 * <p>使用方法
+	 * <p>super(parent);
+	 * <p>setTitle("");
+	 * <p>setTitlePlace(QRDialog.CENTER);
+	 * <p>setSize(400, 300);
+	 * <p><code>mainPanel</code> 是已自带的主面板，默认布局为null
+	 *
+	 * @param parent 父窗体
+	 */
 	public QRDialog(Window parent, boolean parentUnable) {
 		super(parent, null, parentUnable ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
 		this.parent = parent;
