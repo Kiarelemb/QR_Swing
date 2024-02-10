@@ -421,16 +421,23 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 添加滚动条
+	 * 添加滚动条，默认单次滚动五行
 	 *
 	 * @return 滚动条本身，实例是 {@link QRScrollPane}
 	 */
 	public QRScrollPane addScrollPane() {
+		return addScrollPane(5);
+	}
+
+	/**
+	 * 添加滚动条
+	 * @param line 单次滚动行数
+	 * @return 滚动条本身，实例是 {@link QRScrollPane}
+	 */
+	public QRScrollPane addScrollPane(int line) {
 		if (this.scrollPane == null) {
 			this.scrollPane = new QRScrollPane();
 			this.scrollPane.setViewportView(this);
-			//单次滚动5行
-			int line = 5;
 			this.scrollPane.setScrollSmoothly(line);
 		}
 		return this.scrollPane;
