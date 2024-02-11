@@ -7,7 +7,7 @@ import java.awt.*;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2022-11-30 18:53
  **/
