@@ -38,7 +38,7 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
 	public void addActionListener() {
 		if (this.clickListener == null) {
 			this.clickListener = new QRActionListener();
-			this.clickListener.add(e -> actionListener((ActionEvent) e));
+			this.clickListener.add(e -> actionEvent((ActionEvent) e));
 			addActionListener(this.clickListener);
 		}
 	}
@@ -58,7 +58,7 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
 	/**
 	 * 已自动添加监听器，可直接重写
 	 */
-	protected void actionListener(ActionEvent o) {
+	protected void actionEvent(ActionEvent o) {
 	}
 
 	@Override
