@@ -78,7 +78,7 @@ public class QRStatePanel extends QRPanel {
 		return split(this.rightPane);
 	}
 
-	private QRStatePanel split(QRPanel panel) {
+	protected QRStatePanel split(QRPanel panel) {
 		panel.add(new SplitLabel());
 		return this;
 	}

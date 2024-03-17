@@ -321,7 +321,6 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mouseClick(MouseEvent e) {
-
 	}
 
 	/**

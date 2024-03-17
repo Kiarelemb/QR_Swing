@@ -92,7 +92,10 @@ public class QRColorsAndFonts {
 	 */
 	public static Color MENU_COLOR = new Color(235, 235, 235);
 	public static String[] COLOR_ATTRIBUTES = new String[]{"TEXT_COLOR_FORE", "TEXT_COLOR_BACK", "CORRECT_COLOR_FORE", "CORRECT_COLOR_BACK", "SENIOR_RANDOM_COLOR_BACK", "FRAME_COLOR_BACK", "BORDER_COLOR", "ENTER_COLOR", "PRESS_COLOR", "LINE_COLOR", "SCROLL_COLOR", "MENU_COLOR", "CARET_COLOR"};
-
+	/**
+	 * 所有主题
+	 */
+	public static String[] THEME_CLASS;
 
 	/**
 	 * 加载主题
@@ -102,6 +105,18 @@ public class QRColorsAndFonts {
 		loadColors(colors);
 		UIManager.put("ToolTip.background", FRAME_COLOR_BACK);
 		UIManager.put("ToolTip.foreground", TEXT_COLOR_FORE);
+
+		LinkedList<String> themes = new LinkedList<>(Arrays.asList(BASIC_THEMES));
+		File themeDir = new File(QRSwing.THEME_DIRECTORY);
+		final File[] files = themeDir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (isThemeFile(file)) {
+					themes.add(getThemeFileName(file));
+				}
+			}
+		}
+		THEME_CLASS = themes.toArray(QRStringUtils.ARR_EMPTY);
 	}
 
 	private static void loadColors(Color[] colors) {
@@ -125,7 +140,7 @@ public class QRColorsAndFonts {
 		}
 	}
 
-	private static Color[] getThemeColors(String themeName) {
+	public static Color[] getThemeColors(String themeName) {
 
 		LinkedList<String> themes = new LinkedList<>(Arrays.asList(BASIC_THEMES));
 		//基础主题
@@ -240,7 +255,7 @@ public class QRColorsAndFonts {
 	/**
 	 * 取得主题文件的文件名
 	 */
-	private static String getThemeFileName(File f) {
+	public static String getThemeFileName(File f) {
 		final String name = f.getName();
 		final int extension = name.lastIndexOf(THEME_FILE_EXTENSION);
 		if (extension == -1) {
@@ -255,7 +270,7 @@ public class QRColorsAndFonts {
 	 * @param f 文件
 	 * @return 是否为主题文件
 	 */
-	private static boolean isThemeFile(File f) {
+	public static boolean isThemeFile(File f) {
 		final String name = f.getName();
 		if (!name.endsWith(THEME_FILE_EXTENSION)) {
 			return false;
@@ -305,5 +320,37 @@ public class QRColorsAndFonts {
 	private static Color parseColor(String rgb, char seperator) {
 		int[] values = QRArrayUtils.splitToInt(rgb, seperator);
 		return new Color(values[0], values[1], values[2]);
+	}
+
+	/**
+	 * 主题名称转换
+	 * @param englishTopic 主题名
+	 * @return 转为中文
+	 */
+	public static String topicEnglishToChinese(String englishTopic) {
+		return switch (englishTopic) {
+			case "gray" -> "灰色";
+			case "light" -> "浅色";
+			case "pink" -> "粉色";
+			case "brown" -> "棕色";
+			case "dark" -> "深色";
+			default -> englishTopic;
+		};
+	}
+
+	/**
+	 * 主题名称转换
+	 * @param chineseTopic 主题名
+	 * @return 转为英文
+	 */
+	public static String topicChineseToEnglish(String chineseTopic) {
+		return switch (chineseTopic) {
+			case "灰色" -> "gray";
+			case "浅色" -> "light";
+			case "粉色" -> "pink";
+			case "棕色" -> "brown";
+			case "深色" -> "dark";
+			default -> chineseTopic;
+		};
 	}
 }

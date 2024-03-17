@@ -27,7 +27,6 @@ public final class QROpinionDialog extends QRDialog {
 	private final QRLabel message;
 	private final JLabel image;
 	private int selection = CANCEL;
-
 	private final static String INFO = "提示";
 	private final static String ERROR = "错误";
 	private final static String MSG = "信息";

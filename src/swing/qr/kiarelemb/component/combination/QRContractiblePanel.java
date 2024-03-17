@@ -25,7 +25,30 @@ public class QRContractiblePanel extends QRPanel {
 	public static final int LEFT = 0;
 	public static final int CENTER = 1;
 	public static final int RIGHT = 2;
-	private final ArrayList<QRColumnPanel> columns = new ArrayList<>();
+	private final ArrayList<QRColumnPanel> columns = new ArrayList<>() {
+		@Override
+		public int indexOf(Object o) {
+			if (o instanceof QRColumnContentPanel) {
+				for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+					QRColumnPanel c = this.get(i);
+					if (c.contentPanel == o) {
+						return i;
+					}
+				}
+				return -1;
+			} else if (o instanceof String) {
+				for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+					QRColumnPanel c = this.get(i);
+					if (c.name.equals(o)) {
+						return i;
+					}
+				}
+				return -1;
+			}
+			return super.indexOf(o);
+
+		}
+	};
 
 	/**
 	 * 推荐的宽度是 300
@@ -33,6 +56,9 @@ public class QRContractiblePanel extends QRPanel {
 	private final Dimension DEFAULT_DIMENSION;
 
 	private static final int GAP = 5;
+	/**
+	 * 用于保存各栏的状态，其中 {@code 0} 为关闭状态， {@code 1} 为打开状态
+	 */
 	private final Map<Integer, Integer> columnMap = new TreeMap<>(Integer::compareTo);
 	private final QRPanel mainPanel;
 	private final QRScrollPane scrollPane;
@@ -87,6 +113,34 @@ public class QRContractiblePanel extends QRPanel {
 		return addColumn(column);
 	}
 
+	/**
+	 * @param index 索引
+	 * @return 取得 {@link QRColumnContentPanel}
+	 */
+	public QRColumnContentPanel getColumn(int index) {
+		if (index < 0 || index >= columns.size()) {
+			return null;
+		}
+		return columns.get(index).contentPanel;
+	}
+
+	public QRColumnContentPanel getColumn(String columnName) {
+		int index = getColumnIndex(columnName);
+		if (index == -1) {
+			return null;
+		}
+		return columns.get(index).contentPanel;
+	}
+
+
+	public int getColumnIndex(QRColumnContentPanel column) {
+		return columns.indexOf(column);
+	}
+
+	public int getColumnIndex(String columnName) {
+		return columns.indexOf(columnName);
+	}
+
 	private QRColumnContentPanel addColumn(QRColumnPanel column) {
 		columnMap.put(column.index, 0);
 		this.mainPanel.add(column);
@@ -111,7 +165,6 @@ public class QRContractiblePanel extends QRPanel {
 		this.mainPanel.add(column.contentPanel, index + 1);
 		update(column, true);
 		columnMap.put(column.index, 1);
-//		}
 	}
 
 	public void collapseColumn(QRColumnPanel column) {
@@ -154,7 +207,7 @@ public class QRContractiblePanel extends QRPanel {
 		private final int index;
 		private static final int COLUMN_HEIGHT = 40;
 		private final int[] xRange = new int[2];
-		private static final int[] yRange = {8, 32};
+		private static final int[] Y_RANGE = {8, 32};
 		private boolean collapsable = true;
 		private final ArrayList<QRActionRegister> actionList = new ArrayList<>();
 
@@ -213,6 +266,10 @@ public class QRContractiblePanel extends QRPanel {
 			return fold;
 		}
 
+		public String name() {
+			return name;
+		}
+
 		/**
 		 * 当将此栏打开或关闭时可进行的操作
 		 *
@@ -261,7 +318,7 @@ public class QRContractiblePanel extends QRPanel {
 		private boolean mouseInRange(Point p) {
 			int x = p.x;
 			int y = p.y;
-			return x > this.xRange[0] && x < this.xRange[1] && y > yRange[0] && y < yRange[1];
+			return x > this.xRange[0] && x < this.xRange[1] && y > Y_RANGE[0] && y < Y_RANGE[1];
 		}
 
 		@Override
@@ -291,5 +348,6 @@ public class QRContractiblePanel extends QRPanel {
 		private void setColumn(QRColumnPanel column) {
 			this.column = column;
 		}
+
 	}
 }

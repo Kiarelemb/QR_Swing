@@ -26,7 +26,7 @@ import static swing.qr.kiarelemb.theme.QRColorsAndFonts.LINE_COLOR;
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
+ * @description: 普通自定义窗体边框的对话框
  * @create 2022-11-21 18:51
  **/
 public class QRDialog extends JDialog implements QRParentWindowMove, QRComponentUpdate, QRWindowListenerAdd {

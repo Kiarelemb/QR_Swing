@@ -34,6 +34,13 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 
 	/**
 	 * @param owner        父窗体
+	 */
+	public QREmptyDialog(Window owner) {
+		this(owner,true);
+	}
+
+	/**
+	 * @param owner        父窗体
 	 * @param parentUnable 父窗体是否禁用
 	 */
 	public QREmptyDialog(Window owner, boolean parentUnable) {

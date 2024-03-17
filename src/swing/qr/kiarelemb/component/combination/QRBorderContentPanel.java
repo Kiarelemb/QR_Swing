@@ -16,11 +16,10 @@ import java.awt.*;
  **/
 public class QRBorderContentPanel extends QRPanel {
 
-	private boolean borderPaint = true;
 
 	public QRBorderContentPanel() {
 		super();
-		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
+		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 3));
 	}
 
 	@Override
@@ -28,10 +27,10 @@ public class QRBorderContentPanel extends QRPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setColor(QRColorsAndFonts.BORDER_COLOR);
-		if (QRSwing.windowRound && this.borderPaint) {
+		if (QRSwing.windowRound) {
 			final int arc = 15;
 			g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
-		} else if (this.borderPaint) {
+		} else {
 			g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 		}
 	}
@@ -45,16 +44,9 @@ public class QRBorderContentPanel extends QRPanel {
 		}
 	}
 
-	/**
-	 * 是否设置边框圆角，{@code false} 则不画圆角
-	 */
-	public void setBorderPaint(boolean borderPaint) {
-		this.borderPaint = borderPaint;
-	}
-
 	@Override
 	public void componentFresh() {
 		super.componentFresh();
-		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
+		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.BORDER_COLOR, 3));
 	}
 }

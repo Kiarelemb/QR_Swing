@@ -428,18 +428,26 @@ public class QRSwing {
 	}
 
 	/**
-	 * 潮加键盘按键事件
+	 * 潮加键盘按键事件，提供多个快捷键对应一个Action的功能
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
 	 *
-	 * @param key             按键组合
+	 * @param key             按键组合，不同按键组合间以英文逗号{@code ,}分割
 	 *                        <p>有+号则优先以+号分割，再以空格分割
-	 *                        <p>支持格式 {@code Ctrl + Alt + Shift + s}、{@code a}、{@code shift a}，但不支持 Windows 键的组合
+	 *                        <p>支持格式 {@code Ctrl + Alt + Shift + s}、{@code a}、{@code shift a}、{@code shift b,ctrl a}、{@code shift b, ctrl b}，但不支持 Windows 键的组合
 	 * @param ar              事件，其参数 {@link Object} 为 {@link KeyStroke} 类
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
 	 */
 	public static void registerGlobalAction(String key, QRActionRegister ar, boolean mainWindowFocus) {
-		KeyStroke keyStroke = QRStringUtils.getKeyStroke(key);
-		registerGlobalAction(keyStroke, ar, mainWindowFocus);
+		if (key.indexOf(',') == -1) {
+			KeyStroke keyStroke = QRStringUtils.getKeyStroke(key);
+			registerGlobalAction(keyStroke, ar, mainWindowFocus);
+		} else {
+			String[] keys =key.split(",");
+			for (String k : keys) {
+				KeyStroke keyStroke = QRStringUtils.getKeyStroke(k);
+				registerGlobalAction(keyStroke, ar, mainWindowFocus);
+			}
+		}
 	}
 
 	/**

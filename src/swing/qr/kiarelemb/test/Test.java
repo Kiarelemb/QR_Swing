@@ -2,15 +2,15 @@ package swing.qr.kiarelemb.test;
 
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.component.assembly.QRMutableTreeNode;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.basic.QRSplitPane;
-import swing.qr.kiarelemb.component.basic.QRTextPane;
-import swing.qr.kiarelemb.component.basic.QRTree;
+import swing.qr.kiarelemb.component.basic.*;
 import swing.qr.kiarelemb.component.combination.QRContractiblePanel;
+import swing.qr.kiarelemb.component.combination.QRStatePanel;
+import swing.qr.kiarelemb.theme.QRSwingThemeDesigner;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 
 /**
@@ -32,11 +32,8 @@ public class Test extends QRFrame {
 		this.mainPanel.setLayout(new BorderLayout());
 
 		QRSplitPane splitPane = new QRSplitPane(JSplitPane.VERTICAL_SPLIT);
-		QRTextPane textPane = new QRTextPane();
-		splitPane.setTopComponent(textPane.addScrollPane());
-		QRLabel label = new QRLabel("这是一个用于测试的简单标签");
-		label.setTextCenter();
-		splitPane.setBottomComponent(label);
+		splitPane.setTopComponent(new QRTextPane().addScrollPane());
+		splitPane.setBottomComponent(new QRTextPane().addScrollPane());
 		splitPane.setResizeWeight(0.618);
 		this.mainPanel.add(splitPane, BorderLayout.CENTER);
 
@@ -50,6 +47,21 @@ public class Test extends QRFrame {
 			contractiblePanel.addColumn("Test " + i, 300);
 		}
 		this.mainPanel.add(contractiblePanel, BorderLayout.WEST);
+
+		QRContractiblePanel.QRColumnContentPanel second = contractiblePanel.getColumn("Test 1");
+		QRRoundButton btn = new QRRoundButton("主题设置"){
+			@Override
+			protected void actionEvent(ActionEvent o) {
+				QRSwingThemeDesigner designer = new QRSwingThemeDesigner(Test.this);
+				designer.setVisible(true);
+			}
+		};
+		btn.setSize(140,30);
+		second.add(btn);
+
+		QRStatePanel statePanel = new QRStatePanel();
+		statePanel.leftAdd(new QRLabel("Test"));
+		this.mainPanel.add(statePanel, BorderLayout.SOUTH);
 
 		first.column().setCollapsable(false);
 		first.column().setFold(false);

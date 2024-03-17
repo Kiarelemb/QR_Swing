@@ -45,6 +45,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	protected final QRButton closeButton;
 	protected final QRButton maximumButton;
 	protected final QRButton minimumButton;
+	/**
+	 * 所继承的各主窗体所添加的控件基本都需要放在这个 {@link QRFrame#mainPanel} 中
+	 */
 	protected final QRPanel mainPanel;
 	private final QRBorderContentPanel contentPane;
 	private final QRPanel topPanel;
