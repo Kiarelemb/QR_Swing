@@ -242,7 +242,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 			@Override
 			public void componentFresh() {
 				super.componentFresh();
-				setFont(QRFrame.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
 			}
 		};
 

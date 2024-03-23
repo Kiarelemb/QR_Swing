@@ -9,14 +9,12 @@ import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.component.QRTextBasicActionSetting;
 import swing.qr.kiarelemb.inter.listener.add.*;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 /**
  * @author Kiarelemb QR
@@ -241,6 +239,34 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 */
 	public void addUndoManager() {
 		this.undoManager = new QRUndoManager(this);
+	}
+
+	public void addClearButton(boolean right) {
+		setLayout(new BorderLayout());
+		QRButton clearButton = new QRButton(QRFrame.CLOSE_MARK) {
+			{
+				addMouseListener();
+			}
+
+			@Override
+			protected void mouseEnter(MouseEvent e) {
+				setCursor(Cursor.getDefaultCursor());
+			}
+
+			@Override
+			public void componentFresh() {
+				super.componentFresh();
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
+			}
+
+			@Override
+			protected void actionEvent(ActionEvent o) {
+				QRTextField.this.clear();
+			}
+		};
+		//按钮宽30
+		add(clearButton, right ? BorderLayout.EAST : BorderLayout.WEST);
+		setMargin(new Insets(10, right ? 10 : 40, 10, right ? 40 : 10));
 	}
 
 	//endregion

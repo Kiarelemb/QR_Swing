@@ -37,16 +37,15 @@ import java.util.Properties;
  * @create 2022-11-04 16:33
  **/
 public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListenerAdd {
-	public static final String MIN_MARK = " — ";
-	public static final String CLOSE_MARK = "   ╳   ";
+	public static final String MIN_MARK = "—";
+	public static final String CLOSE_MARK = "  ╳  ";
 	public static final String MAX_MARK = "❐";
-	public static final Font PROCESS_BUTTON_FONT = QRFontUtils.loadFontFromURL(QRSwingInfo.loadUrl("seguisym.ttf"));
 	public static final int DIS = 5;
 	protected final QRButton closeButton;
 	protected final QRButton maximumButton;
 	protected final QRButton minimumButton;
 	/**
-	 * 所继承的各主窗体所添加的控件基本都需要放在这个 {@link QRFrame#mainPanel} 中
+	 * 所继承的各主窗体所添加的控件基本都需要放在这个 {@link #mainPanel} 中
 	 */
 	protected final QRPanel mainPanel;
 	private final QRBorderContentPanel contentPane;
@@ -341,7 +340,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			@Override
 			public void componentFresh() {
 				super.componentFresh();
-				setFont(PROCESS_BUTTON_FONT.deriveFont(13f));
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(13f));
 			}
 		};
 		this.minimumButton.addActionListener(e -> minWindow());
@@ -351,10 +350,10 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			@Override
 			public void componentFresh() {
 				super.componentFresh();
-				setFont(PROCESS_BUTTON_FONT.deriveFont(16f));
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(16f));
 			}
 		};
-		this.maximumButton.setFont(PROCESS_BUTTON_FONT.deriveFont(16f));
+//		this.maximumButton.setFont(PROCESS_BUTTON_FONT.deriveFont(16f));
 		this.maximumButton.addActionListener(e -> maxWindow());
 		this.threeButtonPanel.add(this.maximumButton);
 
@@ -362,12 +361,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			@Override
 			public void componentFresh() {
 				super.componentFresh();
-				setFont(PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
 
 			}
 		};
 		this.closeButton.setToolTipText("关闭");
-		this.closeButton.setFont(PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
+//		this.closeButton.setFont(PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
 		this.closeButton.disableListener();
 		this.closeButton.addMouseListener(new QRButtonMouseListener(this.closeButton) {
 			@Override

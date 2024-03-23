@@ -48,7 +48,7 @@ public class Test extends QRFrame {
 		}
 		this.mainPanel.add(contractiblePanel, BorderLayout.WEST);
 
-		QRContractiblePanel.QRColumnContentPanel second = contractiblePanel.getColumn("Test 1");
+		QRContractiblePanel.QRColumnContentPanel second = contractiblePanel.getColumn(1);
 		QRRoundButton btn = new QRRoundButton("主题设置"){
 			@Override
 			protected void actionEvent(ActionEvent o) {
@@ -56,7 +56,7 @@ public class Test extends QRFrame {
 				designer.setVisible(true);
 			}
 		};
-		btn.setSize(140,30);
+		btn.setSize(80,30);
 		second.add(btn);
 
 		QRStatePanel statePanel = new QRStatePanel();

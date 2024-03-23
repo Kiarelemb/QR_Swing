@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.theme;
 
 import method.qr.kiarelemb.utils.*;
 import swing.qr.kiarelemb.QRSwing;
+import swing.qr.kiarelemb.resource.QRSwingInfo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +21,7 @@ public class QRColorsAndFonts {
 	 * 主题文件的扩展名
 	 */
 	public static final String THEME_FILE_EXTENSION = ".qr.th";
+	public static final Font PROCESS_BUTTON_FONT = QRFontUtils.loadFontFromURL(QRSwingInfo.loadUrl("seguisym.ttf"));
 	/**
 	 * 默认字体为 微软雅黑
 	 */
