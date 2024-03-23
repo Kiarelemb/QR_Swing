@@ -602,16 +602,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * <p>请及时在调用本方法前执行 {@link #freshCaretLineRow(int)} 方法
-	 *
 	 * @return 返回文本的长度
 	 */
 	public int textLength() {
-		if (this.caretListener != null) {
-			if (this.caretUpdateData.totalLines == 1) {
-				return this.caretUpdateData.lineLength;
-			}
-		}
 		return getText().length();
 	}
 

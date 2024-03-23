@@ -226,15 +226,6 @@ public class QRSwing {
 	}
 
 	/**
-	 * 软件关闭后的操作
-	 *
-	 * @param ar 其参数 {@link Object} 为 {@code null}
-	 */
-	public static void addActionAfterClose(QRActionRegister ar) {
-		actionAfterClose.add(ar);
-	}
-
-	/**
 	 * 窗体大小及位置复原
 	 */
 	public static void windowPropBackToDefault() {
@@ -527,5 +518,14 @@ public class QRSwing {
 				list.remove(ar);
 			}
 		}
+	}
+
+	/**
+	 * 软件关闭后的操作
+	 *
+	 * @param ar 其参数 {@link Object} 为 {@code null}
+	 */
+	public static void registerSystemExitAction(QRActionRegister ar) {
+		actionAfterClose.add(ar);
 	}
 }

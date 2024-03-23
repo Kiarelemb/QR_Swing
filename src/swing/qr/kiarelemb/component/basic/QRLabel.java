@@ -34,6 +34,7 @@ import java.net.URL;
 public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicActionSetting, QRMouseListenerAdd, QRMouseMotionListenerAdd {
 	private QRMouseMotionListener mouseMotionListener;
 	private QRMouseListener mouseListener;
+	private boolean wrap = false;
 
 	public QRLabel() {
 		componentFresh();
@@ -50,6 +51,48 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 	}
 
 	//region 文本设置
+
+
+	@Override
+	public void setText(String text) {
+		if (!wrap) {
+			super.setText(text);
+		} else {
+			//使文本可换行
+			StringBuilder sb = new StringBuilder("<html>");
+			char[] chars = text.toCharArray();
+			int fontSize = QRColorsAndFonts.DEFAULT_FONT_MENU.getSize();
+			FontMetrics fm = getFontMetrics(getFont());
+			int start = 0;
+			int len = 0;
+			int lines = 0;
+			Font font = new Font(QRColorsAndFonts.DEFAULT_FONT_MENU.getFamily(), Font.PLAIN, fontSize);
+			while (start + len < text.length()) {
+				while (true) {
+					len++;
+					if (start + len > text.length()) {
+						break;
+					}
+					if (fm.charsWidth(chars, start, len) > getWidth()) {
+						break;
+					}
+				}
+				lines++;
+				sb.append(chars, start, len - 1).append("<br/>");
+				if (lines / 4 > 0) {
+					fontSize--;
+					setFont(font);
+					fm = getFontMetrics(font);
+				}
+				start = start + len - 1;
+				len = 0;
+			}
+			sb.append(chars, start, text.length() - start);
+			sb.append("</html>");
+			super.setText(sb.toString());
+		}
+	}
+
 	public void setText(int intValue) {
 		setText(String.valueOf(intValue));
 	}
@@ -75,6 +118,16 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 	@Override
 	public void setTextRight() {
 		setHorizontalAlignment(SwingConstants.RIGHT);
+	}
+
+	/**
+	 * 设置标签可换行
+	 */
+	public void wrapText(boolean wrap) {
+		if (this.wrap != wrap) {
+			this.wrap = wrap;
+			setText(getText());
+		}
 	}
 
 	@Override
