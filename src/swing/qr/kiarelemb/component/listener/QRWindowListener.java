@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.component.listener;
 
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.LinkedList;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
  **/
 public class QRWindowListener implements WindowListener {
 	public enum TYPE {
-		OPEN, CLOSING, CLOSED, ICONIFIED, DEICONIFIED, ACTIVATED, DEACTIVATED
+		OPEN, CLOSING, CLOSED, ICONIFIED, DEICONIFIED, ACTIVATED, DEACTIVATED, MOVE
 	}
 
 	private final LinkedList<QRActionRegister> open = new LinkedList<>();
@@ -24,24 +25,18 @@ public class QRWindowListener implements WindowListener {
 	private final LinkedList<QRActionRegister> deiconified = new LinkedList<>();
 	private final LinkedList<QRActionRegister> activated = new LinkedList<>();
 	private final LinkedList<QRActionRegister> deactivated = new LinkedList<>();
+	private final LinkedList<QRActionRegister> move = new LinkedList<>();
 
 	public void add(TYPE type, QRActionRegister ar) {
 		switch (type) {
-			case CLOSING:
-				this.closing.add(ar);
-			case CLOSED:
-				this.closed.add(ar);
-			case ICONIFIED:
-				this.iconified.add(ar);
-			case DEICONIFIED:
-				this.deiconified.add(ar);
-			case ACTIVATED:
-				this.activated.add(ar);
-			case DEACTIVATED:
-				this.deactivated.add(ar);
-				break;
-			default:
-				this.open.add(ar);
+			case CLOSING -> this.closing.add(ar);
+			case CLOSED -> this.closed.add(ar);
+			case ICONIFIED -> this.iconified.add(ar);
+			case DEICONIFIED -> this.deiconified.add(ar);
+			case ACTIVATED -> this.activated.add(ar);
+			case MOVE -> this.move.add(ar);
+			case DEACTIVATED -> this.deactivated.add(ar);
+			default -> this.open.add(ar);
 		}
 	}
 
@@ -91,6 +86,12 @@ public class QRWindowListener implements WindowListener {
 	public final void windowDeactivated(WindowEvent e) {
 		for (QRActionRegister register : this.deactivated) {
 			register.action(e);
+		}
+	}
+
+	public final void windowMoved(Point p) {
+		for (QRActionRegister register : this.move) {
+			register.action(p);
 		}
 	}
 }

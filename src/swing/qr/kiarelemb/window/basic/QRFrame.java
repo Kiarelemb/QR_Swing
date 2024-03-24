@@ -133,7 +133,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			int eYOnScreen = e.getYOnScreen();
 			int eY = e.getY();
 			int eX = e.getX();
-			boolean sizeChanged = true;
 			boolean backgroundImageSet = QRFrame.this.backgroundImage != null && QRFrame.this.backgroundBorder.scale();
 			if (this.upAndLeft) {
 				if (backgroundImageSet) {
@@ -200,18 +199,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
 				setSize(eX, this.height);
 			} else {
-				sizeChanged = false;
 				//只能在窗体的标题栏进行移动
 				if (eY < QRFrame.this.topPanel.getHeight()) {
 					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 					if (this.p == null) {
 						return;
 					}
-					setLocation(e.getXOnScreen() - this.p.x, e.getYOnScreen() - this.p.y);
+					int x = e.getXOnScreen() - this.p.x;
+					int y = e.getYOnScreen() - this.p.y;
+					setLocation(x, y);
 				}
-			}
-			if (sizeChanged) {
-				windowSizeChangedAction();
 			}
 		}
 
@@ -289,12 +286,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		int sizeHeight = QRPropertiesUtils.getPropInInteger(this.prop, "window.size.height", screenSize[1] / 2);
 		int locationX = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.X", screenSize[0] / 4);
 		int locationY = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.Y", screenSize[1] / 4);
+		super.setSize(sizeWidth, sizeHeight);
+		super.setLocation(locationX, locationY);
 		//endregion
 
-		super.setSize(sizeWidth, sizeHeight);
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 		setIconImage(QRSwing.windowIcon.getImage());
-		setLocation(locationX, locationY);
 		setUndecorated(true);
 
 		this.contentPane = new QRBorderContentPanel();
@@ -456,7 +453,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 		this.contentPane.componentFresh();
-		if (this.childWindows.size() > 0) {
+		if (!this.childWindows.isEmpty()) {
 			synchronized (this.childWindows) {
 				childWindows.forEach(childWindow -> {
 					if (childWindow instanceof QRComponentUpdate window) {
@@ -485,6 +482,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, e -> windowDeactivated((WindowEvent) e));
 			this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, e -> windowIconified((WindowEvent) e));
 			this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, e -> windowDeiconified((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.MOVE, e -> windowMoved((Point) e));
 			addWindowListener(this.windowListener);
 		}
 	}
@@ -660,6 +658,13 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			return;
 		}
 		super.setSize(width, height);
+		windowSizeChangedAction();
+	}
+
+	@Override
+	public void setLocation(int x, int y) {
+		super.setLocation(x, y);
+		windowListener.windowMoved(new Point(x, y));
 	}
 
 	/**
@@ -724,7 +729,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 窗体大小改变事事件
 	 */
 	protected void windowSizeChangedAction() {
-
 	}
 
 	protected void childWindowLocationUpdate() {
@@ -779,5 +783,11 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 已自动添加监听器，可直接重写
 	 */
 	public void windowDeactivated(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowMoved(Point p) {
 	}
 }
