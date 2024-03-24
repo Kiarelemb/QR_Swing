@@ -279,7 +279,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 				QRDialog.this.dispose();
 			}
 		};
-		QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, this.disposeAction, false);
 	}
 
 	public void setParentWindowNotFollowMove() {
@@ -343,6 +342,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 				setLocationRelativeTo(null);
 			}
 		}
+		QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, this.disposeAction, false);
 		super.setVisible(b);
 	}
 

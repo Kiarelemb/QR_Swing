@@ -23,7 +23,7 @@ public class QRColorsAndFonts {
 	public static final String THEME_FILE_EXTENSION = ".qr.th";
 	public static final Font PROCESS_BUTTON_FONT = QRFontUtils.loadFontFromURL(QRSwingInfo.loadUrl("seguisym.ttf"));
 	/**
-	 * 默认字体为 微软雅黑
+	 * 默认字体为 微软雅黑，可通过 {@link QRSwing#customFontName(String)} 自定义字体
 	 */
 	public static Font MENU_ITEM_DEFAULT_FONT = QRFontUtils.getFontInSize(15);
 	public static Font DEFAULT_FONT_MENU = QRFontUtils.getFontInSize(16);
@@ -326,6 +326,7 @@ public class QRColorsAndFonts {
 
 	/**
 	 * 主题名称转换
+	 *
 	 * @param englishTopic 主题名
 	 * @return 转为中文
 	 */
@@ -342,6 +343,7 @@ public class QRColorsAndFonts {
 
 	/**
 	 * 主题名称转换
+	 *
 	 * @param chineseTopic 主题名
 	 * @return 转为英文
 	 */

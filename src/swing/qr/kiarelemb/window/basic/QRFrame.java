@@ -69,7 +69,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	private String imagePath;
 	private Image backgroundImage;
 	private double imageRatio;
-	private Dimension minimumSize;
+	private Dimension minimumSize = new Dimension(10, 10);
 	private int originalWidth = 500;
 	private boolean backgroundImageSet = false;
 

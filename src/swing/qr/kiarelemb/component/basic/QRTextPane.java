@@ -5,6 +5,7 @@ import method.qr.kiarelemb.utils.QRStringUtils;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import swing.qr.kiarelemb.component.QRComponentUtils;
+import swing.qr.kiarelemb.component.assembly.QRBackgroundBorder;
 import swing.qr.kiarelemb.component.assembly.QRCaret;
 import swing.qr.kiarelemb.component.assembly.QRUndoManager;
 import swing.qr.kiarelemb.component.data.QRMousePointIndexData;
@@ -1130,7 +1131,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	/**
 	 * 当添加了背景图片时，就需要不断更新文本面板，以确保它透明
 	 *
-	 * <p>确保窗体中有面板设置了 {@link swing.qr.kiarelemb.component.assembly.QRBackgroundBorder}
+	 * <p>确保窗体中有面板设置了 {@link QRBackgroundBorder}
 	 */
 	@Override
 	public final void addCaretListenerForBackgroundUpdate() {
@@ -1448,6 +1449,10 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	public void print(String str, Font f, Color colorFore, Color colorBack, int index) {
 		SimpleAttributeSet attributeSet = QRComponentUtils.getSimpleAttributeSet(f, colorFore, colorBack);
 		print(str, attributeSet, index);
+	}
+
+	public final void print(String str, SimpleAttributeSet sas) {
+		print(str, sas, textLength());
 	}
 
 	public final void print(String str, SimpleAttributeSet sas, int index) {

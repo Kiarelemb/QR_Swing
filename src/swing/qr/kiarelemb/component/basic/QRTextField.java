@@ -42,6 +42,10 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	private QRKeyListener keyListener;
 	private QRMouseListener mouseListener;
 	private QRMouseMotionListener mouseMotionListener;
+	/**
+	 * {@code 0} 为未设置，{@code 1} 为左，{@code 2} 为右
+	 */
+	private int clearButtonState = 0;
 
 	public QRTextField() {
 		setMargin(new Insets(10, 10, 10, 10));
@@ -243,6 +247,8 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 	public void addClearButton(boolean right) {
 		setLayout(new BorderLayout());
+		clearButtonState = right ? 2 : 1;
+		System.out.println("getComponentCount() = " + getComponentCount());
 		QRButton clearButton = new QRButton(QRFrame.CLOSE_MARK) {
 			{
 				addMouseListener();
@@ -275,7 +281,11 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 * 已自动添加监听器，可直接重写，但不建议完全重写
 	 */
 	protected void focusGainedAction() {
-		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.enterColor));
+		if (clearButtonState == 0) {
+			setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.enterColor));
+		} else if (clearButtonState == 1) {
+			setBorder(BorderFactory.createMatteBorder(0, 40, 1, 0, this.enterColor));
+		}
 	}
 
 	/**
@@ -344,11 +354,11 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 * @return {@code true} 则禁止输入
 	 */
 	private boolean notAllowInput(KeyEvent e) {
-		if (this.forbiddenInputChar.length() == 0 && this.onlyAllowedInputChar.length() == 0) {
+		if (this.forbiddenInputChar.isEmpty() && this.onlyAllowedInputChar.isEmpty()) {
 			return false;
 		}
 		final String value = String.valueOf(e.getKeyChar());
-		if (this.onlyAllowedInputChar.length() != 0 && this.onlyAllowedInputChar.toString().contains(value)) {
+		if (!this.onlyAllowedInputChar.isEmpty() && this.onlyAllowedInputChar.toString().contains(value)) {
 			return false;
 		}
 		return this.forbiddenInputChar.toString().contains(value);
@@ -512,4 +522,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	}
 
 	//endregion
+
+
 }
