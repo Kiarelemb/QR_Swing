@@ -14,8 +14,6 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -156,18 +154,13 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
 	/**
 	 * 为 {@link QRTextPane} 添加行号
 	 */
-	public void addLineNumberModelForTextPane() {
-		if (this.view != null && this.view instanceof QRTextPane && this.lineNumberComponent == null) {
+	public QRLineNumberComponent addLineNumberModelForTextPane() {
+		if (this.lineNumberComponent == null && this.view != null && this.view instanceof QRTextPane) {
 			this.lineNumberComponent = new QRLineNumberComponent((QRTextPane) this.view);
 			this.lineNumberComponent.setAlignment(QRLineNumberComponent.RIGHT_ALIGNMENT);
-			this.view.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusGained(FocusEvent e) {
-					QRScrollPane.this.lineNumberComponent.adjustWidth();
-				}
-			});
 			setRowHeaderView(this.lineNumberComponent);
 		}
+		return this.lineNumberComponent;
 	}
 
 	public void setBorderPaint(boolean borderPaint) {

@@ -1455,7 +1455,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		print(str, sas, textLength());
 	}
 
-	public final void print(String str, SimpleAttributeSet sas, int index) {
+	public void print(String str, SimpleAttributeSet sas, int index) {
 		try {
 			setCaretBlock();
 			getDocument().insertString(index, str, sas);
@@ -1512,7 +1512,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	 * 清除内容
 	 */
 	public void clear() {
-		setText("");
+		setText(null);
 	}
 
 	//endregion

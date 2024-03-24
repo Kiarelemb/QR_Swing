@@ -5,7 +5,10 @@ import swing.qr.kiarelemb.component.basic.QRTextPane;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 /**
  * @author Kiarelemb QR
@@ -23,21 +26,49 @@ public class QRLineNumberComponent extends JComponent {
 	public static int margin = 15;
 	private int alignment = LEFT_ALIGNMENT;
 	private final QRTextPane textPane;
+	private int preAllLine = 1;
+	/**
+	 * 默认情况下，文本面板不论输入还是删除均会更新行号
+	 */
+	private boolean customAdjust = false;
 
 	public QRLineNumberComponent(QRTextPane textPane) {
 		super();
 		this.textPane = textPane;
 		adjustWidth();
+		textPane.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				changedUpdate(e);
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				changedUpdate(e);
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				if (!customAdjust) {
+					adjustWidth();
+				}
+			}
+		});
 	}
 
 	public void adjustWidth() {
 		int max = this.textPane.allLines();
-		int width = QRFontUtils.getTextInWidth(this.textPane, String.valueOf(max)) + 2 * margin;
-		Dimension dimension = this.textPane.getPreferredSize();
-		setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.LINE_COLOR));
-		setPreferredSize(new Dimension(width, dimension.height));
-		revalidate();
-		repaint();
+		if (max != preAllLine) {
+			SwingUtilities.invokeLater(() -> {
+				int width = QRFontUtils.getTextInWidth(this.textPane, String.valueOf(max)) + 2 * margin;
+				Dimension dimension = this.textPane.getPreferredSize();
+				setPreferredSize(new Dimension(width, dimension.height));
+				setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.LINE_COLOR));
+				revalidate();
+				repaint();
+				preAllLine = max;
+			});
+		}
 	}
 
 	public void setAlignment(int alignment) {
@@ -45,6 +76,15 @@ public class QRLineNumberComponent extends JComponent {
 			throw new IllegalArgumentException(String.valueOf(alignment));
 		}
 		this.alignment = alignment;
+	}
+
+	/**
+	 * 设置为 {@code true} 之后，行号的更新需要自行调用 {@link #adjustWidth()}
+	 *
+	 * @param customAdjust 是否自定义行号的更新
+	 */
+	public void setCustomAdjust(boolean customAdjust) {
+		this.customAdjust = customAdjust;
 	}
 
 	@Override
@@ -63,7 +103,12 @@ public class QRLineNumberComponent extends JComponent {
 
 		int textPaneMargin = this.textPane.getMargin().left;
 		for (int i = 1; i <= allLines; i++) {
-			Rectangle rect = this.textPane.positionRectangle(this.textPane.getLineStartOffset(i)).getBounds();
+			int offset = this.textPane.getLineStartOffset(i);
+			Rectangle2D r = this.textPane.positionRectangle(offset);
+			if (r == null) {
+				continue;
+			}
+			Rectangle rect = r.getBounds();
 			String text = String.valueOf(i);
 			Rectangle stringBounds = this.textPane.textFont.getStringBounds(text, g2d.getFontRenderContext()).getBounds();
 			int yPosition = rect.y + (rect.height - stringBounds.height) / 2 + textPaneMargin;

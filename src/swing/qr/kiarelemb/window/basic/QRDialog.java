@@ -35,8 +35,8 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	protected final QRPanel contentPane;
 	protected final QRPanel mainPanel;
 	protected final QRButton closeButton;
+	protected final Window parent;
 	private final QRLabel titleLabel;
-	private final Window parent;
 	private final QRPanel topPanel;
 	private boolean parentWindowFollowMove = true;
 	private boolean resizable = false;
