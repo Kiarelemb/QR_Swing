@@ -1459,7 +1459,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		try {
 			setCaretBlock();
 			getDocument().insertString(index, str, sas);
-		} catch (Exception e) {
+		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} finally {
 			setCaretUnblock();

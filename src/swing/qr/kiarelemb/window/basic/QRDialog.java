@@ -371,9 +371,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 		if (this.parentWindowFollowMove) {
 			if (this.parent != null) {
 				//居中
-				setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
-			} else {
-				setLocationRelativeTo(null);
+				parent.setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
 			}
 		}
 	}
