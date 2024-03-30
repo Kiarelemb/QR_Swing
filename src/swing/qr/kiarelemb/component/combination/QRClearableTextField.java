@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QRClearableTextField
- * @description TODO 带清除按钮的文本框
+ * @description 带清除按钮的文本框
  * @create 2024/3/25 22:27
  */
 public class QRClearableTextField extends QRPanel {
@@ -23,11 +23,10 @@ public class QRClearableTextField extends QRPanel {
 
 	public QRClearableTextField(boolean right) {
 		textField = new TextField();
-		QRButton clearButton = new Button();
 		setLayout(new BorderLayout());
 
 		add(textField, BorderLayout.CENTER);
-		add(clearButton, right ? BorderLayout.EAST : BorderLayout.WEST);
+		add(new ClearButton(), right ? BorderLayout.EAST : BorderLayout.WEST);
 	}
 
 	protected boolean meetCondition() {
@@ -93,8 +92,8 @@ public class QRClearableTextField extends QRPanel {
 
 	//region 类重写
 
-	private class Button extends QRButton {
-		public Button() {
+	private class ClearButton extends QRButton {
+		public ClearButton() {
 			super(QRFrame.CLOSE_MARK);
 			setToolTipText("清除");
 		}
