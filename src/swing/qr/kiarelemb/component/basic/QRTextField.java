@@ -29,7 +29,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	private final FocusAdapter fa;
 	protected Color enterColor = QRColorsAndFonts.BLUE_LIGHT;
 	protected Color rightColor = QRColorsAndFonts.LIGHT_GREEN;
-	protected Color defaultColor = QRColorsAndFonts.GRAY_DARK;
 	protected Color errorColor = QRColorsAndFonts.RED_NORMAL;
 
 	/**
@@ -248,7 +247,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	public void addClearButton(boolean right) {
 		setLayout(new BorderLayout());
 		clearButtonState = right ? 2 : 1;
-		System.out.println("getComponentCount() = " + getComponentCount());
 		QRButton clearButton = new QRButton(QRFrame.CLOSE_MARK) {
 			{
 				addMouseListener();
@@ -281,11 +279,7 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 * 已自动添加监听器，可直接重写，但不建议完全重写
 	 */
 	protected void focusGainedAction() {
-		if (clearButtonState == 0) {
-			setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.enterColor));
-		} else if (clearButtonState == 1) {
-			setBorder(BorderFactory.createMatteBorder(0, 40, 1, 0, this.enterColor));
-		}
+		setEnterBorder();
 	}
 
 	/**
@@ -295,24 +289,56 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 		String text = getText();
 		if (text.isEmpty()) {
 			//内容为空的边框
-			setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.YELLOW));
-		} else if (meetCondition()) {
-			//符合条件的边框
-			setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.rightColor));
-		} else {
-			//不符合条件的边框
-			setBorder(BorderFactory.createLineBorder(this.errorColor, 1));
+			setEmptyBorder();
+			return;
 		}
+		if (meetCondition()) {
+			//符合条件的边框
+			setRightBorder();
+			return;
+		}
+		//不符合条件的边框
+		setErrorBorder();
 	}
 
 	public void removeFocusListeners() {
 		removeFocusListener(this.fa);
 	}
 
-	public final boolean isOK() {
+	public final boolean isOkay() {
 		return meetCondition();
 	}
 
+	//region 边框设置
+
+	/**
+	 * 获得焦点时的边框
+	 */
+	protected void setEnterBorder() {
+		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.enterColor));
+	}
+
+	/**
+	 * 内容为空时的边框
+	 */
+	protected void setEmptyBorder() {
+		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.YELLOW));
+	}
+
+	/**
+	 * 符合条件的边框
+	 */
+	protected void setRightBorder() {
+		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.rightColor));
+	}
+
+	/**
+	 * 不符合条件的边框
+	 */
+	protected void setErrorBorder() {
+		setBorder(BorderFactory.createLineBorder(this.errorColor, 1));
+	}
+	//endregion 边框设置
 
 	//region 输入限制
 
@@ -501,12 +527,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	@Override
 	public void clear() {
 		setText(null);
-	}
-
-	@Override
-	public void setText(String t) {
-		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.rightColor));
-		super.setText(t);
 	}
 
 	public void setText(int value) {

@@ -64,9 +64,12 @@ public class QRTabbedPane extends QRPanel {
 		};
 		this.tabs.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		switch (tabPositionFromBorderLayout) {
-			case BorderLayout.SOUTH -> this.tabs.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.LINE_COLOR));
-			case BorderLayout.EAST -> this.tabs.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.LINE_COLOR));
-			case BorderLayout.NORTH -> this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+			case BorderLayout.SOUTH ->
+					this.tabs.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.LINE_COLOR));
+			case BorderLayout.EAST ->
+					this.tabs.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.LINE_COLOR));
+			case BorderLayout.NORTH ->
+					this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
 //			default -> throw new IllegalArgumentException("The tab position should be selected form BorderLayout.SOUTH, BorderLayout.EAST, BorderLayout.NORTH and BorderLayout.WEST");
 			default -> {
 				tabPositionFromBorderLayout = BorderLayout.WEST;
@@ -93,7 +96,6 @@ public class QRTabbedPane extends QRPanel {
 	protected void tabSelectChangedAction(QRTabSelectEvent event) {
 
 	}
-
 
 	public void addTabCloseButton() {
 		this.loadCloseButton = true;
@@ -185,18 +187,14 @@ public class QRTabbedPane extends QRPanel {
 	}
 
 	private void setContentPane(QRTabPanel tabPanel) {
-//		if (selectedIndex != -1) {
-//			remove(arrTabs.get(selectedIndex));
-//		} else {
 		Component[] components = getComponents();
-		if (components != null && components.length > 0) {
+		if (components != null) {
 			for (Component c : components) {
 				if (c instanceof QRTabbedContentPanel) {
 					remove(c);
 				}
 			}
 		}
-//		}
 		int foreSelectedIndex = this.selectedIndex;
 		if (this.selectedIndex != -1) {
 			this.arrTabs.get(this.selectedIndex).setClicked(false);
@@ -295,12 +293,10 @@ public class QRTabbedPane extends QRPanel {
 
 		public void setClicked(boolean clicked) {
 			if (clicked) {
-				//            setBackground(SELECTED_TAB_COLOR);
 				this.titleLabel.setForeground(QRColorsAndFonts.CARET_COLOR);
 				setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
 			} else {
 				this.titleLabel.setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
-				//            titleLabel.setForeground(DehorutoHuukaku.TEXT_COLOR_FORE);
 				setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
 			}
 		}
