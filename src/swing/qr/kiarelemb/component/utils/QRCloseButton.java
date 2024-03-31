@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.utils;
 
+import swing.qr.kiarelemb.adapter.QRButtonMouseListener;
 import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QRFrame;
@@ -18,13 +19,20 @@ public class QRCloseButton extends QRButton {
 	public QRCloseButton() {
 		super(QRFrame.CLOSE_MARK);
 		disableListener();
-		addMouseMotionListener();
 	}
 
-	@Override
-	protected void mouseEnter(MouseEvent e) {
-		//进入关闭按钮时，鼠标仍然是默认状态
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	/**
+	 * 设置按钮为关闭按钮，使其进入时，变红
+	 */
+	public void setCloseButton() {
+		addMouseListener(new QRButtonMouseListener(this) {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
+				//解决一个当鼠(hf)标在关闭按钮右侧的时候，进入按钮仍然是剪头的bug
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
 	}
 
 	@Override

@@ -354,7 +354,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.maximumButton.addActionListener(e -> maxWindow());
 		this.threeButtonPanel.add(this.maximumButton);
 
-		this.closeButton = new QRCloseButton();
+		this.closeButton = new QRCloseButton() {{
+			setCloseButton();
+		}};
 		this.closeButton.setToolTipText("关闭");
 		this.closeButton.addActionListener(e -> dispose());
 		this.threeButtonPanel.add(this.closeButton);

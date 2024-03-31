@@ -28,15 +28,14 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 	protected final QRBorderContentPanel contentPane;
 	protected final Color backgroundColor;
 	private QRWindowListener windowListener;
-
 	private final Point p = new Point();
 	private boolean windowCanMove = true;
 
 	/**
-	 * @param owner        父窗体
+	 * @param owner 父窗体
 	 */
 	public QREmptyDialog(Window owner) {
-		this(owner,true);
+		this(owner, true);
 	}
 
 	/**
