@@ -33,6 +33,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	public final static int LEFT = SwingConstants.LEFT;
 	public final static int CENTER = SwingConstants.CENTER;
 	protected final QRPanel contentPane;
+	/**
+	 * 自带的主面板，默认布局为 {@code null}
+	 */
 	protected final QRPanel mainPanel;
 	protected final QRButton closeButton;
 	protected final Window parent;
@@ -196,7 +199,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	 * <p>setTitle("");
 	 * <p>setTitlePlace(QRDialog.CENTER);
 	 * <p>setSize(400, 300);
-	 * <p><code>mainPanel</code> 是已自带的主面板，默认布局为null
+	 * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
 	 *
 	 * @param parent 父窗体
 	 */
@@ -211,7 +214,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	 * <p>setTitle("");
 	 * <p>setTitlePlace(QRDialog.CENTER);
 	 * <p>setSize(400, 300);
-	 * <p><code>mainPanel</code> 是已自带的主面板，默认布局为null
+	 * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
 	 *
 	 * @param parent 父窗体
 	 */

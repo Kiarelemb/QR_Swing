@@ -45,10 +45,18 @@ public class QRTabbedPane extends QRPanel {
 
 	private Font tabFont = QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT;
 
+	/**
+	 * 创建一个默认标签显示在上方的标签面板
+	 */
 	public QRTabbedPane() {
 		this(BorderLayout.NORTH);
 	}
 
+	/**
+	 * 创建一个标签显示可自定义的标签面板
+	 *
+	 * @param tabPositionFromBorderLayout 值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH}, {@link BorderLayout#WEST} 和 {@link BorderLayout#EAST} 中选择
+	 */
 	public QRTabbedPane(String tabPositionFromBorderLayout) {
 		super(false);
 		this.arrTabs = new ArrayList<>();
@@ -68,12 +76,11 @@ public class QRTabbedPane extends QRPanel {
 					this.tabs.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.LINE_COLOR));
 			case BorderLayout.EAST ->
 					this.tabs.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.LINE_COLOR));
-			case BorderLayout.NORTH ->
-					this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-//			default -> throw new IllegalArgumentException("The tab position should be selected form BorderLayout.SOUTH, BorderLayout.EAST, BorderLayout.NORTH and BorderLayout.WEST");
+			case BorderLayout.WEST ->
+					this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.LINE_COLOR));
 			default -> {
-				tabPositionFromBorderLayout = BorderLayout.WEST;
-				this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.LINE_COLOR));
+				tabPositionFromBorderLayout = BorderLayout.NORTH;
+				this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
 			}
 		}
 		setLayout(new BorderLayout());

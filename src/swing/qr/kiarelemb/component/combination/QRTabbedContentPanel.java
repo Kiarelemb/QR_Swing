@@ -10,6 +10,6 @@ import swing.qr.kiarelemb.component.basic.QRPanel;
  **/
 public class QRTabbedContentPanel extends QRPanel {
 	public QRTabbedContentPanel() {
-		super(false);
+		super();
 	}
 }

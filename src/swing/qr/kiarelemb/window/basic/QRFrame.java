@@ -359,7 +359,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			public void componentFresh() {
 				super.componentFresh();
 				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
-
 			}
 		};
 		this.closeButton.setToolTipText("关闭");

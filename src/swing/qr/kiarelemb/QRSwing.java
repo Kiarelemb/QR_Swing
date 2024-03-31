@@ -176,7 +176,9 @@ public class QRSwing {
 	 */
 	private void loadProp(String propFilePath) {
 		if (!QRFileUtils.fileExists(propFilePath)) {
-			GLOBAL_PROP_PATH = "settings.properties";
+			if (!QRFileUtils.fileCreate(propFilePath)) {
+				GLOBAL_PROP_PATH = "settings.properties";
+			}
 			globalPropBackToDefault();
 			return;
 		}
@@ -210,10 +212,8 @@ public class QRSwing {
 
 	public static ImageIcon iconLoadLead(String key, String defaultFileName) {
 		String iconPath = GLOBAL_PROP.getProperty(key);
-		if (iconPath != null) {
-			if (QRFileUtils.fileExists(iconPath)) {
-				return new ImageIcon(iconPath);
-			}
+		if (QRFileUtils.fileExists(iconPath)) {
+			return new ImageIcon(iconPath);
 		}
 		return new ImageIcon(QRSwingInfo.loadUrl(defaultFileName));
 	}
@@ -419,7 +419,7 @@ public class QRSwing {
 	}
 
 	/**
-	 * 潮加键盘按键事件，提供多个快捷键对应一个Action的功能
+	 * 添加键盘按键事件，提供多个快捷键对应一个Action的功能
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
 	 *
 	 * @param key             按键组合，不同按键组合间以英文逗号{@code ,}分割
@@ -433,7 +433,7 @@ public class QRSwing {
 			KeyStroke keyStroke = QRStringUtils.getKeyStroke(key);
 			registerGlobalAction(keyStroke, ar, mainWindowFocus);
 		} else {
-			String[] keys =key.split(",");
+			String[] keys = key.split(",");
 			for (String k : keys) {
 				KeyStroke keyStroke = QRStringUtils.getKeyStroke(k);
 				registerGlobalAction(keyStroke, ar, mainWindowFocus);
@@ -442,7 +442,7 @@ public class QRSwing {
 	}
 
 	/**
-	 * 潮加键盘按键事件
+	 * 添加键盘按键事件
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
 	 *
 	 * @param keycode         键值
@@ -455,7 +455,7 @@ public class QRSwing {
 	}
 
 	/**
-	 * 潮加键盘按键事件
+	 * 添加键盘按键事件
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
 	 *
 	 * @param keycode         键值
@@ -469,7 +469,7 @@ public class QRSwing {
 	}
 
 	/**
-	 * 潮加键盘按键事件
+	 * 添加键盘按键事件
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
 	 *
 	 * @param keyStroke       按键组合

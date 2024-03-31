@@ -316,7 +316,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 		previewTopPanel.setLayout(new BorderLayout());
 
 		QRButton closeButton = new QRButton("  ╳  ");
-		closeButton.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+		closeButton.setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
 		closeButton.disableListener();
 		QRButtonMouseListener closeButtonMouseListener = new QRButtonMouseListener(closeButton);
 		closeButton.addMouseListener(closeButtonMouseListener);
