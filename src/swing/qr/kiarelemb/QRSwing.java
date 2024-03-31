@@ -293,11 +293,11 @@ public class QRSwing {
 	 * @param key   键
 	 * @param value 值
 	 */
-	public static void setGlobalSetting(String key, String value) {
+	public static void setGlobalSetting(String key, Object value) {
 		if (value == null) {
 			removeGlobalSetting(key);
 		} else {
-			GLOBAL_PROP.setProperty(key, value);
+			GLOBAL_PROP.setProperty(key, value.toString());
 		}
 	}
 

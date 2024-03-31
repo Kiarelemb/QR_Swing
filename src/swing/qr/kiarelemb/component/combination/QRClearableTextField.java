@@ -30,6 +30,7 @@ public class QRClearableTextField extends QRPanel {
 
 		add(textField, BorderLayout.CENTER);
 		add(new ClearButton(), right ? BorderLayout.EAST : BorderLayout.WEST);
+		setEmptyBorder();
 	}
 
 	protected boolean meetCondition() {
@@ -97,6 +98,7 @@ public class QRClearableTextField extends QRPanel {
 
 	private class ClearButton extends QRCloseButton {
 		public ClearButton() {
+			setText(" ╳ ");
 			setToolTipText("清除");
 		}
 
