@@ -137,7 +137,7 @@ public class QRSwing {
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
-	 * <p>在调用本方法时，将使用默认的设置进行配置，其文件 {@link QRSwing#GLOBAL_PROP_PATH} 和 {@link QRSwing#WINDOW_PROP_PATH} 将会创立在程序的根目录下</p>
+	 * <p>在调用本方法时，将使用默认的设置进行配置，其文件 {@link QRSwing#GLOBAL_PROP_PATH} 和 {@link QRSwing#WINDOW_PROP_PATH} 将会创建在程序的根目录下</p>
 	 */
 	public static void start() {
 		INSTANCE = new QRSwing("settings.properties");
@@ -148,7 +148,7 @@ public class QRSwing {
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
-	 * <p>窗体位置的资源文件 {@link QRSwing#WINDOW_PROP_PATH} 将会创立在程序的根目录</p>
+	 * <p>窗体位置的资源文件 {@link QRSwing#WINDOW_PROP_PATH} 将会创建在程序的根目录</p>
 	 *
 	 * @param propPath 资源文件的路径
 	 */
