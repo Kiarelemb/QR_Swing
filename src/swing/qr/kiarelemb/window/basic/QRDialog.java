@@ -112,7 +112,16 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 					if (this.p == null) {
 						return;
 					}
-					setLocation(e.getXOnScreen() - this.p.x, e.getYOnScreen() - this.p.y);
+					int x = e.getXOnScreen() - this.p.x;
+					int y = e.getYOnScreen() - this.p.y;
+					setLocation(x, y);
+					if (parentWindowFollowMove && parent != null) {
+						//居中
+						parent.setLocation(x + (getWidth() - parent.getWidth()) / 2, y + (getHeight() - parent.getHeight()) / 2);
+						if (parent instanceof QRFrame) {
+							((QRFrame) parent).childWindowLocationUpdate();
+						}
+					}
 				}
 			}
 		}
@@ -269,10 +278,8 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
 		this.mainPanel.setLayout(null);
 
-		if (parent != null) {
-			if (parent instanceof QRFrame frame) {
-				frame.addChildWindow(this);
-			}
+		if (parent instanceof QRFrame frame) {
+			frame.addChildWindow(this);
 		}
 		this.disposeAction = e -> {
 			if (QRDialog.this.isFocused()) {
@@ -366,17 +373,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	}
 
 	@Override
-	public void setLocation(int x, int y) {
-		super.setLocation(x, y);
-		if (this.parentWindowFollowMove) {
-			if (this.parent != null) {
-				//居中
-				parent.setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
-			}
-		}
-	}
-
-	@Override
 	public final void setBounds(int x, int y, int width, int height) {
 		super.setBounds(Math.max(x, 0), Math.max(y, 0), width, height);
 		windowStateUpdate();
@@ -385,6 +381,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 	@Override
 	public void dispose() {
 		QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), this.disposeAction, false);
+		if (parent instanceof QRFrame frame) {
+			frame.removeChildWindow(this);
+		}
 		super.dispose();
 	}
 

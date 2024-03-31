@@ -446,7 +446,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		setTitle(title);
 	}
 
-
 	@Override
 	public void componentFresh() {
 		this.titlePanel.setBorder(BorderFactory.createMatteBorder(0, 5, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
@@ -734,13 +733,19 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	protected void childWindowLocationUpdate() {
 		synchronized (this.childWindows) {
 			for (QRParentWindowMove childWindow : this.childWindows) {
-				childWindow.ownerMoved();
+				if (((Window) childWindow).isVisible()) {
+					childWindow.ownerMoved();
+				}
 			}
 		}
 	}
 
 	public void addChildWindow(QRParentWindowMove w) {
 		this.childWindows.add(w);
+	}
+
+	public void removeChildWindow(QRParentWindowMove w) {
+		this.childWindows.remove(w);
 	}
 
 	/**

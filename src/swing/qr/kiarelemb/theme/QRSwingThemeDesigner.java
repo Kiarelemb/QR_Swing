@@ -203,43 +203,43 @@ public class QRSwingThemeDesigner extends QRDialog {
 
 		//region  color value
 		QRActionRegister colorChangedAction = e -> update();
-		QRRGBColorPane textColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.TEXT_COLOR_FORE, showTextColorForeLabel,colorChangedAction);
+		QRRGBColorPane textColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.TEXT_COLOR_FORE, showTextColorForeLabel, colorChangedAction);
 		mainPanel.add(textColorForeColorValue);
 
-		QRRGBColorPane textColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.TEXT_COLOR_BACK, showTextColorbackLabel,colorChangedAction);
+		QRRGBColorPane textColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.TEXT_COLOR_BACK, showTextColorbackLabel, colorChangedAction);
 		mainPanel.add(textColorBackColorValue);
 
-		QRRGBColorPane correctColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CORRECT_COLOR_FORE, showCorrectColorForeLabel,colorChangedAction);
+		QRRGBColorPane correctColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CORRECT_COLOR_FORE, showCorrectColorForeLabel, colorChangedAction);
 		mainPanel.add(correctColorForeColorValue);
 
-		QRRGBColorPane correctColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CORRECT_COLOR_BACK, showCorrectColorBackLabel,colorChangedAction);
+		QRRGBColorPane correctColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CORRECT_COLOR_BACK, showCorrectColorBackLabel, colorChangedAction);
 		mainPanel.add(correctColorBackColorValue);
 
-		QRRGBColorPane seniorCorrectColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.SENIOR_RANDOM_COLOR_BACK, showSeniorCorrectColorForeLabel,colorChangedAction);
+		QRRGBColorPane seniorCorrectColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.SENIOR_RANDOM_COLOR_BACK, showSeniorCorrectColorForeLabel, colorChangedAction);
 		mainPanel.add(seniorCorrectColorForeColorValue);
 
-		QRRGBColorPane frameColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.FRAME_COLOR_BACK, showFrameColorbackLabel,colorChangedAction);
+		QRRGBColorPane frameColorBackColorValue = new QRRGBColorPane(this, QRColorsAndFonts.FRAME_COLOR_BACK, showFrameColorbackLabel, colorChangedAction);
 		mainPanel.add(frameColorBackColorValue);
 
-		QRRGBColorPane frameColorBorderColorValue = new QRRGBColorPane(this, QRColorsAndFonts.BORDER_COLOR, showFrameColorBorderLabel,colorChangedAction);
+		QRRGBColorPane frameColorBorderColorValue = new QRRGBColorPane(this, QRColorsAndFonts.BORDER_COLOR, showFrameColorBorderLabel, colorChangedAction);
 		mainPanel.add(frameColorBorderColorValue);
 
-		QRRGBColorPane bottonEnterColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.ENTER_COLOR, showBottonEnterColorLabel,colorChangedAction);
+		QRRGBColorPane bottonEnterColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.ENTER_COLOR, showBottonEnterColorLabel, colorChangedAction);
 		mainPanel.add(bottonEnterColorColorValue);
 
-		QRRGBColorPane bottonPressColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.PRESS_COLOR, showBottonPressColorLabel,colorChangedAction);
+		QRRGBColorPane bottonPressColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.PRESS_COLOR, showBottonPressColorLabel, colorChangedAction);
 		mainPanel.add(bottonPressColorColorValue);
 
-		QRRGBColorPane ScrollColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.SCROLL_COLOR, showScrollColorLabel,colorChangedAction);
+		QRRGBColorPane ScrollColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.SCROLL_COLOR, showScrollColorLabel, colorChangedAction);
 		mainPanel.add(ScrollColorColorValue);
 
-		QRRGBColorPane menuLineColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.LINE_COLOR, showMenuLineColorLabel,colorChangedAction);
+		QRRGBColorPane menuLineColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.LINE_COLOR, showMenuLineColorLabel, colorChangedAction);
 		mainPanel.add(menuLineColorColorValue);
 
-		QRRGBColorPane menuTextColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.MENU_COLOR, showMenuTextColorForeLabel,colorChangedAction);
+		QRRGBColorPane menuTextColorForeColorValue = new QRRGBColorPane(this, QRColorsAndFonts.MENU_COLOR, showMenuTextColorForeLabel, colorChangedAction);
 		mainPanel.add(menuTextColorForeColorValue);
 
-		QRRGBColorPane caretColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CARET_COLOR, showCaretColorLabel,colorChangedAction);
+		QRRGBColorPane caretColorColorValue = new QRRGBColorPane(this, QRColorsAndFonts.CARET_COLOR, showCaretColorLabel, colorChangedAction);
 		mainPanel.add(caretColorColorValue);
 
 		panes = new QRRGBColorPane[]{textColorForeColorValue, textColorBackColorValue, correctColorForeColorValue, correctColorBackColorValue,
@@ -593,7 +593,6 @@ public class QRSwingThemeDesigner extends QRDialog {
 	private void saveToFile(String fileName) {
 		if (fileName != null) {
 			String filePath = QRSwing.THEME_DIRECTORY + fileName + ".th.xq";
-//            if (QRFileUtils.fileExists(filePath)) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < panes.length; i++) {
 				String rgbValue = QRRGBColorSelectPane.getColor(panes[i].getColor());
@@ -602,7 +601,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 			}
 			QRFileUtils.fileWriterWithUTF8(filePath, sb.toString());
 			QROpinionDialog.messageTellShow(this, "保存成功！");
-			topicCB.setModel(new DefaultComboBoxModel(getThemes()));
+			topicCB.setModel(new DefaultComboBoxModel<>(getThemes()));
 			topicCB.setText(fileName);
 			if (fileName.equals(QRColorsAndFonts.topicEnglishToChinese(QRSwing.theme))) {
 				currentThemeChanged = true;
