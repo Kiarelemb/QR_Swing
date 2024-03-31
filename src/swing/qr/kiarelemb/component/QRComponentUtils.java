@@ -71,10 +71,7 @@ public class QRComponentUtils {
 	 * @param list 任务列表
 	 */
 	public static void runActions(List<QRActionRegister> list) {
-		if (list.size() > 0) {
-			ArrayList<QRActionRegister> temp = new ArrayList<>(list);
-			temp.forEach(e -> e.action(null));
-		}
+		runActions(list, null);
 	}
 
 	/**
@@ -83,9 +80,16 @@ public class QRComponentUtils {
 	 * @param list 任务列表
 	 */
 	public static void runActions(List<QRActionRegister> list, Object obj) {
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			ArrayList<QRActionRegister> temp = new ArrayList<>(list);
-			temp.forEach(e -> e.action(obj));
+			temp.forEach(e -> {
+				//确保每个都能完成而不影响之后的事件
+				try {
+					e.action(obj);
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			});
 		}
 	}
 
@@ -96,7 +100,7 @@ public class QRComponentUtils {
 	 * @param com 窗体内的一控件
 	 */
 	public static void windowFresh(JComponent com) {
-		java.util.Timer timer = new Timer();
+		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
