@@ -18,13 +18,13 @@ import java.awt.event.MouseEvent;
 public class QRCloseButton extends QRButton {
 	public QRCloseButton() {
 		super(QRFrame.CLOSE_MARK);
-		disableListener();
 	}
 
 	/**
 	 * 设置按钮为关闭按钮，使其进入时，变红
 	 */
 	public void setCloseButton() {
+		disableListener();
 		addMouseListener(new QRButtonMouseListener(this) {
 			@Override
 			public void mouseEntered(MouseEvent e) {
