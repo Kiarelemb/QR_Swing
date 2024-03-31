@@ -1,10 +1,9 @@
 package swing.qr.kiarelemb.component.combination;
 
-import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
+import swing.qr.kiarelemb.component.utils.QRCloseButton;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
-import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -20,6 +19,10 @@ import java.awt.event.ActionEvent;
  */
 public class QRClearableTextField extends QRPanel {
 	public final QRTextField textField;
+
+	public QRClearableTextField() {
+		this(true);
+	}
 
 	public QRClearableTextField(boolean right) {
 		textField = new TextField();
@@ -92,9 +95,8 @@ public class QRClearableTextField extends QRPanel {
 
 	//region 类重写
 
-	private class ClearButton extends QRButton {
+	private class ClearButton extends QRCloseButton {
 		public ClearButton() {
-			super(QRFrame.CLOSE_MARK);
 			setToolTipText("清除");
 		}
 

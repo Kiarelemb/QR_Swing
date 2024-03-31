@@ -5,7 +5,6 @@ import method.qr.kiarelemb.utils.QRFontUtils;
 import method.qr.kiarelemb.utils.QRPropertiesUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.adapter.QRButtonMouseListener;
 import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.component.assembly.QRBackgroundBorder;
 import swing.qr.kiarelemb.component.basic.QRButton;
@@ -14,6 +13,7 @@ import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.component.combination.QRMenuPanel;
 import swing.qr.kiarelemb.component.listener.QRWindowListener;
+import swing.qr.kiarelemb.component.utils.QRCloseButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
@@ -354,24 +354,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.maximumButton.addActionListener(e -> maxWindow());
 		this.threeButtonPanel.add(this.maximumButton);
 
-		this.closeButton = new QRButton(CLOSE_MARK) {
-			@Override
-			public void componentFresh() {
-				super.componentFresh();
-				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
-			}
-		};
+		this.closeButton = new QRCloseButton();
 		this.closeButton.setToolTipText("关闭");
-//		this.closeButton.setFont(PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
-		this.closeButton.disableListener();
-		this.closeButton.addMouseListener(new QRButtonMouseListener(this.closeButton) {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				super.mouseEntered(e);
-				//解决一个当鼠(hf)标在关闭按钮右侧的时候，进入按钮仍然是剪头的bug
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
 		this.closeButton.addActionListener(e -> dispose());
 		this.threeButtonPanel.add(this.closeButton);
 		final MouseAdapte mouseAdapte = new MouseAdapte();

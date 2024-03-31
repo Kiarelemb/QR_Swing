@@ -3,12 +3,12 @@ package swing.qr.kiarelemb.window.basic;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.adapter.QRButtonMouseListener;
 import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.component.listener.QRWindowListener;
+import swing.qr.kiarelemb.component.utils.QRCloseButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
@@ -18,7 +18,10 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 
 import static swing.qr.kiarelemb.theme.QRColorsAndFonts.BORDER_COLOR;
 import static swing.qr.kiarelemb.theme.QRColorsAndFonts.LINE_COLOR;
@@ -245,33 +248,12 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 		this.titleLabel.setForeground(QRColorsAndFonts.MENU_COLOR);
 		titlePanel.add(this.titleLabel, BorderLayout.CENTER);
 
-		this.closeButton = new QRButton(QRFrame.CLOSE_MARK) {
-			@Override
-			protected void actionEvent(ActionEvent o) {
-				dispose();
-			}
-
-			@Override
-			public void componentFresh() {
-				super.componentFresh();
-				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
-			}
-		};
-
-		this.closeButton.disableListener();
-		this.closeButton.setForeground(QRColorsAndFonts.MENU_COLOR);
-		this.closeButton.addMouseListener(new QRButtonMouseListener(this.closeButton) {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				super.mouseEntered(e);
-				//解决一个当鼠(hf)标在关闭按钮右侧的时候，进入按钮仍然是剪头的bug
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
+		this.closeButton = new QRCloseButton();
+		this.closeButton.setToolTipText("关闭");
+		this.closeButton.addActionListener(e -> dispose());
 		titlePanel.add(this.closeButton, BorderLayout.EAST);
 
 		MouseAdapte adapte = new MouseAdapte();
-
 		addMouseMotionListener(adapte);
 
 		addMouseListener(adapte);

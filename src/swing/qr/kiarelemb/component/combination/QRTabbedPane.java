@@ -41,7 +41,7 @@ public class QRTabbedPane extends QRPanel {
 	private QRTabCloseListener closeButtonActionListener;
 	private QRActionListener actionListener;
 
-	private QRTabSelectChangedListener tabSelectChangedListener;
+	private QRTabSelectChangedListener tabSelectChangedListener = new QRTabSelectChangedListener();
 
 	private Font tabFont = QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT;
 
@@ -85,13 +85,7 @@ public class QRTabbedPane extends QRPanel {
 		}
 		setLayout(new BorderLayout());
 		add(this.tabs, tabPositionFromBorderLayout);
-	}
-
-	public void addTabSelectChangedListener() {
-		if (this.tabSelectChangedListener == null) {
-			this.tabSelectChangedListener = new QRTabSelectChangedListener();
-			this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
-		}
+		this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
 	}
 
 	public void addTabSelectChangedAction(QRActionRegister ar) {
@@ -119,7 +113,7 @@ public class QRTabbedPane extends QRPanel {
 	/**
 	 * 设置当前欲显示的面板索引
 	 *
-	 * @param index
+	 * @param index 从 {@code 0} 开始计数
 	 */
 	public void setSelectedTab(int index) {
 		setContentPaneIndex(index);
