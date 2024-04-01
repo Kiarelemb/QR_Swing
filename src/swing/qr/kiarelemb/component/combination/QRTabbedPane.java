@@ -223,13 +223,7 @@ public class QRTabbedPane extends QRPanel {
 	}
 
 	private int getAddIndex() {
-		int index = this.arrTabs.size() - 1;
-		if (index < 0) {
-			index = 0;
-		} else {
-			index++;
-		}
-		return index;
+		return this.arrTabs.size();
 	}
 
 	/**
@@ -321,7 +315,6 @@ public class QRTabbedPane extends QRPanel {
 		 * 关闭按钮
 		 */
 		static class QRTabCloseButton extends JButton {
-
 			private QRTabCloseButton() {
 				final int size = 12;
 				setPreferredSize(new Dimension(size, size));

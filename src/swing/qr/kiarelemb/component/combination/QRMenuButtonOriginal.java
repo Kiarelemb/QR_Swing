@@ -32,7 +32,6 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 		this.jpm = new JPopupMenu();
 		this.jpm.setBorderPainted(true);
 		this.jpm.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.ENTER_COLOR, 1));
-//		jpm.setBackground(QRColorsAndFonts.POPUP_COLOR_BACK);
 		this.jpm.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -67,7 +66,6 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 		switch (e.getButton()) {
 			//左键
 			case MouseEvent.BUTTON1 -> showPopupMenu();
-
 			//右键
 			case MouseEvent.BUTTON3 -> e.consume();
 		}

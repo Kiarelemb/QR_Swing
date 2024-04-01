@@ -30,17 +30,8 @@ public class QRMenuPanel extends QRPanel {
 		super(false);
 		this.menuButtons = new QRPanel();
 		this.menuButtons.setLayout(new GridLayout(1, 0, 2, 0));
-//		menuButtons.setLayout(new FlowLayout(FlowLayout., 0, 0));
 		setLayout(new BorderLayout());
 		add(this.menuButtons, BorderLayout.WEST);
-		//起到调节菜单竖直高度的作用
-//		if (!QRSwing.windowTitleMenu) {
-//			QRLabel rightLabel = new QRLabel(QRStringUtils.A_WHITE_SPACE);
-//			setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-//			rightLabel.setFont(QRFontUtils.getFontInSize(22));
-//			rightLabel.setForeground(QRColorsAndFonts.FRAME_COLOR_BACK);
-//			add(rightLabel, BorderLayout.EAST);
-//		}
 		setFocusable(false);
 		this.bottons = new LinkedList<>();
 		this.enables = new ArrayList<>();
@@ -51,45 +42,35 @@ public class QRMenuPanel extends QRPanel {
 	 * 因为 Mac 系统和 Windows, Linux 用的菜单按钮不一样，所以用这方法可以去掉判断
 	 *
 	 * @param name 按钮名称
-	 * @return
+	 * @return 菜单按钮
 	 */
 	public QRButton add(String name) {
-		QRButton button;
-		if (QRSystemUtils.IS_OSX) {
-			button = new QRMenuButtonOriginal(name, this);
-		} else {
-			button = new QRMenuButton(name, this);
-		}
-		button.addMouseAction(QRMouseListener.TYPE.PRESS, e -> {
-			mousePressAction(button);
-		});
-		button.addMouseAction(QRMouseListener.TYPE.ENTER, e -> {
-			mouseEnterAction(button);
-		});
-		this.menuButtons.add(button);
-		this.bottons.add(button);
+		QRButton button = QRSystemUtils.IS_OSX ? new QRMenuButtonOriginal(name, this) : new QRMenuButton(name, this);
+		button.addMouseListener();
+		button.addMouseAction(QRMouseListener.TYPE.PRESS, e -> mousePressAction(button));
+		button.addMouseAction(QRMouseListener.TYPE.ENTER, e -> mouseEnterAction(button));
+		menuButtons.add(button);
+		bottons.add(button);
 		return button;
 	}
 
 	private void mouseEnterAction(QRButton button) {
-		if (QRMenuPanel.this.pressed && button.isEnabled()) {
+		if (pressed && button.isEnabled()) {
 			((QRMenuButtonProcess) button).showPopupMenu();
-			if (QRMenuPanel.this.preClickedItem != null && QRMenuPanel.this.preClickedItem != button) {
-				((QRMenuButtonProcess) button).closePopupMenu();
-				QRMenuPanel.this.preClickedItem = button;
+			if (preClickedItem != button) {
+				((QRMenuButtonProcess) preClickedItem).closePopupMenu();
+				preClickedItem = button;
 			}
 		}
 	}
 
 	private void mousePressAction(QRButton button) {
-		QRMenuPanel.this.pressed = true;
-		QRMenuPanel.this.preClickedItem = button;
+		pressed = true;
+		preClickedItem = button;
 	}
 
 	public void setPressed(boolean b) {
-		if (this.pressed != b) {
-			this.pressed = b;
-		}
+		pressed = b;
 	}
 
 	public void disableAll() {

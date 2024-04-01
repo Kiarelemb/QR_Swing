@@ -8,7 +8,6 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -47,7 +46,6 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 			public void focusLose(FocusEvent e) {
 				if (QRMenuButton.this.jpm.isVisible()) {
 					QRMenuButton.this.jpm.setVisible(false);
-					menuPanel.setPressed(false);
 				}
 				QRMenuButton.this.setBackColor(QRColorsAndFonts.FRAME_COLOR_BACK);
 				QRMenuButton.this.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
@@ -95,7 +93,7 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 			public void mousePressed(MouseEvent e) {
 				qmi.componentFresh();
 				closePopupMenu();
-				QRMenuButton.this.menuPanel.setPressed(false);
+				menuPanel.setPressed(false);
 			}
 		});
 	}

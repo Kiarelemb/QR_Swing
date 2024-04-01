@@ -93,17 +93,11 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			windowClickAction();
-//            if (e.getClickCount() == 2 && e.getY() < topPanel.getHeight()) {
-//                maxWindow();
-//            }
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-//            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//            p = new Point(e.getX() + contentPane.getX(), e.getY() + contentPane.getY());
 			this.p = e.getPoint();
-//			System.out.println("p = " + p);
 		}
 
 		@Override
@@ -312,7 +306,20 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.iconLabel = QRLabel.getIconLabel();
 		this.titlePanel.add(this.iconLabel, BorderLayout.WEST);
 
-		this.titleLabel = new QRLabel();
+		this.titleLabel = new QRLabel() {
+			@Override
+			public void setHorizontalAlignment(int alignment) {
+				super.setHorizontalAlignment(alignment);
+				if (alignment == SwingConstants.LEFT) {
+					setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+					return;
+				}
+				if (alignment == SwingConstants.CENTER) {
+					//试图让标签居中
+					setBorder(BorderFactory.createEmptyBorder(0, 70, 0, 0));
+				}
+			}
+		};
 		this.titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
 		if (QRSwing.windowTitleMenu) {
@@ -324,8 +331,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 			this.titlePanel.add(topCenterPanel, BorderLayout.CENTER);
 		} else {
-			//试图让标签居中
-			this.titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 70, 0, 0));
 			this.titlePanel.add(this.titleLabel, BorderLayout.CENTER);
 		}
 
@@ -493,15 +498,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 设置窗体的标题是否居中
 	 */
 	public void setTitleCenter() {
-//		if (!QRSwing.windowTitleMenu) {
 		//没有启用标题菜单就可以居中
 		this.titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//		}
 	}
 
 	public final void setBackgroundImage(String filePath) {
 		if (filePath == null && this.backgroundImageSet) {
-//			QRSwing.setBackgroundFilePath(null);
 			this.mainPanel.setBorder(null);
 			this.backgroundBorder = null;
 			imagePath = null;
@@ -652,7 +654,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	}
 
 	/**
-	 * 子类继承，用于自动保存窗体大小和位置信息
+	 * 该方法<b>并不会</b>关闭窗体。
+	 * <p>子类继承，用于自动保存窗体大小和位置信息。
 	 */
 	@Override
 	public final void dispose() {

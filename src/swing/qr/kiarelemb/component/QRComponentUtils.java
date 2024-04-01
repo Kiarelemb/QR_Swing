@@ -66,7 +66,7 @@ public class QRComponentUtils {
 	}
 
 	/**
-	 * 将一个 {@link QRActionRegister} 列表使用 {@code null} 参数运行一下，会检查其内容是否为空的清况
+	 * 将 {@link QRActionRegister} 列表使用 {@code null} 参数运行，会检查其内容是否为空
 	 *
 	 * @param list 任务列表
 	 */
@@ -75,7 +75,7 @@ public class QRComponentUtils {
 	}
 
 	/**
-	 * 将一个 {@link QRActionRegister} 列表使用 {@code obj} 参数运行一下，会检查其内容是否为空的清况
+	 * 将 {@link QRActionRegister} 列表使用 {@code obj} 参数运行，会检查其内容是否为空
 	 *
 	 * @param list 任务列表
 	 */

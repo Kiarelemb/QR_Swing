@@ -142,7 +142,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	}
 
 	/**
-	 * 添加鼠标事件
+	 * 添加鼠标事件，请先调用 {@link #addMouseListener()}
 	 *
 	 * @param type 类型
 	 * @param ar   操作

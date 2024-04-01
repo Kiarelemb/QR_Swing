@@ -1,8 +1,10 @@
 package swing.qr.kiarelemb.test;
 
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.assembly.QRMutableTreeNode;
-import swing.qr.kiarelemb.component.basic.*;
+import swing.qr.kiarelemb.component.basic.QRLabel;
+import swing.qr.kiarelemb.component.basic.QRRoundButton;
+import swing.qr.kiarelemb.component.basic.QRSplitPane;
+import swing.qr.kiarelemb.component.basic.QRTextPane;
 import swing.qr.kiarelemb.component.combination.QRContractiblePanel;
 import swing.qr.kiarelemb.component.combination.QRStatePanel;
 import swing.qr.kiarelemb.theme.QRSwingThemeDesigner;
@@ -20,8 +22,6 @@ import java.awt.event.WindowEvent;
  * @create 2022-11-04 17:41
  **/
 public class Test extends QRFrame {
-	QRTree jTree;
-	QRMutableTreeNode node;
 
 	public Test(String title) {
 		super(title);
@@ -49,14 +49,14 @@ public class Test extends QRFrame {
 		this.mainPanel.add(contractiblePanel, BorderLayout.WEST);
 
 		QRContractiblePanel.QRColumnContentPanel second = contractiblePanel.getColumn(1);
-		QRRoundButton btn = new QRRoundButton("主题设置"){
+		QRRoundButton btn = new QRRoundButton("主题设置") {
 			@Override
 			protected void actionEvent(ActionEvent o) {
 				QRSwingThemeDesigner designer = new QRSwingThemeDesigner(Test.this);
 				designer.setVisible(true);
 			}
 		};
-		btn.setSize(80,30);
+		btn.setSize(80, 30);
 		second.add(btn);
 
 		QRStatePanel statePanel = new QRStatePanel();
