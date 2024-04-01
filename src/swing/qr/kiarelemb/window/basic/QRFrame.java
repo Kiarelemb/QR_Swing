@@ -355,7 +355,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(16f));
 			}
 		};
-//		this.maximumButton.setFont(PROCESS_BUTTON_FONT.deriveFont(16f));
 		this.maximumButton.addActionListener(e -> maxWindow());
 		this.threeButtonPanel.add(this.maximumButton);
 

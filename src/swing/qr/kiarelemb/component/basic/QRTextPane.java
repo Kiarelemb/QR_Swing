@@ -1446,6 +1446,10 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		print(str, textFont, colorFore, colorBack, index);
 	}
 
+	public void print(String str, Font f, Color colorFore, int index) {
+		print(str, f, colorFore,  QRColorsAndFonts.TEXT_COLOR_BACK, index);
+	}
+
 	public void print(String str, Font f, Color colorFore, Color colorBack, int index) {
 		SimpleAttributeSet attributeSet = QRComponentUtils.getSimpleAttributeSet(f, colorFore, colorBack);
 		print(str, attributeSet, index);
@@ -1499,6 +1503,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	public final void println(String str, Color colorFore, Color colorBack, int index) {
 		println(str, textFont, colorFore, colorBack, index);
 	}
+
+	public final void println(String str, Font f, Color colorFore, int index) {
+		print(str + QRStringUtils.AN_ENTER, f, colorFore, QRColorsAndFonts.TEXT_COLOR_BACK, index);
+	}
+
 
 	public final void println(String str, Font f, Color colorFore, Color colorBack, int index) {
 		print(str + QRStringUtils.AN_ENTER, f, colorFore, colorBack, index);
