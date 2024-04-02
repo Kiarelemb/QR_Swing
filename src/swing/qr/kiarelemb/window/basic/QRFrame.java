@@ -61,7 +61,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	private final QRBorderContentPanel contentPane;
 	private final QRPanel topPanel;
 	private final QRLabel iconLabel;
-	private final QRPanel threeButtonPanel;
+	private final QRPanel windowFunctionPanel;
 	private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
 	private final ArrayList<QRActionRegister> actionOnDispose = new ArrayList<>();
 	private final QRPanel titlePanel;
@@ -110,7 +110,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.contentPane.add(this.topPanel, BorderLayout.NORTH);
 
 		this.iconLabel = QRLabel.getIconLabel();
-		this.threeButtonPanel = new QRPanel();
+		this.windowFunctionPanel = new QRPanel();
 		this.titlePanel = new QRPanel() {
 			private final Font font = QRColorsAndFonts.DEFAULT_FONT_MENU;
 
@@ -126,17 +126,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 					// 设置为左或右时，相应地产生 5 的偏差。此处设置为 20 是为了拉大距离。但如果是设置为中间，则无偏差
 					if (QRSwing.windowTitleMenu) {
 						if (titlePlace == SwingConstants.RIGHT) {
-							x = (float) (panelWidth - threeButtonPanel.getWidth() - r.getWidth()) - 20;
+							x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth() - 20);
 						} else if (titlePlace == SwingConstants.CENTER) {
-							int tmp = iconLabel.getWidth() + titleMenuPanel.getWidth();
-							int titleWidth = panelWidth - threeButtonPanel.getWidth() - tmp;
-							x = (float) (tmp + titleWidth / 2 - r.getWidth() / 2);
+							x = (float) (panelWidth - windowFunctionPanel.getWidth() + iconLabel.getWidth()
+									+ titleMenuPanel.getWidth() - r.getWidth()) / 2;
 						} else {
-							x = iconLabel.getWidth() + titleMenuPanel.getWidth() + 10;
+							x = iconLabel.getWidth() + titleMenuPanel.getWidth() + 20;
 						}
 					} else {
 						if (titlePlace == SwingConstants.RIGHT) {
-							x = (float) (panelWidth - threeButtonPanel.getWidth() - r.getWidth()) - 20;
+							x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth()) - 20;
 						} else if (titlePlace == SwingConstants.CENTER) {
 							//使标题绝对居中而不顾图标与功能按钮。该行的设定，是取消添加标签而独自 drawString 的主要原因
 							x = (float) (panelWidth / 2 - r.getWidth() / 2);
@@ -147,7 +146,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 					float y = (float) (getHeight() - r.getHeight() / 2);
 
 					//无损绘制字体，改编自 SwingUtilities2
-					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
+					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+							this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
 					Map<TextAttribute, Object> map = new HashMap<TextAttribute, Object>();
 					map.put(TextAttribute.FONT, font);
 					map.put(TextAttribute.FOREGROUND, QRColorsAndFonts.MENU_COLOR);
@@ -173,8 +173,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.titlePanel.add(this.iconLabel, BorderLayout.WEST);
 		}
 
-		this.threeButtonPanel.setLayout(new GridLayout(1, 3, 3, 0));
-		this.titlePanel.add(this.threeButtonPanel, BorderLayout.EAST);
+		this.windowFunctionPanel.setLayout(new GridLayout(1, 3, 3, 0));
+		this.titlePanel.add(this.windowFunctionPanel, BorderLayout.EAST);
 		this.minimumButton = new QRButton(MIN_MARK) {
 			@Override
 			public void componentFresh() {
@@ -183,7 +183,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			}
 		};
 		this.minimumButton.addActionListener(e -> minWindow());
-		this.threeButtonPanel.add(this.minimumButton);
+		this.windowFunctionPanel.add(this.minimumButton);
 
 		this.maximumButton = new QRButton(MAX_MARK) {
 			@Override
@@ -193,7 +193,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			}
 		};
 		this.maximumButton.addActionListener(e -> maxWindow());
-		this.threeButtonPanel.add(this.maximumButton);
+		this.windowFunctionPanel.add(this.maximumButton);
 
 		this.closeButton = new QRCloseButton() {
 			{
@@ -202,7 +202,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		};
 		this.closeButton.setToolTipText("关闭");
 		this.closeButton.addActionListener(e -> dispose());
-		this.threeButtonPanel.add(this.closeButton);
+		this.windowFunctionPanel.add(this.closeButton);
 		final MouseAdapte mouseAdapte = new MouseAdapte();
 
 		addMouseListener(mouseAdapte);
@@ -483,7 +483,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	}
 
 	public Dimension getMinimumSizes() {
-		int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.threeButtonPanel.getWidth() + 20;
+		int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.windowFunctionPanel.getWidth() + 20;
 		return new Dimension(titleWidth, titleWidth / 2);
 	}
 
