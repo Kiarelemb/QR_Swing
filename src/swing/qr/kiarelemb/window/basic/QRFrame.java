@@ -117,44 +117,45 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			@Override
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				if (title != null) {
-					Graphics2D g2 = (Graphics2D) g;
-					Rectangle2D r = QRFontUtils.getStringBounds(title, font);
-					int panelWidth = getWidth();
-					int panelHeight = getHeight();
-					float x;
-					// 设置为左或右时，相应地产生 5 的偏差。此处设置为 20 是为了拉大距离。但如果是设置为中间，则无偏差
-					if (QRSwing.windowTitleMenu) {
-						if (titlePlace == SwingConstants.RIGHT) {
-							x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth() - 20);
-						} else if (titlePlace == SwingConstants.CENTER) {
-							x = (float) (panelWidth - windowFunctionPanel.getWidth() + iconLabel.getWidth()
-									+ titleMenuPanel.getWidth() - r.getWidth()) / 2;
-						} else {
-							x = iconLabel.getWidth() + titleMenuPanel.getWidth() + 20;
-						}
-					} else {
-						if (titlePlace == SwingConstants.RIGHT) {
-							x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth()) - 20;
-						} else if (titlePlace == SwingConstants.CENTER) {
-							//使标题绝对居中而不顾图标与功能按钮。该行的设定，是取消添加标签而独自 drawString 的主要原因
-							x = (float) (panelWidth / 2 - r.getWidth() / 2);
-						} else {
-							x = iconLabel.getWidth() + 20;
-						}
-					}
-					float y = (float) (getHeight() - r.getHeight() / 2);
-
-					//无损绘制字体，改编自 SwingUtilities2
-					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-							this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
-					Map<TextAttribute, Object> map = new HashMap<TextAttribute, Object>();
-					map.put(TextAttribute.FONT, font);
-					map.put(TextAttribute.FOREGROUND, QRColorsAndFonts.MENU_COLOR);
-					map.put(TextAttribute.NUMERIC_SHAPING, this.getClientProperty(TextAttribute.NUMERIC_SHAPING));
-					TextLayout layout = new TextLayout(title, map, g2.getFontRenderContext());
-					layout.draw(g2, x, y);
+				if (title == null) {
+					return;
 				}
+				Graphics2D g2 = (Graphics2D) g;
+				Rectangle2D r = QRFontUtils.getStringBounds(title, font);
+				int panelWidth = getWidth();
+				int panelHeight = getHeight();
+				float x;
+				// 设置为左或右时，相应地产生 5 的偏差。此处设置为 20 是为了拉大距离。但如果是设置为中间，则无偏差
+				if (QRSwing.windowTitleMenu) {
+					if (titlePlace == SwingConstants.RIGHT) {
+						x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth() - 20);
+					} else if (titlePlace == SwingConstants.CENTER) {
+						x = (float) (panelWidth - windowFunctionPanel.getWidth() + iconLabel.getWidth()
+								+ titleMenuPanel.getWidth() - r.getWidth()) / 2;
+					} else {
+						x = iconLabel.getWidth() + titleMenuPanel.getWidth() + 20;
+					}
+				} else {
+					if (titlePlace == SwingConstants.RIGHT) {
+						x = (float) (panelWidth - windowFunctionPanel.getWidth() - r.getWidth()) - 20;
+					} else if (titlePlace == SwingConstants.CENTER) {
+						//使标题绝对居中而不顾图标与功能按钮。该行的设定，是取消添加标签而独自 drawString 的主要原因
+						x = (float) (panelWidth / 2 - r.getWidth() / 2);
+					} else {
+						x = iconLabel.getWidth() + 20;
+					}
+				}
+				float y = (float) (getHeight() - r.getHeight() / 2);
+
+				//无损绘制字体，改编自 SwingUtilities2
+				g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+						this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
+				Map<TextAttribute, Object> map = new HashMap<TextAttribute, Object>();
+				map.put(TextAttribute.FONT, font);
+				map.put(TextAttribute.FOREGROUND, QRColorsAndFonts.MENU_COLOR);
+				map.put(TextAttribute.NUMERIC_SHAPING, this.getClientProperty(TextAttribute.NUMERIC_SHAPING));
+				TextLayout layout = new TextLayout(title, map, g2.getFontRenderContext());
+				layout.draw(g2, x, y);
 			}
 		};
 		this.titlePanel.setLayout(new BorderLayout());
