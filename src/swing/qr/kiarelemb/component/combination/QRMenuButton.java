@@ -24,18 +24,15 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 	private final LinkedList<QRMenuItem> buttons;
 	private final ArrayList<Boolean> enables;
 	private final QRPopupMenu jpm;
-	QRMenuPanel menuPanel;
+	private final QRMenuPanel menuPanel;
 
 	public QRMenuButton(String text, QRMenuPanel menuPanel) {
 		super(text);
 		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
 		setForeground(QRColorsAndFonts.MENU_COLOR);
 		this.menuPanel = menuPanel;
-		this.jpm = new QRPopupMenu(SwingUtilities.getWindowAncestor(menuPanel)) {
-			{
-				addFocusListener();
-			}
 
+		this.jpm = new QRPopupMenu(SwingUtilities.getWindowAncestor(menuPanel)) {
 			@Override
 			public void focusGain(FocusEvent e) {
 				QRMenuButton.this.setBackColor(QRColorsAndFonts.PRESS_COLOR);
@@ -46,11 +43,13 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 			public void focusLose(FocusEvent e) {
 				if (QRMenuButton.this.jpm.isVisible()) {
 					QRMenuButton.this.jpm.setVisible(false);
+					menuPanel.setPressed(false);
 				}
 				QRMenuButton.this.setBackColor(QRColorsAndFonts.FRAME_COLOR_BACK);
 				QRMenuButton.this.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 			}
 		};
+		this.jpm.addFocusListener();
 		setPreferredSize(new Dimension(QRFontUtils.getTextInWidth(this, text) + 20, 32));
 		this.buttons = new LinkedList<>();
 		this.enables = new ArrayList<>();

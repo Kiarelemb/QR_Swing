@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 
 /**
  * @author Kiarelemb
@@ -120,12 +121,12 @@ public class QRClearableTextField extends QRPanel {
 		}
 
 		@Override
-		protected void focusGainedAction() {
+		protected void focusGained(FocusEvent e) {
 			QRClearableTextField.this.focusGainedAction();
 		}
 
 		@Override
-		protected void focusLostAction() {
+		protected void focusLost(FocusEvent e) {
 			QRClearableTextField.this.focusLostAction();
 		}
 

@@ -7,8 +7,10 @@ import swing.qr.kiarelemb.component.listener.QRMouseListener;
 import swing.qr.kiarelemb.inter.QRMenuButtonProcess;
 
 import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * @author Kiarelemb QR
@@ -17,9 +19,9 @@ import java.util.LinkedList;
  * @create 2022-11-04 17:11
  **/
 public class QRMenuPanel extends QRPanel {
-	protected final LinkedList<QRButton> bottons;
+	protected final LinkedList<QRButton> buttons;
 	private final ArrayList<Boolean> enables;
-	QRPanel menuButtons;
+	private final QRPanel buttonsPanel;
 	private boolean pressed = false;
 	private QRButton preClickedItem;
 
@@ -27,16 +29,16 @@ public class QRMenuPanel extends QRPanel {
 	 * 实现一个菜单条，可以在其中加入菜单按钮
 	 */
 	public QRMenuPanel() {
-		super(false);
-		this.menuButtons = new QRPanel();
-		this.menuButtons.setLayout(new GridLayout(1, 0, 2, 0));
+		super();
+		this.buttonsPanel = new QRPanel();
+		this.buttonsPanel.setLayout(new GridLayout(1, 0, 2, 0));
 		setLayout(new BorderLayout());
-		add(this.menuButtons, BorderLayout.WEST);
-		setFocusable(false);
-		this.bottons = new LinkedList<>();
+		add(this.buttonsPanel, BorderLayout.WEST);
+		addFocusListener();
+		this.buttons = new LinkedList<>();
 		this.enables = new ArrayList<>();
-
 	}
+
 
 	/**
 	 * 因为 Mac 系统和 Windows, Linux 用的菜单按钮不一样，所以用这方法可以去掉判断
@@ -49,19 +51,37 @@ public class QRMenuPanel extends QRPanel {
 		button.addMouseListener();
 		button.addMouseAction(QRMouseListener.TYPE.PRESS, e -> mousePressAction(button));
 		button.addMouseAction(QRMouseListener.TYPE.ENTER, e -> mouseEnterAction(button));
-		menuButtons.add(button);
-		bottons.add(button);
+		buttonsPanel.add(button);
+		buttons.add(button);
 		return button;
+	}
+
+	public QRButton get(String name) {
+		for (QRButton button : buttons) {
+			if (Objects.equals(button.getText(), name)) {
+				return button;
+			}
+		}
+		return null;
 	}
 
 	private void mouseEnterAction(QRButton button) {
 		if (pressed && button.isEnabled()) {
 			((QRMenuButtonProcess) button).showPopupMenu();
 			if (preClickedItem != button) {
-				((QRMenuButtonProcess) preClickedItem).closePopupMenu();
+				if (preClickedItem != null) {
+					((QRMenuButtonProcess) preClickedItem).closePopupMenu();
+				}
 				preClickedItem = button;
 			}
 		}
+	}
+
+	@Override
+	protected void focusLost(FocusEvent e) {
+		System.out.println("focusLost");
+
+		setPressed(false);
 	}
 
 	private void mousePressAction(QRButton button) {
@@ -69,12 +89,15 @@ public class QRMenuPanel extends QRPanel {
 		preClickedItem = button;
 	}
 
-	public void setPressed(boolean b) {
+	protected void setPressed(boolean b) {
 		pressed = b;
+		if (!b) {
+			preClickedItem = null;
+		}
 	}
 
 	public void disableAll() {
-		for (QRButton item : this.bottons) {
+		for (QRButton item : this.buttons) {
 			this.enables.add(item.isEnabled());
 			item.setEnabled(false);
 			((QRMenuButtonProcess) this.preClickedItem).disableAll();
@@ -83,7 +106,7 @@ public class QRMenuPanel extends QRPanel {
 
 	public void enablesAll() {
 		int index = 0;
-		for (QRButton item : this.bottons) {
+		for (QRButton item : this.buttons) {
 			item.setEnabled(this.enables.get(index++));
 			((QRMenuButtonProcess) this.preClickedItem).enablesAll();
 		}

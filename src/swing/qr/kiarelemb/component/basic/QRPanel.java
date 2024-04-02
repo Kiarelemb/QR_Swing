@@ -1,15 +1,18 @@
 package swing.qr.kiarelemb.component.basic;
 
+import swing.qr.kiarelemb.component.listener.QRFocusListener;
 import swing.qr.kiarelemb.component.listener.QRMouseListener;
 import swing.qr.kiarelemb.component.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 
 /**
@@ -18,10 +21,11 @@ import java.awt.event.MouseEvent;
  * @apiNote: 面板类
  * @create 2022-11-04 16:29
  **/
-public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionListenerAdd, QRMouseListenerAdd {
+public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionListenerAdd, QRFocusListenerAdd, QRMouseListenerAdd {
 
 	private QRMouseMotionListener mouseMotionListener;
 	private QRMouseListener mouseListener;
+	private QRFocusListener focusListener;
 	private QRScrollPane scrollPane;
 
 	public QRPanel() {
@@ -59,7 +63,6 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
 			this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
 			this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
 			addMouseMotionListener(this.mouseMotionListener);
-
 		}
 	}
 
@@ -89,7 +92,6 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
 			this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
 			this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
 			addMouseListener(this.mouseListener);
-
 		}
 	}
 
@@ -105,6 +107,30 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
 			this.mouseListener.add(type, ar);
 		}
 	}
+
+	/**
+	 * 添加焦点事件
+	 */
+	@Override
+	public void addFocusListener() {
+		if (this.focusListener == null) {
+			this.focusListener = new QRFocusListener();
+			this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> this.focusGained((FocusEvent) e));
+			this.focusListener.add(QRFocusListener.TYPE.LOST, e -> this.focusLost((FocusEvent) e));
+			addFocusListener(this.focusListener);
+		}
+	}
+
+	/**
+	 * 添加焦点事件
+	 */
+	@Override
+	public void addFocusAction(QRFocusListener.TYPE type, QRActionRegister ar) {
+		if (this.focusListener != null) {
+			this.focusListener.add(type, ar);
+		}
+	}
+
 
 	/**
 	 * 添加滚动条
@@ -137,35 +163,42 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mouseClick(MouseEvent e) {
-
 	}
 
 	/**
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mousePress(MouseEvent e) {
-
 	}
 
 	/**
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mouseRelease(MouseEvent e) {
-
 	}
 
 	/**
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mouseEnter(MouseEvent e) {
-
 	}
 
 	/**
 	 * 重写前请先调用 {@link #addMouseListener()}
 	 */
 	protected void mouseExit(MouseEvent e) {
+	}
 
+	/**
+	 * 重写前请先调用 {@link #addFocusListener()}
+	 */
+	protected void focusGained(FocusEvent e) {
+	}
+
+	/**
+	 * 重写前请先调用 {@link #addFocusListener()}
+	 */
+	protected void focusLost(FocusEvent e) {
 	}
 
 	/**

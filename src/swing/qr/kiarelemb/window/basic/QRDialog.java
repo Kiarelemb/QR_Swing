@@ -113,7 +113,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 				setSize(eX, this.height);
 			} else {
 				//只能在窗体的标题栏进行移动
-				if (eY < QRDialog.this.topPanel.getHeight()) {
+				if (eY < QRDialog.this.titleLabel.getHeight()) {
 					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 					if (this.p == null) {
 						return;

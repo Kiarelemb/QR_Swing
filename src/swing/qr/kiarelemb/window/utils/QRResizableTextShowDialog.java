@@ -9,19 +9,18 @@ import java.awt.*;
 
 /**
  * @author Kiarelemb QR
- * @create  2024.03.13
+ * @create 2024.03.13
  * @apiNote 一个可以调节窗体大小的不可编辑的文本面板窗体
  */
 public class QRResizableTextShowDialog extends QRDialog {
 	private final QRTextArea textArea;
 
 	/**
-	 *
-	 * @param parent 父窗体
-	 * @param width 本窗体宽
-	 * @param height 本窗体高
-	 * @param title 本窗体标题
-	 * @param content 文本内容
+	 * @param parent        父窗体
+	 * @param width         本窗体宽
+	 * @param height        本窗体高
+	 * @param title         本窗体标题
+	 * @param content       文本内容
 	 * @param scrollInFirst 滚轮是否移到最上面
 	 */
 	public QRResizableTextShowDialog(Window parent, int width, int height, String title, String content, boolean scrollInFirst) {

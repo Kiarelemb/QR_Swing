@@ -27,8 +27,14 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.font.TextAttribute;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+
 
 /**
  * @author Kiarelemb QR
@@ -48,18 +54,17 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 所继承的各主窗体所添加的控件基本都需要放在这个 {@link #mainPanel} 中
 	 */
 	protected final QRPanel mainPanel;
-	private final QRBorderContentPanel contentPane;
-	private final QRPanel topPanel;
-	private final QRLabel iconLabel;
-	private final QRLabel titleLabel;
-	private final QRPanel threeButtonPanel;
-	private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
-	private final ArrayList<QRActionRegister> actionOnDispose = new ArrayList<>();
-	private final QRPanel titlePanel;
 	/**
 	 * 用于记忆窗体位置及大小信息
 	 */
 	protected final Properties prop;
+	private final QRBorderContentPanel contentPane;
+	private final QRPanel topPanel;
+	private final QRLabel iconLabel;
+	private final QRPanel threeButtonPanel;
+	private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
+	private final ArrayList<QRActionRegister> actionOnDispose = new ArrayList<>();
+	private final QRPanel titlePanel;
 	/**
 	 * 若设置了 {@link QRSwing#windowTitleMenu} 为 {@code true}，则将自动实例化
 	 */
@@ -67,11 +72,590 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	private QRWindowListener windowListener;
 	private QRBackgroundBorder backgroundBorder;
 	private String imagePath;
+	private String title = "";
 	private Image backgroundImage;
 	private double imageRatio;
 	private Dimension minimumSize = new Dimension(10, 10);
 	private int originalWidth = 500;
+	private int titlePlace = SwingConstants.LEFT;
 	private boolean backgroundImageSet = false;
+
+	public QRFrame() {
+		QRFileUtils.fileCreate(QRSwing.WINDOW_PROP_PATH);
+		this.prop = QRPropertiesUtils.loadProp(QRSwing.WINDOW_PROP_PATH);
+
+		//region 加载资源
+		final int[] screenSize = QRSystemUtils.getScreenSize();
+		int sizeWidth = QRPropertiesUtils.getPropInInteger(this.prop, "window.size.width", screenSize[0] / 2);
+		int sizeHeight = QRPropertiesUtils.getPropInInteger(this.prop, "window.size.height", screenSize[1] / 2);
+		int locationX = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.X", screenSize[0] / 4);
+		int locationY = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.Y", screenSize[1] / 4);
+		super.setSize(sizeWidth, sizeHeight);
+		super.setLocation(locationX, locationY);
+		//endregion
+
+		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+		setIconImage(QRSwing.windowIcon.getImage());
+		setUndecorated(true);
+
+		this.contentPane = new QRBorderContentPanel();
+		this.contentPane.setLayout(new BorderLayout());
+		setContentPane(this.contentPane);
+		this.contentPane.setBorder(new LineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
+
+
+		this.topPanel = new QRPanel();
+		this.topPanel.setLayout(new BorderLayout());
+		this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+		this.contentPane.add(this.topPanel, BorderLayout.NORTH);
+
+		this.iconLabel = QRLabel.getIconLabel();
+		this.threeButtonPanel = new QRPanel();
+		this.titlePanel = new QRPanel() {
+			private final Font font = QRColorsAndFonts.DEFAULT_FONT_MENU;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if (title != null) {
+					Graphics2D g2 = (Graphics2D) g;
+					Rectangle2D r = QRFontUtils.getStringBounds(title, font);
+					int panelWidth = getWidth();
+					int panelHeight = getHeight();
+					float x;
+					// 设置为左或右时，相应地产生 5 的偏差。此处设置为 20 是为了拉大距离。但如果是设置为中间，则无偏差
+					if (QRSwing.windowTitleMenu) {
+						if (titlePlace == SwingConstants.RIGHT) {
+							x = (float) (panelWidth - threeButtonPanel.getWidth() - r.getWidth()) - 20;
+						} else if (titlePlace == SwingConstants.CENTER) {
+							int tmp = iconLabel.getWidth() + titleMenuPanel.getWidth();
+							int titleWidth = panelWidth - threeButtonPanel.getWidth() - tmp;
+							x = (float) (tmp + titleWidth / 2 - r.getWidth() / 2);
+						} else {
+							x = iconLabel.getWidth() + titleMenuPanel.getWidth() + 10;
+						}
+					} else {
+						if (titlePlace == SwingConstants.RIGHT) {
+							x = (float) (panelWidth - threeButtonPanel.getWidth() - r.getWidth()) - 20;
+						} else if (titlePlace == SwingConstants.CENTER) {
+							//使标题绝对居中而不顾图标与功能按钮。该行的设定，是取消添加标签而独自 drawString 的主要原因
+							x = (float) (panelWidth / 2 - r.getWidth() / 2);
+						} else {
+							x = iconLabel.getWidth() + 20;
+						}
+					}
+					float y = (float) (getHeight() - r.getHeight() / 2);
+
+					//无损绘制字体，改编自 SwingUtilities2
+					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
+					Map<TextAttribute, Object> map = new HashMap<TextAttribute, Object>();
+					map.put(TextAttribute.FONT, font);
+					map.put(TextAttribute.FOREGROUND, QRColorsAndFonts.MENU_COLOR);
+					map.put(TextAttribute.NUMERIC_SHAPING, this.getClientProperty(TextAttribute.NUMERIC_SHAPING));
+					TextLayout layout = new TextLayout(title, map, g2.getFontRenderContext());
+					layout.draw(g2, x, y);
+				}
+			}
+		};
+		this.titlePanel.setLayout(new BorderLayout());
+		this.titlePanel.setBorder(BorderFactory.createEmptyBorder(1, 5, 0, 0));
+		this.topPanel.add(this.titlePanel, BorderLayout.CENTER);
+
+
+		if (QRSwing.windowTitleMenu) {
+			this.titleMenuPanel = new QRMenuPanel();
+			QRPanel westPanel = new QRPanel();
+			westPanel.setLayout(new BorderLayout());
+			westPanel.add(iconLabel, BorderLayout.WEST);
+			westPanel.add(this.titleMenuPanel, BorderLayout.CENTER);
+			this.titlePanel.add(westPanel, BorderLayout.WEST);
+		} else {
+			this.titlePanel.add(this.iconLabel, BorderLayout.WEST);
+		}
+
+		this.threeButtonPanel.setLayout(new GridLayout(1, 3, 3, 0));
+		this.titlePanel.add(this.threeButtonPanel, BorderLayout.EAST);
+		this.minimumButton = new QRButton(MIN_MARK) {
+			@Override
+			public void componentFresh() {
+				super.componentFresh();
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(13f));
+			}
+		};
+		this.minimumButton.addActionListener(e -> minWindow());
+		this.threeButtonPanel.add(this.minimumButton);
+
+		this.maximumButton = new QRButton(MAX_MARK) {
+			@Override
+			public void componentFresh() {
+				super.componentFresh();
+				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(16f));
+			}
+		};
+		this.maximumButton.addActionListener(e -> maxWindow());
+		this.threeButtonPanel.add(this.maximumButton);
+
+		this.closeButton = new QRCloseButton() {
+			{
+				setCloseButton();
+			}
+		};
+		this.closeButton.setToolTipText("关闭");
+		this.closeButton.addActionListener(e -> dispose());
+		this.threeButtonPanel.add(this.closeButton);
+		final MouseAdapte mouseAdapte = new MouseAdapte();
+
+		addMouseListener(mouseAdapte);
+
+		addMouseMotionListener(mouseAdapte);
+
+		MouseAdapter titleMouseAdapter = new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					maxWindow();
+				} else {
+					windowClickAction();
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				mouseAdapte.mousePressed(e);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				mouseAdapte.mouseReleased(e);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setCursorDefault();
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				mouseAdapte.mouseDragged(e);
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mouseAdapte.mouseMoved(e);
+			}
+		};
+		this.titlePanel.addMouseMotionListener(titleMouseAdapter);
+		this.titlePanel.addMouseListener(titleMouseAdapter);
+
+		//子类直接向 mainPanel 中添加控件
+		this.mainPanel = new QRPanel() {
+			@Override
+			public void componentFresh() {
+				super.componentFresh();
+				if (backgroundBorder != null) {
+					setBorder(backgroundBorder);
+				}
+			}
+		}
+
+		;
+		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
+
+		addWindowListener();
+
+		addWindowAction(QRWindowListener.TYPE.OPEN, e -> this.minimumSize = getMinimumSizes());
+	}
+	//endregion class-MouseAdapte
+
+	/**
+	 * 一个简单的开始：
+	 * <p>{@code QRSwing.start("可找到的properties文件路径");}
+	 * <p>{@code QRFrame window = new QRFrame("这是一个测试窗体")}
+	 * <p>{{
+	 * <p>{@code setTitleCenter();}//设置窗体标题居中
+	 * <p>{@code setCloseButtonSystemExit();}//设置单击关闭按钮后窗体淡化退出并结束程序
+	 * <p>}};
+	 * <p>{@code window.setVisible(true);}//设置窗体可见
+	 */
+	public QRFrame(String title) {
+		this();
+		setTitle(title);
+	}
+
+	@Override
+	public void componentFresh() {
+		this.titlePanel.setBorder(BorderFactory.createMatteBorder(0, 5, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+		this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+		this.contentPane.componentFresh();
+		if (!this.childWindows.isEmpty()) {
+			synchronized (this.childWindows) {
+				childWindows.forEach(childWindow -> {
+					if (childWindow instanceof QRComponentUpdate window) {
+						window.componentFresh();
+					}
+				});
+			}
+		}
+		mainPanel.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.TEXT_COLOR_BACK, 5));
+		if (titleMenuPanel != null) {
+			if (QRSwing.windowTitleMenu) {
+				titleMenuPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+			} else {
+				titleMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+			}
+		}
+		revalidate();
+		repaint();
+	}
+
+	/**
+	 * 已在实例化时自动添加
+	 */
+	@Override
+	public final void addWindowListener() {
+		if (this.windowListener == null) {
+			this.windowListener = new QRWindowListener();
+			this.windowListener.add(QRWindowListener.TYPE.OPEN, e -> windowOpened((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.CLOSED, e -> windowClosed((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.CLOSING, e -> windowClosing((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, e -> windowActivated((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, e -> windowDeactivated((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, e -> windowIconified((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, e -> windowDeiconified((WindowEvent) e));
+			this.windowListener.add(QRWindowListener.TYPE.MOVE, e -> windowMoved((Point) e));
+			addWindowListener(this.windowListener);
+		}
+	}
+
+	@Override
+	public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister ar) {
+		if (this.windowListener != null) {
+			this.windowListener.add(type, ar);
+		}
+	}
+
+	public QRButton getCloseButton() {
+		return this.closeButton;
+	}
+
+	/**
+	 * 设置单击关闭按钮后退出程序
+	 */
+	public void setCloseButtonSystemExit() {
+		this.closeButton.addActionListener(e -> dispose(true));
+	}
+
+	/**
+	 * 设置窗体的标题是否居中
+	 */
+	public void setTitleCenter() {
+		setTitlePlace(SwingConstants.CENTER);
+	}
+
+	/**
+	 * 设置窗体标题位置
+	 *
+	 * @param p 该值有三种取法：{@link SwingConstants#LEFT}, {@link SwingConstants#CENTER} 和 {@link SwingConstants#RIGHT},
+	 */
+	public final void setTitlePlace(int p) {
+		titlePlace = p;
+	}
+
+	/**
+	 * 当 {@link QRSwing#windowTitleMenu} 为 {@code false} 时，可以手动调用该方法实例化并添加菜单面板到窗体
+	 */
+	public void setTitlePanel() {
+		if (!QRSwing.windowTitleMenu) {
+			titleMenuPanel = new QRMenuPanel();
+			titleMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
+			this.topPanel.add(titleMenuPanel, BorderLayout.SOUTH);
+		}
+	}
+
+	public final void setBackgroundImage(String filePath) {
+		if (filePath == null && this.backgroundImageSet) {
+			this.mainPanel.setBorder(null);
+			this.backgroundBorder = null;
+			imagePath = null;
+			this.backgroundImage = null;
+			this.backgroundImageSet = false;
+			QRSwing.setWindowBackgroundImagePath(null);
+			return;
+		}
+		if (!QRFileUtils.fileExists(filePath)) {
+			return;
+		}
+		Image imageToSet = QRSwingInfo.loadImage(filePath);
+		if (imageToSet != null && !filePath.equals(this.imagePath)) {
+			this.backgroundImage = imageToSet;
+			imagePath = filePath;
+			QRSwing.setWindowBackgroundImagePath(filePath);
+			this.backgroundImageSet = true;
+			int height = this.backgroundImage.getHeight(null);
+			int width = this.backgroundImage.getWidth(null);
+			this.imageRatio = (double) width / height;
+			this.backgroundBorder = new QRBackgroundBorder(this.backgroundImage);
+			this.mainPanel.setBorder(this.backgroundBorder);
+			QRComponentUtils.loopComsForBackgroundSetting(this.mainPanel);
+			QRSwing.windowTransparency = 0.999f;
+			QRSystemUtils.setWindowNotTrans(this);
+		}
+	}
+
+	public final void setBackgroundBorderScale(boolean scale) {
+		if (this.backgroundBorder != null) {
+			this.backgroundBorder.setScale(scale);
+			QRSwing.setWindowScale(scale);
+			QRComponentUtils.windowFresh(this.mainPanel);
+		}
+	}
+
+	public final void setBackgroundBorderAlpha(float alpha) {
+		if (this.backgroundBorder != null) {
+			this.backgroundBorder.setAlpha(alpha);
+			QRSwing.setWindowAlpha(alpha);
+			QRComponentUtils.windowFresh(this.mainPanel);
+		}
+	}
+
+	public final boolean isBackgroundImageSet() {
+		return this.backgroundBorder == null && this.backgroundImage == null;
+	}
+
+	public void minWindow() {
+		this.setExtendedState(JFrame.ICONIFIED);
+	}
+
+	public void maxWindow() {
+		if (!this.maximumButton.isEnabled()) {
+			return;
+		}
+		if (this.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+			this.setExtendedState(JFrame.NORMAL);
+		} else {
+			this.originalWidth = getWidth();
+			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		}
+		windowStateUpdate();
+	}
+
+	private void windowStateUpdate() {
+		if (QRSwing.windowRound) {
+			QRSystemUtils.setWindowRound(this);
+		} else {
+			QRSystemUtils.setWindowNotRound(this);
+		}
+		if (backgroundImageSet) {
+			QRSystemUtils.setWindowNotTrans(this);
+		} else {
+			QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
+		}
+	}
+
+	public void setMaxEnable(boolean b) {
+		this.maximumButton.setEnabled(b);
+	}
+
+	public void setMinEnable(boolean b) {
+		this.minimumButton.setEnabled(b);
+	}
+
+	public boolean backgroundImageSet() {
+		return this.backgroundImageSet;
+	}
+
+	public final void dispose(boolean systemExit) {
+		dispose();
+		QRComponentUtils.runActions(this.actionOnDispose);
+		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowTransparency, systemExit);
+	}
+
+	/**
+	 * 在窗体退出前的操作。
+	 * <p>当调用 {@link QRFrame#dispose(boolean)} 时，不确定 {@link QRFrame#windowClosing(WindowEvent)} 和 {@link QRFrame#windowClosed(WindowEvent)} 是否起作用
+	 * <p>但本方法一定起作用
+	 *
+	 * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@code null}
+	 */
+	public final void addActionBeforeDispose(QRActionRegister ar) {
+		this.actionOnDispose.add(ar);
+	}
+
+	public Dimension getMinimumSizes() {
+		int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.threeButtonPanel.getWidth() + 20;
+		return new Dimension(titleWidth, titleWidth / 2);
+	}
+
+	public void setCursorWait() {
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	}
+
+	public void setCursorDefault() {
+		setCursor(Cursor.getDefaultCursor());
+	}
+
+	@Override
+	public String getTitle() {
+//		return this.titleLabel.getText();
+		return this.title;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		super.setTitle(title);
+		this.title = title;
+		if (isVisible()) {
+			//更新
+			this.minimumSize = getMinimumSizes();
+		}
+	}
+
+	@Override
+	public void setSize(int width, int height) {
+		if (width < this.minimumSize.width || height < this.minimumSize.height) {
+			return;
+		}
+		super.setSize(width, height);
+		windowSizeChangedAction();
+	}
+
+	@Override
+	public void setLocation(int x, int y) {
+		super.setLocation(x, y);
+		windowListener.windowMoved(new Point(x, y));
+	}
+
+	/**
+	 * 该方法<b>并不会</b>关闭窗体。
+	 * <p>子类继承，用于自动保存窗体大小和位置信息。
+	 */
+	@Override
+	public final void dispose() {
+		int width = getWidth();
+		int height = getHeight();
+		int x = getX();
+		int y = getY();
+		this.prop.setProperty("window.size.width", Integer.toString(width));
+		this.prop.setProperty("window.size.height", Integer.toString(height));
+		this.prop.setProperty("window.start.X", Integer.toString(x));
+		this.prop.setProperty("window.start.Y", Integer.toString(y));
+		//保存
+		QRPropertiesUtils.storeProp(this.prop, QRSwing.WINDOW_PROP_PATH);
+	}
+
+	@Override
+	public void setBounds(int x, int y, int width, int height) {
+		if (getExtendedState() != JFrame.MAXIMIZED_BOTH) {
+			if (QRSwing.windowScreenAdsorb) {
+				final int[] screenSize = QRSystemUtils.getScreenSize();
+				final int displayWidth = screenSize[0];
+				final int displayHeight = screenSize[1];
+				if (width > displayWidth || height > displayHeight) {
+					width = displayWidth / 2;
+					height = displayHeight / 2;
+					x = displayWidth / 4;
+					y = displayHeight / 4;
+				} else {
+					int adsorbent = 15;
+					if (Math.abs(x) < adsorbent) {
+						x = 0;
+					}
+					int rightX = x + width;
+					if (rightX < displayWidth + adsorbent && rightX > displayWidth - adsorbent) {
+						x = displayWidth - width;
+					}
+					if (Math.abs(y) < adsorbent) {
+						y = 0;
+					}
+					int bottomY = y + height;
+					if (bottomY < displayHeight + adsorbent && bottomY > displayHeight - adsorbent) {
+						y = displayHeight - height;
+					}
+				}
+			}
+			super.setBounds(x, y, Math.max(width, 100), Math.max(height, 50));
+			windowStateUpdate();
+		}
+	}
+
+	/**
+	 * 窗体单击事件
+	 */
+	protected void windowClickAction() {
+	}
+
+	/**
+	 * 窗体大小改变事事件
+	 */
+	protected void windowSizeChangedAction() {
+	}
+
+	protected void childWindowLocationUpdate() {
+		synchronized (this.childWindows) {
+			for (QRParentWindowMove childWindow : this.childWindows) {
+				if (((Window) childWindow).isVisible()) {
+					childWindow.ownerMoved();
+				}
+			}
+		}
+	}
+
+	public void addChildWindow(QRParentWindowMove w) {
+		this.childWindows.add(w);
+	}
+
+	public void removeChildWindow(QRParentWindowMove w) {
+		this.childWindows.remove(w);
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowOpened(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowClosing(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowClosed(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowIconified(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowDeiconified(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowActivated(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowDeactivated(WindowEvent e) {
+	}
+
+	/**
+	 * 已自动添加监听器，可直接重写
+	 */
+	public void windowMoved(Point p) {
+	}
 
 	//region class-MouseAdapte
 	private class MouseAdapte extends MouseAdapter {
@@ -267,519 +851,5 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.width = getWidth();
 			this.height = getHeight();
 		}
-	}
-	//endregion class-MouseAdapte
-
-	public QRFrame() {
-		QRFileUtils.fileCreate(QRSwing.WINDOW_PROP_PATH);
-		this.prop = QRPropertiesUtils.loadProp(QRSwing.WINDOW_PROP_PATH);
-
-		//region 加载资源
-		final int[] screenSize = QRSystemUtils.getScreenSize();
-		int sizeWidth = QRPropertiesUtils.getPropInInteger(this.prop, "window.size.width", screenSize[0] / 2);
-		int sizeHeight = QRPropertiesUtils.getPropInInteger(this.prop, "window.size.height", screenSize[1] / 2);
-		int locationX = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.X", screenSize[0] / 4);
-		int locationY = QRPropertiesUtils.getPropInInteger(this.prop, "window.start.Y", screenSize[1] / 4);
-		super.setSize(sizeWidth, sizeHeight);
-		super.setLocation(locationX, locationY);
-		//endregion
-
-		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-		setIconImage(QRSwing.windowIcon.getImage());
-		setUndecorated(true);
-
-		this.contentPane = new QRBorderContentPanel();
-		this.contentPane.setLayout(new BorderLayout());
-		setContentPane(this.contentPane);
-		this.contentPane.setBorder(new LineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
-
-		this.topPanel = new QRPanel();
-		this.topPanel.setLayout(new BorderLayout());
-		this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-		this.contentPane.add(this.topPanel, BorderLayout.NORTH);
-
-		this.titlePanel = new QRPanel();
-		this.titlePanel.setLayout(new BorderLayout());
-		this.titlePanel.setBorder(BorderFactory.createEmptyBorder(1, 5, 0, 0));
-		this.topPanel.add(this.titlePanel, BorderLayout.CENTER);
-
-		this.iconLabel = QRLabel.getIconLabel();
-		this.titlePanel.add(this.iconLabel, BorderLayout.WEST);
-
-		this.titleLabel = new QRLabel() {
-			@Override
-			public void setHorizontalAlignment(int alignment) {
-				super.setHorizontalAlignment(alignment);
-				if (alignment == SwingConstants.LEFT) {
-					setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
-					return;
-				}
-				if (alignment == SwingConstants.CENTER) {
-					//试图让标签居中
-					setBorder(BorderFactory.createEmptyBorder(0, 70, 0, 0));
-				}
-			}
-		};
-		this.titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-		if (QRSwing.windowTitleMenu) {
-			this.titleMenuPanel = new QRMenuPanel();
-			QRPanel topCenterPanel = new QRPanel();
-			topCenterPanel.setLayout(new BorderLayout());
-			topCenterPanel.add(this.titleMenuPanel, BorderLayout.WEST);
-			topCenterPanel.add(this.titleLabel, BorderLayout.CENTER);
-			this.titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
-			this.titlePanel.add(topCenterPanel, BorderLayout.CENTER);
-		} else {
-			this.titlePanel.add(this.titleLabel, BorderLayout.CENTER);
-		}
-
-		this.threeButtonPanel = new QRPanel();
-		this.threeButtonPanel.setLayout(new GridLayout(1, 3, 3, 0));
-		this.titlePanel.add(this.threeButtonPanel, BorderLayout.EAST);
-
-		this.minimumButton = new QRButton(MIN_MARK) {
-			@Override
-			public void componentFresh() {
-				super.componentFresh();
-				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(13f));
-			}
-		};
-		this.minimumButton.addActionListener(e -> minWindow());
-		this.threeButtonPanel.add(this.minimumButton);
-
-		this.maximumButton = new QRButton(MAX_MARK) {
-			@Override
-			public void componentFresh() {
-				super.componentFresh();
-				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(16f));
-			}
-		};
-		this.maximumButton.addActionListener(e -> maxWindow());
-		this.threeButtonPanel.add(this.maximumButton);
-
-		this.closeButton = new QRCloseButton() {{
-			setCloseButton();
-		}};
-		this.closeButton.setToolTipText("关闭");
-		this.closeButton.addActionListener(e -> dispose());
-		this.threeButtonPanel.add(this.closeButton);
-		final MouseAdapte mouseAdapte = new MouseAdapte();
-		addMouseListener(mouseAdapte);
-		addMouseMotionListener(mouseAdapte);
-		MouseAdapter titleMouseAdapter = new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					maxWindow();
-				} else {
-					windowClickAction();
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				mouseAdapte.mousePressed(e);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				mouseAdapte.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				setCursorDefault();
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				mouseAdapte.mouseDragged(e);
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				mouseAdapte.mouseMoved(e);
-			}
-		};
-		this.titlePanel.addMouseMotionListener(titleMouseAdapter);
-		this.titlePanel.addMouseListener(titleMouseAdapter);
-
-		//子类直接向 mainPanel 中添加控件
-		this.mainPanel = new QRPanel() {
-			@Override
-			public void componentFresh() {
-				super.componentFresh();
-				if (backgroundBorder != null) {
-					setBorder(backgroundBorder);
-				}
-			}
-		};
-		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
-		addWindowListener();
-		addWindowAction(QRWindowListener.TYPE.OPEN, e -> this.minimumSize = getMinimumSizes());
-	}
-
-	/**
-	 * 一个简单的开始：
-	 * <p>{@code QRSwing.start("可找到的properties文件路径");}
-	 * <p>{@code QRFrame window = new QRFrame("这是一个测试窗体")}
-	 * <p>{{
-	 * <p>{@code setTitleCenter();}//设置窗体标题居中
-	 * <p>{@code setCloseButtonSystemExit();}//设置单击关闭按钮后窗体淡化退出并结束程序
-	 * <p>}};
-	 * <p>{@code window.setVisible(true);}//设置窗体可见
-	 */
-	public QRFrame(String title) {
-		this();
-		setTitle(title);
-	}
-
-	@Override
-	public void componentFresh() {
-		this.titlePanel.setBorder(BorderFactory.createMatteBorder(0, 5, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-		this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-		this.contentPane.componentFresh();
-		if (!this.childWindows.isEmpty()) {
-			synchronized (this.childWindows) {
-				childWindows.forEach(childWindow -> {
-					if (childWindow instanceof QRComponentUpdate window) {
-						window.componentFresh();
-					}
-				});
-			}
-		}
-		mainPanel.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.TEXT_COLOR_BACK, 5));
-		titleMenuPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-		revalidate();
-		repaint();
-	}
-
-	/**
-	 * 已在实例化时自动添加
-	 */
-	@Override
-	public final void addWindowListener() {
-		if (this.windowListener == null) {
-			this.windowListener = new QRWindowListener();
-			this.windowListener.add(QRWindowListener.TYPE.OPEN, e -> windowOpened((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.CLOSED, e -> windowClosed((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.CLOSING, e -> windowClosing((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, e -> windowActivated((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, e -> windowDeactivated((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, e -> windowIconified((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, e -> windowDeiconified((WindowEvent) e));
-			this.windowListener.add(QRWindowListener.TYPE.MOVE, e -> windowMoved((Point) e));
-			addWindowListener(this.windowListener);
-		}
-	}
-
-	@Override
-	public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister ar) {
-		if (this.windowListener != null) {
-			this.windowListener.add(type, ar);
-		}
-	}
-
-	public QRButton getCloseButton() {
-		return this.closeButton;
-	}
-
-	/**
-	 * 设置单击关闭按钮后退出程序
-	 */
-	public void setCloseButtonSystemExit() {
-		this.closeButton.addActionListener(e -> dispose(true));
-	}
-
-	/**
-	 * 设置窗体的标题是否居中
-	 */
-	public void setTitleCenter() {
-		//没有启用标题菜单就可以居中
-		this.titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	}
-
-	public final void setBackgroundImage(String filePath) {
-		if (filePath == null && this.backgroundImageSet) {
-			this.mainPanel.setBorder(null);
-			this.backgroundBorder = null;
-			imagePath = null;
-			this.backgroundImage = null;
-			this.backgroundImageSet = false;
-			QRSwing.setWindowBackgroundImagePath(null);
-			return;
-		}
-		if (QRFileUtils.fileExists(filePath)) {
-			Image imageToSet = QRSwingInfo.loadImage(filePath);
-			if (imageToSet != null && !filePath.equals(this.imagePath)) {
-				this.backgroundImage = imageToSet;
-				imagePath = filePath;
-				QRSwing.setWindowBackgroundImagePath(filePath);
-				this.backgroundImageSet = true;
-				int height = this.backgroundImage.getHeight(null);
-				int width = this.backgroundImage.getWidth(null);
-				this.imageRatio = (double) width / height;
-				this.backgroundBorder = new QRBackgroundBorder(this.backgroundImage);
-				this.mainPanel.setBorder(this.backgroundBorder);
-				QRComponentUtils.loopComsForBackgroundSetting(this.mainPanel);
-				QRSwing.windowTransparency = 0.999f;
-				QRSystemUtils.setWindowNotTrans(this);
-			}
-		}
-	}
-
-	public final void setBackgroundBorderScale(boolean scale) {
-		if (this.backgroundBorder != null) {
-			this.backgroundBorder.setScale(scale);
-			QRSwing.setWindowScale(scale);
-			QRComponentUtils.windowFresh(this.mainPanel);
-		}
-	}
-
-	public final void setBackgroundBorderAlpha(float alpha) {
-		if (this.backgroundBorder != null) {
-			this.backgroundBorder.setAlpha(alpha);
-			QRSwing.setWindowAlpha(alpha);
-			QRComponentUtils.windowFresh(this.mainPanel);
-		}
-	}
-
-	public final boolean isBackgroundImageSet() {
-		return this.backgroundBorder == null && this.backgroundImage == null;
-	}
-
-	public void minWindow() {
-		this.setExtendedState(JFrame.ICONIFIED);
-	}
-
-	public void maxWindow() {
-		if (!this.maximumButton.isEnabled()) {
-			return;
-		}
-		if (this.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-			this.setExtendedState(JFrame.NORMAL);
-		} else {
-			this.originalWidth = getWidth();
-			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		}
-		windowStateUpdate();
-	}
-
-	private void windowStateUpdate() {
-		if (QRSwing.windowRound) {
-			QRSystemUtils.setWindowRound(this);
-		} else {
-			QRSystemUtils.setWindowNotRound(this);
-		}
-		if (backgroundImageSet) {
-			QRSystemUtils.setWindowNotTrans(this);
-		} else {
-			QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
-		}
-	}
-
-	public void setMaxEnable(boolean b) {
-		this.maximumButton.setEnabled(b);
-	}
-
-	public void setMinEnable(boolean b) {
-		this.minimumButton.setEnabled(b);
-	}
-
-	public boolean backgroundImageSet() {
-		return this.backgroundImageSet;
-	}
-
-	public final void dispose(boolean systemExit) {
-		dispose();
-		QRComponentUtils.runActions(this.actionOnDispose);
-		QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowTransparency, systemExit);
-	}
-
-	/**
-	 * 在窗体退出前的操作。
-	 * <p>当调用 {@link QRFrame#dispose(boolean)} 时，不确定 {@link QRFrame#windowClosing(WindowEvent)} 和 {@link QRFrame#windowClosed(WindowEvent)} 是否起作用
-	 * <p>但本方法一定起作用
-	 *
-	 * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@code null}
-	 */
-	public final void addActionBeforeDispose(QRActionRegister ar) {
-		this.actionOnDispose.add(ar);
-	}
-
-	public Dimension getMinimumSizes() {
-		int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titleLabel, this.titleLabel.getText()) + this.threeButtonPanel.getWidth() + 20;
-		return new Dimension(titleWidth, titleWidth / 2);
-	}
-
-	public void setCursorWait() {
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	}
-
-	public void setCursorDefault() {
-		setCursor(Cursor.getDefaultCursor());
-	}
-
-	@Override
-	public String getTitle() {
-		return this.titleLabel.getText();
-	}
-
-	@Override
-	public void setTitle(String title) {
-		super.setTitle(title);
-		this.titleLabel.setText(title);
-		if (isVisible()) {
-			//更新
-			this.minimumSize = getMinimumSizes();
-		}
-	}
-
-	@Override
-	public void setSize(int width, int height) {
-		if (width < this.minimumSize.width || height < this.minimumSize.height) {
-			return;
-		}
-		super.setSize(width, height);
-		windowSizeChangedAction();
-	}
-
-	@Override
-	public void setLocation(int x, int y) {
-		super.setLocation(x, y);
-		windowListener.windowMoved(new Point(x, y));
-	}
-
-	/**
-	 * 该方法<b>并不会</b>关闭窗体。
-	 * <p>子类继承，用于自动保存窗体大小和位置信息。
-	 */
-	@Override
-	public final void dispose() {
-		int width = getWidth();
-		int height = getHeight();
-		int x = getX();
-		int y = getY();
-		this.prop.setProperty("window.size.width", Integer.toString(width));
-		this.prop.setProperty("window.size.height", Integer.toString(height));
-		this.prop.setProperty("window.start.X", Integer.toString(x));
-		this.prop.setProperty("window.start.Y", Integer.toString(y));
-		//保存
-		QRPropertiesUtils.storeProp(this.prop, QRSwing.WINDOW_PROP_PATH);
-	}
-
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
-		if (getExtendedState() != JFrame.MAXIMIZED_BOTH) {
-			if (QRSwing.windowScreenAdsorb) {
-				final int[] screenSize = QRSystemUtils.getScreenSize();
-				final int displayWidth = screenSize[0];
-				final int displayHeight = screenSize[1];
-				if (width > displayWidth || height > displayHeight) {
-					width = displayWidth / 2;
-					height = displayHeight / 2;
-					x = displayWidth / 4;
-					y = displayHeight / 4;
-				} else {
-					int adsorbent = 15;
-					if (Math.abs(x) < adsorbent) {
-						x = 0;
-					}
-					int rightX = x + width;
-					if (rightX < displayWidth + adsorbent && rightX > displayWidth - adsorbent) {
-						x = displayWidth - width;
-					}
-					if (Math.abs(y) < adsorbent) {
-						y = 0;
-					}
-					int bottomY = y + height;
-					if (bottomY < displayHeight + adsorbent && bottomY > displayHeight - adsorbent) {
-						y = displayHeight - height;
-					}
-				}
-			}
-			super.setBounds(x, y, Math.max(width, 100), Math.max(height, 50));
-			windowStateUpdate();
-		}
-	}
-
-	/**
-	 * 窗体单击事件
-	 */
-	protected void windowClickAction() {
-	}
-
-	/**
-	 * 窗体大小改变事事件
-	 */
-	protected void windowSizeChangedAction() {
-	}
-
-	protected void childWindowLocationUpdate() {
-		synchronized (this.childWindows) {
-			for (QRParentWindowMove childWindow : this.childWindows) {
-				if (((Window) childWindow).isVisible()) {
-					childWindow.ownerMoved();
-				}
-			}
-		}
-	}
-
-	public void addChildWindow(QRParentWindowMove w) {
-		this.childWindows.add(w);
-	}
-
-	public void removeChildWindow(QRParentWindowMove w) {
-		this.childWindows.remove(w);
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowOpened(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowClosing(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowClosed(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowIconified(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowDeiconified(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowActivated(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowDeactivated(WindowEvent e) {
-	}
-
-	/**
-	 * 已自动添加监听器，可直接重写
-	 */
-	public void windowMoved(Point p) {
 	}
 }

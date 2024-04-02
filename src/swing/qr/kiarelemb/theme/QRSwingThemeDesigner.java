@@ -437,7 +437,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 				closeButtonMouseListener.setBackColor(frameColorBackColorValueColor);
 				closeButton.setBackground(frameColorBackColorValueColor);
 				setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, menuLineColorColorValue.getColor()));
-				for (AbstractButton button : bottons) {
+				for (AbstractButton button : buttons) {
 					((QRMenuButton) button).setEnterColor(bottonEnterColorColorValue.getColor());
 					((QRMenuButton) button).setPressColor(bottonPressColorColorValue.getColor());
 					((QRMenuButton) button).setBackColor(frameColorBackColorValueColor);

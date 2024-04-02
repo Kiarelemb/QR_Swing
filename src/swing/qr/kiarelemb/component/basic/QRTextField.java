@@ -14,7 +14,10 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 /**
  * @author Kiarelemb QR
@@ -26,7 +29,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 		QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
 	private final StringBuilder forbiddenInputChar = new StringBuilder();
 	private final StringBuilder onlyAllowedInputChar = new StringBuilder();
-	private final FocusAdapter fa;
 	protected Color enterColor = QRColorsAndFonts.BLUE_LIGHT;
 	protected Color rightColor = QRColorsAndFonts.LIGHT_GREEN;
 	protected Color errorColor = QRColorsAndFonts.RED_NORMAL;
@@ -48,19 +50,8 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 	public QRTextField() {
 		setMargin(new Insets(10, 10, 10, 10));
-		this.fa = new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				focusGainedAction();
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				focusLostAction();
-			}
-		};
 		addKeyListener();
-		addFocusListener(this.fa);
+		addFocusListener();
 		componentFresh();
 	}
 
@@ -103,14 +94,15 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 
 	/**
-	 * 添加焦点事件
+	 * 添加焦点事件，已自动添加
 	 */
 	@Override
 	public final void addFocusListener() {
 		if (this.focusListener == null) {
 			this.focusListener = new QRFocusListener();
+			this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> this.focusGained((FocusEvent) e));
+			this.focusListener.add(QRFocusListener.TYPE.LOST, e -> this.focusLost((FocusEvent) e));
 			addFocusListener(this.focusListener);
-
 		}
 	}
 
@@ -278,14 +270,14 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	/**
 	 * 已自动添加监听器，可直接重写，但不建议完全重写
 	 */
-	protected void focusGainedAction() {
+	protected void focusGained(FocusEvent e) {
 		setEnterBorder();
 	}
 
 	/**
 	 * 已自动添加监听器，可直接重写，但不建议完全重写
 	 */
-	protected void focusLostAction() {
+	protected void focusLost(FocusEvent e) {
 		String text = getText();
 		if (text.isEmpty()) {
 			//内容为空的边框
@@ -299,10 +291,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 		}
 		//不符合条件的边框
 		setErrorBorder();
-	}
-
-	public void removeFocusListeners() {
-		removeFocusListener(this.fa);
 	}
 
 	public final boolean isOkay() {
@@ -505,7 +493,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 		setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 		setCaretColor(QRColorsAndFonts.CARET_COLOR);
-		focusLostAction();
 	}
 
 	//region 文本设置

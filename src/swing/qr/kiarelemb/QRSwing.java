@@ -361,6 +361,11 @@ public class QRSwing {
 		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(value));
 	}
 
+	public static void setWindowTitleMenu(boolean value) {
+		QRSwing.windowTitleMenu = value;
+		GLOBAL_PROP.setProperty(WINDOW_TITLE_MENU, String.valueOf(value));
+	}
+
 	public static void setWindowScale(boolean value) {
 		QRSwing.windowScale = value;
 		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_SCALE, String.valueOf(value));

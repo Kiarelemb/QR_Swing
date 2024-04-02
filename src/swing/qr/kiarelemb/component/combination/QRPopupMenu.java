@@ -64,7 +64,6 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 		}
 	}
 
-
 	/**
 	 * 重写前请先调用 {@link #addFocusListener()}
 	 */
@@ -81,21 +80,18 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 
 	/**
 	 * 子类重写其中被选重时的操作
-	 *
-	 * @param event
 	 */
 	protected void buttonSelectAction(ActionEvent event) {
-
-		//TODO 自写一个事件吧
 	}
 
 	public void addSeparator() {
+
 	}
 
 	/**
 	 * 用来当作菜单栏
 	 *
-	 * @param menuItem
+	 * @param menuItem 添加的菜单按钮
 	 */
 	public void add(QRMenuItem menuItem) {
 		this.contentPane.add(menuItem);
@@ -127,8 +123,6 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 		if (QRSwing.windowRound) {
 			QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
 		}
-//		contentPane.setBorderPaint(QRSwing.windowRound);
-//		setAlwaysOnTop(QRSwing.windowAlwaysOnTop);
-		setVisible(true);
+		super.setVisible(true);
 	}
 }
