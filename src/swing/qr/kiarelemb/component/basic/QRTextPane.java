@@ -54,11 +54,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	 * 使用前请先调用 {@link #addCaretListener()}
 	 */
 	public QRCaretUpdateData caretUpdateData;
+	public Font textFont = QRColorsAndFonts.STANDARD_FONT_TEXT;
 	protected QRScrollPane scrollPane;
 	protected char blankMark = ' ';
 	protected char lineMark = '\n';
 	protected boolean caretBlock = false;
-	public Font textFont = QRColorsAndFonts.STANDARD_FONT_TEXT;
 
 	//region 高级操作变量，用于鼠标取文
 	/**
@@ -432,6 +432,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 	/**
 	 * 添加滚动条
+	 *
 	 * @param line 单次滚动行数
 	 * @return 滚动条本身，实例是 {@link QRScrollPane}
 	 */
@@ -1447,7 +1448,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	public void print(String str, Font f, Color colorFore, int index) {
-		print(str, f, colorFore,  QRColorsAndFonts.TEXT_COLOR_BACK, index);
+		print(str, f, colorFore, QRColorsAndFonts.TEXT_COLOR_BACK, index);
 	}
 
 	public void print(String str, Font f, Color colorFore, Color colorBack, int index) {
@@ -1909,15 +1910,13 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 					this.foreWordStartIndex = -1;
 					this.foreWordEndIndex = -1;
 				} else {
-					int foreLineIndex = text.lastIndexOf(QRTextPane.this.lineMark, position);
-					if (foreLineIndex == -1) {
-						foreLineIndex = 0;
-					}
+					int foreLineIndexTemp = text.lastIndexOf(QRTextPane.this.lineMark, position);
+					int foreLineIndex = foreLineIndexTemp == position ? foreLineIndexTemp : foreLineIndexTemp + 1;
 					this.foreTextStartIndex = foreLineIndex;
 					this.foreText = text.substring(foreLineIndex, position);
 					this.foreWord = caretForeWord(position, text);
 					this.foreWordStartIndex = text.lastIndexOf(this.foreWord, position);
-					this.foreWordEndIndex = this.foreWord.length();
+					this.foreWordEndIndex = this.foreWordStartIndex + this.foreWord.length();
 					if (this.foreText.length() > 0) {
 						this.foreCharStr = this.foreText.substring(this.foreText.length() - 1);
 					} else {
@@ -2027,7 +2026,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
 		@Override
 		public String toString() {
-			return "CaretNearData {" + "\n\tforeText: \n\t\t" + this.foreText + "\n\tnextText: \n\t\t" + this.nextText + "\n\tforeWord: \n\t\t" + this.foreWord + "\n\tnextWord: \n\t\t" + this.nextWord + "\n\tforeCharStr: \n\t\t" + this.foreCharStr + "\n\tnextCharStr: \n\t\t" + this.nextCharStr + "\n\tforeTextStartIndex: \n\t\t" + this.foreTextStartIndex + "\n\tnextTextEndIndex: \n\t\t" + this.nextTextEndIndex + "\n\tforeWordStartIndex: \n\t\t" + this.foreWordStartIndex + "\n\tforeWordEndIndex: \n\t\t" + this.foreWordEndIndex + "\n\tnextWordStartIndex: \n\t\t" + this.nextWordStartIndex + "\n\tnextWordEndIndex: \n\t\t" + this.nextWordEndIndex + "\n\tisCutWord: \n\t\t" + this.isCutWord + "\n\tcutWord: \n\t\t" + this.cutWord + "}";
+			return "CaretNearData {" + "\n\tforeText: \n\t\t" + this.foreText + "\n\tnextText: \n\t\t" + this.nextText + "\n\tforeWord: \n\t\t" + this.foreWord + "\n\tnextWord: \n\t\t" + this.nextWord + "\n\tforeCharStr: \n\t\t" + this.foreCharStr + "\n\tnextCharStr: \n\t\t" + this.nextCharStr + "\n\tforeTextStartIndex: \n\t\t" + this.foreTextStartIndex + "\n\tnextTextEndIndex: \n\t\t" + this.nextTextEndIndex + "\n\tforeWordStartIndex: \n\t\t" + this.foreWordStartIndex + "\n\tforeWordEndIndex: \n\t\t" + this.foreWordEndIndex + "\n\tnextWordStartIndex: \n\t\t" + this.nextWordStartIndex + "\n\tnextWordEndIndex: \n\t\t" + this.nextWordEndIndex + "\n\tisCutWord: \n\t\t" + this.isCutWord + "\n\tcutWord: \n\t\t" + this.cutWord + "\n}";
 		}
 	}
 }

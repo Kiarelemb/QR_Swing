@@ -47,7 +47,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	public static final String CLOSE_MARK = "  ╳  ";
 	public static final String MAX_MARK = "❐";
 	public static final int DIS = 5;
-	protected final QRButton closeButton;
+	protected final QRCloseButton closeButton;
 	protected final QRButton maximumButton;
 	protected final QRButton minimumButton;
 	/**
@@ -111,6 +111,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
 		this.iconLabel = QRLabel.getIconLabel();
 		this.windowFunctionPanel = new QRPanel();
+		final MouseAdapte mouseAdapte = new MouseAdapte();
 		this.titlePanel = new QRPanel() {
 			private final Font font = QRColorsAndFonts.DEFAULT_FONT_MENU;
 
@@ -157,11 +158,44 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				TextLayout layout = new TextLayout(title, map, g2.getFontRenderContext());
 				layout.draw(g2, x, y);
 			}
+
+			@Override
+			public void mouseClick(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					maxWindow();
+				} else {
+					windowClickAction();
+				}
+			}
+
+			@Override
+			public void mousePress(MouseEvent e) {
+				mouseAdapte.mousePressed(e);
+			}
+
+			@Override
+			public void mouseRelease(MouseEvent e) {
+				mouseAdapte.mouseReleased(e);
+			}
+
+			@Override
+			public void mouseEnter(MouseEvent e) {
+				setCursorDefault();
+			}
+
+			@Override
+			public void mouseDrag(MouseEvent e) {
+				mouseAdapte.mouseDragged(e);
+			}
+
+			@Override
+			public void mouseMove(MouseEvent e) {
+				mouseAdapte.mouseMoved(e);
+			}
 		};
 		this.titlePanel.setLayout(new BorderLayout());
 		this.titlePanel.setBorder(BorderFactory.createEmptyBorder(1, 5, 0, 0));
 		this.topPanel.add(this.titlePanel, BorderLayout.CENTER);
-
 
 		if (QRSwing.windowTitleMenu) {
 			this.titleMenuPanel = new QRMenuPanel();
@@ -196,57 +230,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		this.maximumButton.addActionListener(e -> maxWindow());
 		this.windowFunctionPanel.add(this.maximumButton);
 
-		this.closeButton = new QRCloseButton() {
-			{
-				setCloseButton();
-			}
-		};
+		this.closeButton = new QRCloseButton();
+		this.closeButton.setCloseButton();
 		this.closeButton.setToolTipText("关闭");
 		this.closeButton.addActionListener(e -> dispose());
 		this.windowFunctionPanel.add(this.closeButton);
-		final MouseAdapte mouseAdapte = new MouseAdapte();
 
 		addMouseListener(mouseAdapte);
-
 		addMouseMotionListener(mouseAdapte);
-
-		MouseAdapter titleMouseAdapter = new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					maxWindow();
-				} else {
-					windowClickAction();
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				mouseAdapte.mousePressed(e);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				mouseAdapte.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				setCursorDefault();
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				mouseAdapte.mouseDragged(e);
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				mouseAdapte.mouseMoved(e);
-			}
-		};
-		this.titlePanel.addMouseMotionListener(titleMouseAdapter);
-		this.titlePanel.addMouseListener(titleMouseAdapter);
+		this.titlePanel.addMouseMotionListener();
+		this.titlePanel.addMouseListener();
 
 		//子类直接向 mainPanel 中添加控件
 		this.mainPanel = new QRPanel() {
@@ -257,13 +250,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 					setBorder(backgroundBorder);
 				}
 			}
-		}
-
-		;
+		};
 		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
-
 		addWindowListener();
-
 		addWindowAction(QRWindowListener.TYPE.OPEN, e -> this.minimumSize = getMinimumSizes());
 	}
 	//endregion class-MouseAdapte
@@ -415,7 +404,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	public final void setBackgroundBorderAlpha(float alpha) {
 		if (this.backgroundBorder != null) {
 			this.backgroundBorder.setAlpha(alpha);
-			QRSwing.setWindowAlpha(alpha);
+			QRSwing.setWindowBackgroundImageAlpha(alpha);
 			QRComponentUtils.windowFresh(this.mainPanel);
 		}
 	}
@@ -496,9 +485,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		setCursor(Cursor.getDefaultCursor());
 	}
 
+	public int getTitlePlace() {
+		return titlePlace;
+	}
+
 	@Override
 	public String getTitle() {
-//		return this.titleLabel.getText();
 		return this.title;
 	}
 
@@ -853,4 +845,5 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			this.height = getHeight();
 		}
 	}
+	//endregion class-MouseAdapte
 }

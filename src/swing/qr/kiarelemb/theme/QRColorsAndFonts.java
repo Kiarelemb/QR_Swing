@@ -261,7 +261,7 @@ public class QRColorsAndFonts {
 		final String name = f.getName();
 		final int extension = name.lastIndexOf(THEME_FILE_EXTENSION);
 		if (extension == -1) {
-			throw new RuntimeException("The theme file is not normal.");
+			return "晚星";
 		}
 		return name.substring(0, extension);
 	}

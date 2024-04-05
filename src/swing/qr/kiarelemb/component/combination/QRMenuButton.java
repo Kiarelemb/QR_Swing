@@ -43,7 +43,6 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 			public void focusLose(FocusEvent e) {
 				if (QRMenuButton.this.jpm.isVisible()) {
 					QRMenuButton.this.jpm.setVisible(false);
-					menuPanel.setPressed(false);
 				}
 				QRMenuButton.this.setBackColor(QRColorsAndFonts.FRAME_COLOR_BACK);
 				QRMenuButton.this.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);

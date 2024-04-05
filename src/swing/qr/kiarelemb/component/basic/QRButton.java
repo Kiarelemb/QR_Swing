@@ -59,7 +59,6 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 		setBorderPainted(false);
 		setBorder(null);
 		addActionListener();
-//		setBorder(new LineBorder(QRColorsAndFonts.LINE_COLOR, 1));
 		componentFresh();
 	}
 

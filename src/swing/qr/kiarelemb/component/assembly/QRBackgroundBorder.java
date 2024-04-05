@@ -2,7 +2,6 @@ package swing.qr.kiarelemb.component.assembly;
 
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
-import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.border.Border;
 import java.awt.*;
@@ -21,10 +20,10 @@ public class QRBackgroundBorder implements Border, QRComponentUpdate {
 
 	public QRBackgroundBorder(Image image) {
 		this.image = image;
-		if (QRSwing.windowAlpha < 0.0f || QRSwing.windowAlpha > 1.0f) {
+		if (QRSwing.windowBackgroundImageAlpha < 0.0f || QRSwing.windowBackgroundImageAlpha > 1.0f) {
 			alpha = 0.8f;
 		} else {
-			alpha = QRSwing.windowAlpha;
+			alpha = QRSwing.windowBackgroundImageAlpha;
 		}
 	}
 

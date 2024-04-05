@@ -8,6 +8,7 @@ import swing.qr.kiarelemb.component.basic.*;
 import swing.qr.kiarelemb.component.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.component.combination.QRMenuButton;
 import swing.qr.kiarelemb.component.combination.QRMenuPanel;
+import swing.qr.kiarelemb.component.event.QRItemEvent;
 import swing.qr.kiarelemb.component.examples.QRRGBColorSelectPane;
 import swing.qr.kiarelemb.component.utils.QRRGBColorPane;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -52,6 +53,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 		super(parent);
 		setTitle("主题设计器");
 		setTitlePlace(QRDialog.CENTER);
+		setParentWindowNotFollowMove();
 		final int width = 1145;
 		final int height = 680;
 		setSize(width, height);
@@ -323,7 +325,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 		previewTopPanel.add(closeButton, BorderLayout.EAST);
 
 		QRLabel titleLabel = new QRLabel(parent.getTitle());
-		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		titleLabel.setHorizontalAlignment(parent.getTitlePlace());
 		previewTopPanel.add(titleLabel, BorderLayout.CENTER);
 
 		QRLabel iconLabel = QRLabel.getIconLabel();
@@ -448,26 +450,12 @@ public class QRSwingThemeDesigner extends QRDialog {
 		};
 		//endregion
 
-		QRMenuButton typeMenuButton = new QRMenuButton("跟打", menuPanel);
-		menuPanel.add(typeMenuButton);
-
-		QRMenuButton textSendMenuButton = new QRMenuButton("发文", menuPanel);
-		menuPanel.add(textSendMenuButton);
-
-		QRMenuButton raceMenuButton = new QRMenuButton("比赛", menuPanel);
-		menuPanel.add(raceMenuButton);
-
-		QRMenuButton windowMenuButton = new QRMenuButton("窗口", menuPanel);
-		menuPanel.add(windowMenuButton);
-
-		QRMenuButton modelMenuButton = new QRMenuButton("模式", menuPanel);
-		menuPanel.add(modelMenuButton);
-
-		QRMenuButton toolMenuButton = new QRMenuButton("工具", menuPanel);
-		menuPanel.add(toolMenuButton);
-
-		QRMenuButton mineMenuButton = new QRMenuButton("我的", menuPanel);
-		menuPanel.add(mineMenuButton);
+		menuPanel.add("菜单");
+		menuPanel.add("比赛");
+		menuPanel.add("窗口");
+		menuPanel.add("模式");
+		menuPanel.add("工具");
+		menuPanel.add("我的");
 		//endregion
 
 		previewPanel.add(menuPanel, BorderLayout.NORTH);
@@ -518,12 +506,12 @@ public class QRSwingThemeDesigner extends QRDialog {
 			saveToFile(fileName.getAnswer());
 		});
 
-		topicCB.addItemListener(e -> {
-			final String text = topicCB.getText();
-			final String result = QRColorsAndFonts.topicChineseToEnglish(text);
-			topicChangedAction(result);
+		topicCB.addItemChangeListener(e -> {
+			QRItemEvent event = (QRItemEvent) e;
+			final String text = event.after();
+			topicChangedAction(text);
 			//不相等就说明选择的是内置的主题
-			changeAndSaveButton.setEnabled(text.equals(result) && !"自定义".equals(result));
+			changeAndSaveButton.setEnabled(!"自定义".equals(text));
 		});
 
 		transparencySlider.addChangeListener(e -> {

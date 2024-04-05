@@ -62,6 +62,7 @@ public class QRRGBColorPane extends QRPanel {
 			try {
 				super.setText(t);
 			} catch (IllegalStateException ignore) {
+				ignore.printStackTrace();
 			}
 			insertBlock = false;
 		}

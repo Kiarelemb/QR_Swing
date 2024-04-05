@@ -79,8 +79,6 @@ public class QRMenuPanel extends QRPanel {
 
 	@Override
 	protected void focusLost(FocusEvent e) {
-		System.out.println("focusLost");
-
 		setPressed(false);
 	}
 

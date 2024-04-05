@@ -25,16 +25,13 @@ import static java.io.File.separator;
  * @create 2022-11-04 15:05
  **/
 public class QRSwing {
-	/**
-	 * {@link swing.qr.kiarelemb.window.basic.QRFrame} 的资源文件
-	 */
-	public static String WINDOW_PROP_PATH = "window.properties";
 	public static final String WINDOW_IMAGE_ENABLE = "window.image.enable";
 	public static final String WINDOW_THEME = "window.theme";
 	public static final String WINDOW_IMAGE_PATH = "window.image.path";
 	public static final String WINDOW_ROUND = "window.round";
 	public static final String WINDOW_TITLE_MENU = "window.title.menu";
 	public static final String WINDOW_TRANSPARENCY = "window.transparency";
+	public static final String WINDOW_ALPHA = "window.alpha";
 	public static final String WINDOW_BACKGROUND_IMAGE_ALPHA = "window.background.image.alpha";
 	public static final String WINDOW_BACKGROUND_IMAGE_SCALE = "window.background.image.scale";
 	public static final String WINDOW_ALWAYS_TOP = "window.always.top";
@@ -47,6 +44,23 @@ public class QRSwing {
 	 * 主题文件的存放目录
 	 */
 	public static final String THEME_DIRECTORY = "theme" + separator;
+	/**
+	 * 全局配置文件
+	 */
+	public static final Properties GLOBAL_PROP = new Properties();
+	/**
+	 * 主窗体不处于焦点时的事件集
+	 */
+	private static final Map<KeyStroke, ArrayList<QRActionRegister>> GLOBAL_KEY_EVENTS = new HashMap<>();
+	/**
+	 * 所有事件集
+	 */
+	private static final Map<KeyStroke, ArrayList<QRActionRegister>> ALL_KEY_EVENTS = new HashMap<>();
+	private static final ArrayList<QRActionRegister> actionAfterClose = new ArrayList<>();
+	/**
+	 * {@link swing.qr.kiarelemb.window.basic.QRFrame} 的资源文件
+	 */
+	public static String WINDOW_PROP_PATH = "window.properties";
 	/**
 	 * 单例模式
 	 */
@@ -84,33 +98,21 @@ public class QRSwing {
 	 */
 	public static float windowTransparency;
 	/**
-	 * 主窗体设置背景图时的透明度
-	 */
-	public static float windowAlpha = 0.8f;
-	/**
 	 * 主窗体设置背景图时是否让图片自适应
 	 */
 	public static boolean windowScale = true;
-
 	public static String windowBackgroundImagePath;
+	/**
+	 * 主窗体设置背景图时的透明度
+	 */
+	public static float windowBackgroundImageAlpha;
 	/**
 	 * 字体名可能为 {@code null}，默认的全局字体为 微软雅黑
 	 */
 	public static Font globalFont;
 	public static String GLOBAL_PROP_PATH;
-	/**
-	 * 全局配置文件
-	 */
-	public static final Properties GLOBAL_PROP = new Properties();
-	/**
-	 * 主窗体不处于焦点时的事件集
-	 */
-	private static final Map<KeyStroke, ArrayList<QRActionRegister>> GLOBAL_KEY_EVENTS = new HashMap<>();
-	/**
-	 * 所有事件集
-	 */
-	private static final Map<KeyStroke, ArrayList<QRActionRegister>> ALL_KEY_EVENTS = new HashMap<>();
-	private static final ArrayList<QRActionRegister> actionAfterClose = new ArrayList<>();
+	private static QRGlobalKeyboardHookListener keyboardHook;
+
 
 	private QRSwing(String propPath) {
 		GLOBAL_PROP_PATH = propPath;
@@ -132,7 +134,6 @@ public class QRSwing {
 			globalPropSave();
 		}));
 	}
-
 
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
@@ -167,47 +168,6 @@ public class QRSwing {
 	public static void start(String propPath, String windowPropPath) {
 		QRSwing.WINDOW_PROP_PATH = windowPropPath;
 		start(propPath);
-	}
-
-	/**
-	 * 各种配置加载方法
-	 *
-	 * @param propFilePath properties 文件路径
-	 */
-	private void loadProp(String propFilePath) {
-		if (!QRFileUtils.fileExists(propFilePath)) {
-			if (!QRFileUtils.fileCreate(propFilePath)) {
-				GLOBAL_PROP_PATH = "settings.properties";
-			}
-			globalPropBackToDefault();
-			return;
-		}
-		QRPropertiesUtils.loadProp(GLOBAL_PROP, propFilePath);
-	}
-
-	private void load() {
-		windowIcon = iconLoadLead("window.icon.path", "QR.png");
-		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "深色", true);
-		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null, false);
-		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true, true);
-		windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true, true);
-		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true, true);
-		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f, true);
-		windowAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f, true);
-		windowScale = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_SCALE, true, true);
-		windowAlwaysOnTop = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ALWAYS_TOP, false, true);
-		windowScreenAdsorb = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ABSORB, true, true);
-		if (!QRFileUtils.fileExists(WINDOW_PROP_PATH)) {
-			windowPropBackToDefault();
-		}
-		if (windowAlpha < 0 || windowAlpha > 1) {
-			windowAlpha = 0.8f;
-			GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(windowAlpha));
-		}
-		if (windowAlpha < 0.5) {
-			windowAlpha = 1 - windowAlpha;
-			GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(windowAlpha));
-		}
 	}
 
 	public static ImageIcon iconLoadLead(String key, String defaultFileName) {
@@ -336,6 +296,11 @@ public class QRSwing {
 		}
 	}
 
+	public static void setWindowBackgroundImageAlpha(float value) {
+		QRSwing.windowBackgroundImageAlpha = windowBackgroundImageAlpha;
+		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(value));
+	}
+
 	public static void setWindowRound(boolean value) {
 		QRSwing.windowRound = value;
 		GLOBAL_PROP.setProperty(WINDOW_ROUND, String.valueOf(value));
@@ -356,11 +321,6 @@ public class QRSwing {
 		GLOBAL_PROP.setProperty(WINDOW_TRANSPARENCY, String.valueOf(value));
 	}
 
-	public static void setWindowAlpha(float value) {
-		QRSwing.windowAlpha = value;
-		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_ALPHA, String.valueOf(value));
-	}
-
 	public static void setWindowTitleMenu(boolean value) {
 		QRSwing.windowTitleMenu = value;
 		GLOBAL_PROP.setProperty(WINDOW_TITLE_MENU, String.valueOf(value));
@@ -370,8 +330,6 @@ public class QRSwing {
 		QRSwing.windowScale = value;
 		GLOBAL_PROP.setProperty(WINDOW_BACKGROUND_IMAGE_SCALE, String.valueOf(value));
 	}
-
-	private static QRGlobalKeyboardHookListener keyboardHook;
 
 	/**
 	 * 用于注册全局键盘事件
@@ -532,5 +490,46 @@ public class QRSwing {
 	 */
 	public static void registerSystemExitAction(QRActionRegister ar) {
 		actionAfterClose.add(ar);
+	}
+
+	/**
+	 * 各种配置加载方法
+	 *
+	 * @param propFilePath properties 文件路径
+	 */
+	private void loadProp(String propFilePath) {
+		if (!QRFileUtils.fileExists(propFilePath)) {
+			if (!QRFileUtils.fileCreate(propFilePath)) {
+				GLOBAL_PROP_PATH = "settings.properties";
+			}
+			globalPropBackToDefault();
+			return;
+		}
+		QRPropertiesUtils.loadProp(GLOBAL_PROP, propFilePath);
+	}
+
+	private void load() {
+		windowIcon = iconLoadLead("window.icon.path", "QR.png");
+		theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "深色", true);
+		windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null, false);
+		windowBackgroundImageAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f, false);
+		windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true, true);
+		windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true, true);
+		windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true, true);
+		windowTransparency = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_TRANSPARENCY, 0.999f, true);
+		windowScale = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_SCALE, true, true);
+		windowAlwaysOnTop = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ALWAYS_TOP, false, true);
+		windowScreenAdsorb = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ABSORB, true, true);
+		if (!QRFileUtils.fileExists(WINDOW_PROP_PATH)) {
+			windowPropBackToDefault();
+		}
+		if (windowBackgroundImageAlpha < 0 || windowBackgroundImageAlpha > 1) {
+			windowBackgroundImageAlpha = 0.8f;
+			GLOBAL_PROP.setProperty(WINDOW_ALPHA, String.valueOf(windowBackgroundImageAlpha));
+		}
+		if (windowBackgroundImageAlpha < 0.5) {
+			windowBackgroundImageAlpha = 1 - windowBackgroundImageAlpha;
+			GLOBAL_PROP.setProperty(WINDOW_ALPHA, String.valueOf(windowBackgroundImageAlpha));
+		}
 	}
 }
