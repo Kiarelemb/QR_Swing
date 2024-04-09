@@ -21,6 +21,9 @@ import java.awt.event.FocusEvent;
 public class QRClearableTextField extends QRPanel {
 	public final QRTextField textField;
 
+	/**
+	 * 默认清空按钮在右侧
+	 */
 	public QRClearableTextField() {
 		this(true);
 	}

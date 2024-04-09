@@ -58,8 +58,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 用于记忆窗体位置及大小信息
 	 */
 	protected final Properties prop;
+	protected final QRPanel topPanel;
 	private final QRBorderContentPanel contentPane;
-	private final QRPanel topPanel;
 	private final QRLabel iconLabel;
 	private final QRPanel windowFunctionPanel;
 	private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
@@ -95,7 +95,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		//endregion
 
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-		setIconImage(QRSwing.windowIcon.getImage());
+		if (QRSwing.windowIcon != null) {
+			setIconImage(QRSwing.windowIcon.getImage());
+		}
 		setUndecorated(true);
 
 		this.contentPane = new QRBorderContentPanel();

@@ -46,7 +46,9 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
 		super(owner, null, parentUnable ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
 		setSize(200, 100);
 		setResizable(false);
-		setIconImage(QRSwing.windowIcon.getImage());
+		if (QRSwing.windowIcon != null) {
+			setIconImage(QRSwing.windowIcon.getImage());
+		}
 		setUndecorated(true);
 		this.backgroundColor = QRColorsAndFonts.FRAME_COLOR_BACK;
 		this.contentPane = new QRBorderContentPanel();
