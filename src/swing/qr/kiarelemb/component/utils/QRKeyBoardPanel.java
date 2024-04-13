@@ -4,7 +4,9 @@ import method.qr.kiarelemb.utils.QRArrayUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
+import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -23,7 +25,7 @@ public class QRKeyBoardPanel extends QRPanel {
     public QRKeyBoardPanel() {
         setLayout(null);
         text = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "←", "Q", "W", "E", "R", "Y",
-                "T", "U", "I", "O", "P", "[", "]", "\\", "A", "S", "D", "F", "H", "G", "J", "K", "L", ";", "'", "↵",
+                "T", "U", "I", "O", "P", "[", "]", "\\", "A", "S", "D", "F", "H", "G", "J", "K", "L", ";", "'", "ENTER",
                 "SHIFT", "Z", "X", "C", "B", "V", "N", "M", ",", ".", "/", "SHIFT", "ALT", "SPACE"};
         int[][] position = {{20, 20, 80}, {110, 20, 80}, {200, 20, 80}, {290, 20, 80}, {380, 20, 80}, {470, 20, 80},
                 {560, 20, 80}, {650, 20, 80}, {740, 20, 80}, {830, 20, 80}, {920, 20, 80}, {1010, 20, 80}, {1100, 20,
@@ -36,17 +38,20 @@ public class QRKeyBoardPanel extends QRPanel {
                 , 320, 200}, {275, 415, 80}, {375, 415, 545}};
         int length = text.length;
         labelList = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            labelList.add(new Label());
-        }
         int height = 80;
         for (int i = 0; i < length; i++) {
-            QRLabel label = labelList.get(i);
+            Label label = new Label();
             label.setText(text[i]);
             int[] data = position[i];
             label.setBounds(data[0], data[1], data[2], height);
+            labelList.add(label);
+            add(label);
         }
-        setPreferredSize(new Dimension(1270, 515));
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(1270, 515);
     }
 
     public QRLabel getLabel(String text) {
@@ -70,7 +75,7 @@ public class QRKeyBoardPanel extends QRPanel {
      * @param label 当前标签
      */
     protected void labelComponentFresh(QRLabel label) {
-
+        label.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1));
     }
 
     /**
