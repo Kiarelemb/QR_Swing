@@ -153,7 +153,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				//无损绘制字体，改编自 SwingUtilities2
 				g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 						this.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
-				Map<TextAttribute, Object> map = new HashMap<TextAttribute, Object>();
+				Map<TextAttribute, Object> map = new HashMap<>();
 				map.put(TextAttribute.FONT, font);
 				map.put(TextAttribute.FOREGROUND, QRColorsAndFonts.MENU_COLOR);
 				map.put(TextAttribute.NUMERIC_SHAPING, this.getClientProperty(TextAttribute.NUMERIC_SHAPING));

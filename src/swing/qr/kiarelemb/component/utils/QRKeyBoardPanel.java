@@ -15,12 +15,12 @@ import java.util.NoSuchElementException;
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QRKeyBoardPanel
- * @description TODO
+ * @description 键盘布局
  * @create 2024/4/13 15:23
  */
 public class QRKeyBoardPanel extends QRPanel {
-    private final ArrayList<QRLabel> labelList;
-    private final String[] text;
+    public final ArrayList<QRLabel> labelList;
+    protected final String[] text;
 
     public QRKeyBoardPanel() {
         setLayout(null);
@@ -40,7 +40,7 @@ public class QRKeyBoardPanel extends QRPanel {
         labelList = new ArrayList<>(length);
         int height = 80;
         for (int i = 0; i < length; i++) {
-            Label label = new Label();
+            Label label = new Label(i);
             label.setText(text[i]);
             int[] data = position[i];
             label.setBounds(data[0], data[1], data[2], height);
@@ -54,7 +54,7 @@ public class QRKeyBoardPanel extends QRPanel {
         super.setSize(1270, 515);
     }
 
-    public QRLabel getLabel(String text) {
+    public QRLabel label(String text) {
         int index = QRArrayUtils.objectIndexOf(this.text, QRStringUtils.toUpperCase(text), 0);
         if (checkIndex(index)) {
             throw new NoSuchElementException(text);
@@ -62,11 +62,11 @@ public class QRKeyBoardPanel extends QRPanel {
         return labelList.get(index);
     }
 
-    public QRLabel getLabel(int index) {
-        if (checkIndex(index)) {
-            throw new IndexOutOfBoundsException(index);
+    public int labelIndex(QRLabel label) {
+        if (label instanceof Label l) {
+            return l.index;
         }
-        return labelList.get(index);
+        return -1;
     }
 
     /**
@@ -75,7 +75,6 @@ public class QRKeyBoardPanel extends QRPanel {
      * @param label 当前标签
      */
     protected void labelComponentFresh(QRLabel label) {
-        label.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1));
     }
 
     /**
@@ -84,7 +83,7 @@ public class QRKeyBoardPanel extends QRPanel {
      * @param label 当前标签
      * @param g     绘制工具
      */
-    protected void labelPaintComponents(QRLabel label, Graphics g) {
+    protected void labelPaint(QRLabel label, Graphics g) {
 
     }
 
@@ -93,21 +92,24 @@ public class QRKeyBoardPanel extends QRPanel {
     }
 
     private class Label extends QRLabel {
-        public Label() {
-            setTextCenter();
+        final int index;
 
+        public Label(int index) {
+            setTextCenter();
+            this.index = index;
+            labelComponentFresh(this);
         }
 
         @Override
-        public void paintComponents(Graphics g) {
-            super.paintComponents(g);
-            labelPaintComponents(this, g);
+        protected void paintBorder(Graphics g) {
+            super.paintBorder(g);
+            labelPaint(this, g);
         }
 
         @Override
         public void componentFresh() {
             super.componentFresh();
-            labelComponentFresh(this);
+            setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1));
         }
     }
 }
