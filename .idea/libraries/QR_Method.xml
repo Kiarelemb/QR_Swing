@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="QR_Method">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../QR_Method.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../QR_Method/QR_Method.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../QR_Method_/src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../QR_Method/QR_Method.jar!/" />
     </SOURCES>
   </library>
 </component>
