@@ -189,6 +189,9 @@ public class QRSwing {
      * 窗体大小及位置复原
      */
     public static void windowPropBackToDefault() {
+        if (!QRFileUtils.fileCreate(WINDOW_PROP_PATH)) {
+            WINDOW_PROP_PATH = "window.properties";
+        }
         Properties prop = new Properties();
         final int[] size = QRSystemUtils.getScreenSize();
         final int width = size[0];
@@ -546,12 +549,11 @@ public class QRSwing {
             windowPropBackToDefault();
         }
         if (windowBackgroundImageAlpha < 0 || windowBackgroundImageAlpha > 1) {
-            windowBackgroundImageAlpha = 0.8f;
-            GLOBAL_PROP.setProperty(WINDOW_ALPHA, String.valueOf(windowBackgroundImageAlpha));
+            setWindowBackgroundImageAlpha(0.8f);
+            return;
         }
         if (windowBackgroundImageAlpha < 0.5) {
-            windowBackgroundImageAlpha = 1 - windowBackgroundImageAlpha;
-            GLOBAL_PROP.setProperty(WINDOW_ALPHA, String.valueOf(windowBackgroundImageAlpha));
+            setWindowBackgroundImageAlpha(1 - windowBackgroundImageAlpha);
         }
     }
 }
