@@ -55,7 +55,7 @@ public class QRKeyBoardPanel extends QRPanel {
     }
 
     public QRLabel label(String text) {
-        int index = QRArrayUtils.objectIndexOf(this.text, QRStringUtils.toUpperCase(text), 0);
+        int index = QRArrayUtils.objectIndexOf(this.text, QRStringUtils.toUpperCase(text));
         if (checkIndex(index)) {
             throw new NoSuchElementException(text);
         }
