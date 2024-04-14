@@ -63,8 +63,13 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	}
 
 	public QRButton(String text) {
-		this();
+		addMouseListener(this.bml);
+		setFocusPainted(false);
+		setBorderPainted(false);
+		setBorder(null);
+		addActionListener();
 		setText(text);
+		componentFresh();
 	}
 
 	public QRButton(String text, String toolTipText) {

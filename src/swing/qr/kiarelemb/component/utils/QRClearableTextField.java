@@ -1,9 +1,7 @@
-package swing.qr.kiarelemb.component.combination;
+package swing.qr.kiarelemb.component.utils;
 
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
-import swing.qr.kiarelemb.component.utils.QRCloseButton;
-import swing.qr.kiarelemb.component.utils.QRFilePathTextField;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
@@ -47,6 +45,7 @@ public class QRClearableTextField extends QRPanel {
 	 * @param btn           确定按钮，可为 {@code null}
 	 */
 	public QRClearableTextField(boolean right, boolean filePathModel, String path, JButton btn) {
+		ClearButton clearButton = new ClearButton();
 		if (filePathModel) {
 			textField = new QRFilePathTextField(path, btn) {
 				@Override
@@ -65,14 +64,15 @@ public class QRClearableTextField extends QRPanel {
 				}
 			};
 		} else {
-
 			textField = new TextField();
 		}
 		setLayout(new BorderLayout());
-
 		add(textField, BorderLayout.CENTER);
-		add(new ClearButton(), right ? BorderLayout.EAST : BorderLayout.WEST);
+		add(clearButton, right ? BorderLayout.EAST : BorderLayout.WEST);
 		setEmptyBorder();
+		Dimension dimension = this.getPreferredSize();
+		//noinspection SuspiciousNameCombination
+		clearButton.setPreferredSize(new Dimension(dimension.height, dimension.height));
 	}
 
 	protected boolean meetCondition() {
@@ -140,7 +140,6 @@ public class QRClearableTextField extends QRPanel {
 
 	private class ClearButton extends QRCloseButton {
 		public ClearButton() {
-			setText(" ╳ ");
 			setToolTipText("清除");
 		}
 
