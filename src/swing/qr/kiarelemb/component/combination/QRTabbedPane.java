@@ -90,8 +90,6 @@ public class QRTabbedPane extends QRPanel {
 
 	/**
 	 * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
-	 *
-	 * @param ar
 	 */
 	public void addTabSelectChangedAction(QRActionRegister ar) {
 		this.tabSelectChangedListener.add(ar);
@@ -211,7 +209,9 @@ public class QRTabbedPane extends QRPanel {
 		this.selectedLabel = tabPanel.getTitleLabel();
 		this.selectedIndex = tabPanel.getIndex();
 		add(tabPanel.getContentPane(), BorderLayout.CENTER);
-		this.tabSelectChangedListener.tabSelectChangeAction(new QRTabSelectEvent(foreSelectedIndex, this.selectedIndex, tabPanel.content));
+		QRTabSelectEvent selectEvent = new QRTabSelectEvent(foreSelectedIndex, this.selectedIndex, tabPanel.content);
+		tabPanel.content.thisTabSelectChangeAction(selectEvent);
+		this.tabSelectChangedListener.tabSelectChangeAction(selectEvent);
 		repaint();
 	}
 
