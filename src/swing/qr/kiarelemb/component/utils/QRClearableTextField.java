@@ -3,6 +3,7 @@ package swing.qr.kiarelemb.component.combination;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
 import swing.qr.kiarelemb.component.utils.QRCloseButton;
+import swing.qr.kiarelemb.component.utils.QRFilePathTextField;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
@@ -30,6 +31,43 @@ public class QRClearableTextField extends QRPanel {
 
 	public QRClearableTextField(boolean right) {
 		textField = new TextField();
+		setLayout(new BorderLayout());
+
+		add(textField, BorderLayout.CENTER);
+		add(new ClearButton(), right ? BorderLayout.EAST : BorderLayout.WEST);
+		setEmptyBorder();
+	}
+
+	/**
+	 * 此构造器用于将 {@link QRTextField} 设置成 {@link QRFilePathTextField}，那么本类的 {@link #meetCondition()} 将失效
+	 *
+	 * @param right         清空按钮是否在右侧
+	 * @param filePathModel 是否设置为 {@link QRFilePathTextField}
+	 * @param path          文件路径，可为 {@code null}
+	 * @param btn           确定按钮，可为 {@code null}
+	 */
+	public QRClearableTextField(boolean right, boolean filePathModel, String path, JButton btn) {
+		if (filePathModel) {
+			textField = new QRFilePathTextField(path, btn) {
+				@Override
+				public void setBorder(Border border) {
+					super.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+				}
+
+				@Override
+				protected void focusGained(FocusEvent e) {
+					QRClearableTextField.this.focusGainedAction();
+				}
+
+				@Override
+				protected void focusLost(FocusEvent e) {
+					QRClearableTextField.this.focusLostAction();
+				}
+			};
+		} else {
+
+			textField = new TextField();
+		}
 		setLayout(new BorderLayout());
 
 		add(textField, BorderLayout.CENTER);

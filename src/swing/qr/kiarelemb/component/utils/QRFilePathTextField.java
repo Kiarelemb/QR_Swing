@@ -50,8 +50,4 @@ public class QRFilePathTextField extends QRTextField {
 	public void removeUpdate(DocumentEvent e) {
 		insertUpdate(e);
 	}
-
-	public boolean isOk() {
-		return meetCondition();
-	}
 }

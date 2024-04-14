@@ -27,205 +27,207 @@ import java.util.Objects;
  **/
 public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
 
-	private final StringBuilder allowInputChar = new StringBuilder();
-	private boolean itemChangeLock = false;
-	private String preValue = null;
-	private QRItemListener itemChangedListener;
+    private final StringBuilder allowInputChar = new StringBuilder();
+    private boolean itemChangeLock = false;
+    private String preValue = null;
+    private QRItemListener itemChangedListener;
 
-	public QRComboBox() {
-		addItemChangedListener();
-		componentFresh();
-	}
+    public QRComboBox() {
+        addItemChangedListener();
+        componentFresh();
+    }
 
-	public QRComboBox(boolean numberOnly) {
-		this();
-		if (numberOnly) {
-			numberOnly();
-		}
-	}
+    public QRComboBox(boolean numberOnly) {
+        addItemChangedListener();
+        if (numberOnly) {
+            numberOnly();
+        }
+        componentFresh();
+    }
 
-	public QRComboBox(String... array) {
-		this();
-		setModel(array);
-	}
+    public QRComboBox(String... array) {
+        addItemChangedListener();
+        setModel(array);
+        componentFresh();
+    }
 
-	public void setText(String value) {
-		ComboBoxModel<String> cbm = getModel();
-		if (cbm != null && cbm.getSize() > 0) {
-			ArrayList<String> ele = new ArrayList<>();
-			for (int i = 0; i < cbm.getSize(); i++) {
-				String e = cbm.getElementAt(i);
-				ele.add(e);
-				if (e.equals(value)) {
-					setSelectedItem(value);
-					return;
-				}
-			}
-			ele.add(value);
-			setModel(ele.toArray(QRStringUtils.ARR_EMPTY));
-			setSelectedItem(value);
-		}
-	}
+    public void setText(String value) {
+        ComboBoxModel<String> cbm = getModel();
+        if (cbm != null && cbm.getSize() > 0) {
+            ArrayList<String> ele = new ArrayList<>();
+            for (int i = 0; i < cbm.getSize(); i++) {
+                String e = cbm.getElementAt(i);
+                ele.add(e);
+                if (e.equals(value)) {
+                    setSelectedItem(value);
+                    return;
+                }
+            }
+            ele.add(value);
+            setModel(ele.toArray(QRStringUtils.ARR_EMPTY));
+            setSelectedItem(value);
+        }
+    }
 
-	public String getText() {
-		return Objects.requireNonNull(getSelectedItem()).toString();
-	}
+    public String getText() {
+        return Objects.requireNonNull(getSelectedItem()).toString();
+    }
 
-	public void setModel(String... array) {
-		if (array.length > 0) {
-			setModel(new DefaultComboBoxModel<>(array));
-		}
-	}
+    public void setModel(String... array) {
+        if (array.length > 0) {
+            setModel(new DefaultComboBoxModel<>(array));
+        }
+    }
 
-	/**
-	 * 设置只能输入数字
-	 */
-	public void numberOnly() {
-		allowInputChar.append("0123456789");
-		addItemListener(e -> numberItemStateChange());
-	}
+    /**
+     * 设置只能输入数字
+     */
+    public void numberOnly() {
+        allowInputChar.append("0123456789");
+        addItemListener(e -> numberItemStateChange());
+    }
 
-	/**
-	 * 设置只能输入小数
-	 */
-	public void decimalOnly() {
-		allowInputChar.append("0123456789.");
-		addItemListener(e -> decimalItemStateChange());
-	}
+    /**
+     * 设置只能输入小数
+     */
+    public void decimalOnly() {
+        allowInputChar.append("0123456789.");
+        addItemListener(e -> decimalItemStateChange());
+    }
 
-	/**
-	 * 实例化时已自动添加
-	 */
-	private void addItemChangedListener() {
-		if (itemChangedListener == null) {
-			itemChangedListener = new QRItemListener();
-			//每次改动会调用两次，我们需要减少一次
-			QRTimeCountUtil qcu = new QRTimeCountUtil((short) 300);
-			addItemListener(e -> {
-				if(qcu.isPassedMmTime()) {
-					qcu.startTimeUpdate();
-					String text = getText();
-					itemChangedListener.itemChangedAction(new QRItemEvent(preValue, text));
-					preValue = text;
-				}
-			});
-			itemChangedListener.add(e -> itemChangedAction((QRItemEvent) e));
-		}
-	}
+    /**
+     * 实例化时已自动添加
+     */
+    private void addItemChangedListener() {
+        if (itemChangedListener == null) {
+            itemChangedListener = new QRItemListener();
+            //每次改动会调用两次，我们需要减少一次
+            QRTimeCountUtil qcu = new QRTimeCountUtil((short) 300);
+            addItemListener(e -> {
+                if (qcu.isPassedMmTime()) {
+                    qcu.startTimeUpdate();
+                    String text = getText();
+                    itemChangedListener.itemChangedAction(new QRItemEvent(preValue, text));
+                    preValue = text;
+                }
+            });
+            itemChangedListener.add(e -> itemChangedAction((QRItemEvent) e));
+        }
+    }
 
-	/**
-	 * 可直接调用
-	 *
-	 * @param ar 操作，其参数 {@link QRActionRegister#action(Object)} 为 {@link QRItemEvent} 的对象
-	 *           <p> -> {@code QRItemEvent event = (QRItemEvent) e;}
-	 */
-	public void addItemChangeListener(QRActionRegister ar) {
-		if (itemChangedListener != null) {
-			itemChangedListener.add(ar);
-		}
-	}
+    /**
+     * 可直接调用
+     *
+     * @param ar 操作，其参数 {@link QRActionRegister#action(Object)} 为 {@link QRItemEvent} 的对象
+     *           <p> -> {@code QRItemEvent event = (QRItemEvent) e;}
+     */
+    public void addItemChangeListener(QRActionRegister ar) {
+        if (itemChangedListener != null) {
+            itemChangedListener.add(ar);
+        }
+    }
 
-	/**
-	 * 可直接重写
-	 *
-	 * @param e 事件参数
-	 */
-	protected void itemChangedAction(QRItemEvent e) {
+    /**
+     * 可直接重写
+     *
+     * @param e 事件参数
+     */
+    protected void itemChangedAction(QRItemEvent e) {
 
-	}
+    }
 
-	@Override
-	public void setSelectedIndex(int anIndex) {
-		itemChangeLock = true;
-		super.setSelectedIndex(anIndex);
-		itemChangeLock = false;
-	}
+    @Override
+    public void setSelectedIndex(int anIndex) {
+        itemChangeLock = true;
+        super.setSelectedIndex(anIndex);
+        itemChangeLock = false;
+    }
 
-	@Override
-	public void componentFresh() {
-		setFont(QRColorsAndFonts.DEFAULT_FONT_MENU);
-		setForeground(QRColorsAndFonts.MENU_COLOR);
-		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-		setBorder(new LineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
-		setUI(new BasicComboBoxUI() {
-			//selectPreviousPossibleValue
-			@Override
-			public void selectNextPossibleValue() {
-				try {
-					super.selectNextPossibleValue();
-				} catch (Exception ignore) {
-				}
-			}
+    @Override
+    public void componentFresh() {
+        setFont(QRColorsAndFonts.DEFAULT_FONT_MENU);
+        setForeground(QRColorsAndFonts.MENU_COLOR);
+        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+        setBorder(new LineBorder(QRColorsAndFonts.BORDER_COLOR, 1));
+        setUI(new BasicComboBoxUI() {
+            //selectPreviousPossibleValue
+            @Override
+            public void selectNextPossibleValue() {
+                try {
+                    super.selectNextPossibleValue();
+                } catch (Exception ignore) {
+                }
+            }
 
-			@Override
-			public void selectPreviousPossibleValue() {
-				try {
-					super.selectPreviousPossibleValue();
-				} catch (Exception ignore) {
-				}
-			}
+            @Override
+            public void selectPreviousPossibleValue() {
+                try {
+                    super.selectPreviousPossibleValue();
+                } catch (Exception ignore) {
+                }
+            }
 
-			@Override
-			protected JButton createArrowButton() {
-				QRButton button = new QRButton(" ▼ ");
-				button.setForeground(QRColorsAndFonts.SCROLL_COLOR);
-				button.setFont(button.getFont().deriveFont(14f));
-				button.setName("ComboBox.arrowButton");
-				return button;
-			}
+            @Override
+            protected JButton createArrowButton() {
+                QRButton button = new QRButton(" ▼ ");
+                button.setForeground(QRColorsAndFonts.SCROLL_COLOR);
+                button.setFont(button.getFont().deriveFont(14f));
+                button.setName("ComboBox.arrowButton");
+                return button;
+            }
 
-			@Override
-			protected ComboBoxEditor createEditor() {
-				return super.createEditor();
-			}
+            @Override
+            protected ComboBoxEditor createEditor() {
+                return super.createEditor();
+            }
 
-			@Override
-			protected ComboPopup createPopup() {
-				return new BasicComboPopup(comboBox) {
-					@Override
-					protected JScrollPane createScroller() {
-						QRScrollPane scrollPane = new QRScrollPane();
-						scrollPane.setViewportView(list);
-						scrollPane.setHorizontalScrollBar(null);
-						return scrollPane;
-					}
-				};
-			}
+            @Override
+            protected ComboPopup createPopup() {
+                return new BasicComboPopup(comboBox) {
+                    @Override
+                    protected JScrollPane createScroller() {
+                        QRScrollPane scrollPane = new QRScrollPane();
+                        scrollPane.setViewportView(list);
+                        scrollPane.setHorizontalScrollBar(null);
+                        return scrollPane;
+                    }
+                };
+            }
 
-			@Override
-			public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
-				Color t = g.getColor();
-				g.setColor(QRColorsAndFonts.TEXT_COLOR_BACK);
-				g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-				g.setColor(t);
-			}
-		});
-	}
+            @Override
+            public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+                Color t = g.getColor();
+                g.setColor(QRColorsAndFonts.TEXT_COLOR_BACK);
+                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                g.setColor(t);
+            }
+        });
+    }
 
-	private void numberItemStateChange() {
-		if (!itemChangeLock) {
-			String text = getText();
-			final String allowInputCharStr = allowInputChar.toString();
-			if (Arrays.stream(QRStringUtils.stringToStringArr(text)).anyMatch(s -> !allowInputCharStr.contains(s))) {
-				setSelectedIndex(0);
-			}
-		}
-	}
+    private void numberItemStateChange() {
+        if (!itemChangeLock) {
+            String text = getText();
+            final String allowInputCharStr = allowInputChar.toString();
+            if (Arrays.stream(QRStringUtils.stringToStringArr(text)).anyMatch(s -> !allowInputCharStr.contains(s))) {
+                setSelectedIndex(0);
+            }
+        }
+    }
 
-	private void decimalItemStateChange() {
-		if (!itemChangeLock) {
-			String text = getText();
-			boolean show = text.startsWith(".") || text.endsWith(".");
-			if (!show && Arrays.stream(QRStringUtils.stringToStringArr(text)).anyMatch(s -> !allowInputChar.toString().contains(s))) {
-				setSelectedIndex(0);
-			}
-		}
-	}
+    private void decimalItemStateChange() {
+        if (!itemChangeLock) {
+            String text = getText();
+            boolean show = text.startsWith(".") || text.endsWith(".");
+            if (!show && Arrays.stream(QRStringUtils.stringToStringArr(text)).anyMatch(s -> !allowInputChar.toString().contains(s))) {
+                setSelectedIndex(0);
+            }
+        }
+    }
 
-	@Override
-	public JToolTip createToolTip() {
-		QRToolTip tip = new QRToolTip();
-		tip.setComponent(tip);
-		return tip;
-	}
+    @Override
+    public JToolTip createToolTip() {
+        QRToolTip tip = new QRToolTip();
+        tip.setComponent(tip);
+        return tip;
+    }
 }

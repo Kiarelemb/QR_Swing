@@ -1,4 +1,4 @@
-package swing.qr.kiarelemb.component.examples;
+package swing.qr.kiarelemb.component.utils;
 
 import method.qr.kiarelemb.utils.QRArrayUtils;
 import method.qr.kiarelemb.utils.QRSleepUtils;
@@ -14,7 +14,6 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.LinkedList;

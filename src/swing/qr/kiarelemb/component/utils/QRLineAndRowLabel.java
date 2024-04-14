@@ -1,4 +1,4 @@
-package swing.qr.kiarelemb.component.examples;
+package swing.qr.kiarelemb.component.utils;
 
 import swing.qr.kiarelemb.component.basic.QRLabel;
 
@@ -28,7 +28,7 @@ public class QRLineAndRowLabel extends QRLabel {
 		this.row = row;
 		this.other = others;
 		StringBuilder sb = new StringBuilder(line + split + row);
-		if (others != null && others.length > 0) {
+		if (others != null) {
 			for (int i : others) {
 				sb.append(split).append(i);
 			}
