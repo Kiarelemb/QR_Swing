@@ -22,6 +22,7 @@ public class QRFilePathTextField extends QRTextField {
 		setTextCenter();
 		//设置使之能够撤回
 		addUndoManager();
+		addDocumentListener();
 	}
 
 	public QRFilePathTextField() {
@@ -48,6 +49,11 @@ public class QRFilePathTextField extends QRTextField {
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
+		insertUpdate(e);
+	}
+
+	@Override
+	protected void changedUpdate(DocumentEvent e) {
 		insertUpdate(e);
 	}
 }

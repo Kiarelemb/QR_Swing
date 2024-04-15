@@ -1,5 +1,7 @@
 package swing.qr.kiarelemb.component.utils;
 
+import method.qr.kiarelemb.utils.QRFileUtils;
+import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -19,6 +21,7 @@ import java.awt.event.FocusEvent;
  */
 public class QRClearableTextField extends QRPanel {
 	public final QRTextField textField;
+	public final QRButton clearButton;
 
 	/**
 	 * 默认清空按钮在右侧
@@ -32,12 +35,13 @@ public class QRClearableTextField extends QRPanel {
 		setLayout(new BorderLayout());
 
 		add(textField, BorderLayout.CENTER);
-		add(new ClearButton(), right ? BorderLayout.EAST : BorderLayout.WEST);
+		clearButton = new ClearButton();
+		add(clearButton, right ? BorderLayout.EAST : BorderLayout.WEST);
 		setEmptyBorder();
 	}
 
 	/**
-	 * 此构造器用于将 {@link QRTextField} 设置成 {@link QRFilePathTextField}，那么本类的 {@link #meetCondition()} 将失效
+	 * 此构造器用于将 {@link QRTextField} 设置成 {@link QRFilePathTextField}
 	 *
 	 * @param right         清空按钮是否在右侧
 	 * @param filePathModel 是否设置为 {@link QRFilePathTextField}
@@ -45,9 +49,14 @@ public class QRClearableTextField extends QRPanel {
 	 * @param btn           确定按钮，可为 {@code null}
 	 */
 	public QRClearableTextField(boolean right, boolean filePathModel, String path, JButton btn) {
-		ClearButton clearButton = new ClearButton();
+		clearButton = new ClearButton();
 		if (filePathModel) {
 			textField = new QRFilePathTextField(path, btn) {
+				@Override
+				protected boolean meetCondition() {
+					return QRClearableTextField.this.meetCondition();
+				}
+
 				@Override
 				public void setBorder(Border border) {
 					super.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -75,12 +84,26 @@ public class QRClearableTextField extends QRPanel {
 		clearButton.setPreferredSize(new Dimension(dimension.height, dimension.height));
 	}
 
+	/**
+	 * 如果 {@link #textField} 实体是 {@link QRFilePathTextField}，那么其根本的 {@link QRFilePathTextField#meetCondition()}
+	 * 仍然生效。可以通过重写自定义。
+	 *
+	 * @return 是否符合条件
+	 */
 	protected boolean meetCondition() {
-		return true;
+		if (textField instanceof QRFilePathTextField field) {
+			return QRFileUtils.fileExists(field.getText());
+		}
+		return textField.isOkay();
 	}
 
 	protected void focusGainedAction() {
 		setEnterBorder();
+	}
+
+
+	protected void clearAction(ActionEvent o) {
+		textField.clear();
 	}
 
 	/**
@@ -145,19 +168,19 @@ public class QRClearableTextField extends QRPanel {
 
 		@Override
 		protected void actionEvent(ActionEvent o) {
-			textField.clear();
+			QRClearableTextField.this.clearAction(o);
 		}
 	}
 
 	private class TextField extends QRTextField {
 		@Override
-		public void setBorder(Border border) {
-			super.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		protected boolean meetCondition() {
+			return QRClearableTextField.this.meetCondition();
 		}
 
 		@Override
-		protected boolean meetCondition() {
-			return QRClearableTextField.this.meetCondition();
+		public void setBorder(Border border) {
+			super.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		}
 
 		@Override
