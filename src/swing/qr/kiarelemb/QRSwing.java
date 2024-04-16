@@ -64,6 +64,7 @@ public class QRSwing {
     /**
      * 单例模式
      */
+    @Deprecated
     public static QRSwing INSTANCE;
     /**
      * 各种窗体的左上角的图标
@@ -116,6 +117,8 @@ public class QRSwing {
 
     private QRSwing(String propPath) {
         GLOBAL_PROP_PATH = propPath;
+        //动画优化
+        Toolkit.getDefaultToolkit().sync();
         //设置为系统外观
         QRSystemUtils.setSystemLookAndFeel();
         //设置窗体可透明
