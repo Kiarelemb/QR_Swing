@@ -1,6 +1,8 @@
 package swing.qr.kiarelemb.adapter;
 
-public interface QRMenuInter {
+import java.io.Serializable;
+
+public interface QRMenuInter extends Serializable {
 	void setPressed(boolean b);
 
 	void disenableAll();

@@ -3,7 +3,6 @@ package swing.qr.kiarelemb.component.basic;
 import method.qr.kiarelemb.utils.QRFontUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.assembly.QRToolTip;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -17,8 +16,9 @@ import java.awt.*;
  * @apiNote: 菜单栏按钮
  * @create 2022-11-04 16:21
  **/
-public class QRMenuItem extends QRButton implements QRComponentUpdate, QRActionRegister {
+public class QRMenuItem extends QRButton implements QRComponentUpdate {
 	private final QRLabel tip;
+	private final QRActionRegister ar = e -> this.actionEvent(null);
 	private String quickTip;
 
 	public QRMenuItem(String text) {
@@ -36,8 +36,8 @@ public class QRMenuItem extends QRButton implements QRComponentUpdate, QRActionR
 		tip.setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
 		tip.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		KeyStroke keyStroke = QRStringUtils.getKeyStroke(key);
-		setKeyStroke(keyStroke);
+		//设置快捷键
+		setKeyStroke(key);
 
 		add(tip, BorderLayout.EAST);
 		setHorizontalAlignment(SwingConstants.LEFT);
@@ -48,23 +48,25 @@ public class QRMenuItem extends QRButton implements QRComponentUpdate, QRActionR
 	/**
 	 * 若更新快捷键也是调用该方法
 	 *
-	 * @param keyStroke 快捷键
+	 * @param key 快捷键
 	 */
-	public final void setKeyStroke(KeyStroke keyStroke) {
-		if (keyStroke != null) {
-			quickTip = QRStringUtils.getKeyStrokeString(keyStroke);
-			tip.setText(quickTip);
-			setPreferredSize(new Dimension(QRFontUtils.getTextInWidth(this, getText() + quickTip) + 20, 25));
-			QRSwing.registerGlobalActionRemove(keyStroke, this, true);
-			QRSwing.registerGlobalAction(keyStroke, this, true);
+	public final void setKeyStroke(String key) {
+		if (key != null) {
+			KeyStroke keyStroke = null;
+			String[] keys = key.split(",");
+			// 第一个快捷键将得到展示
+			for (int i = keys.length - 1; i >= 0; i--) {
+				String k = keys[i];
+				keyStroke = QRStringUtils.getKeyStroke(k);
+				QRSwing.registerGlobalActionRemove(keyStroke, ar, true);
+				QRSwing.registerGlobalAction(keyStroke, ar, true);
+			}
+			if (keyStroke != null) {
+				quickTip = QRStringUtils.getKeyStrokeString(keyStroke);
+				tip.setText(quickTip);
+				setPreferredSize(new Dimension(QRFontUtils.getTextInWidth(this, getText() + quickTip) + 20, 25));
+			}
 		}
-	}
-
-	@Override
-	public JToolTip createToolTip() {
-		QRToolTip tip = new QRToolTip();
-		tip.setComponent(tip);
-		return tip;
 	}
 
 	@Override
@@ -76,11 +78,6 @@ public class QRMenuItem extends QRButton implements QRComponentUpdate, QRActionR
 			tip.componentFresh();
 		}
 		repaint();
-	}
-
-	@Override
-	public final void action(Object event) {
-		actionEvent(null);
 	}
 
 	public String quickTip() {

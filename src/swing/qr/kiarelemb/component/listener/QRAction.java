@@ -2,9 +2,10 @@ package swing.qr.kiarelemb.component.listener;
 
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class QRAction {
+public class QRAction implements Serializable {
 	private final LinkedList<QRActionRegister> list = new LinkedList<>();
 
 	public void add(QRActionRegister ar) {

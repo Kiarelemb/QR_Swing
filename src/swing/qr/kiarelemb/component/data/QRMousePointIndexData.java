@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.component.data;
 
 import java.awt.*;
+import java.io.Serializable;
 
 
 /**
@@ -14,5 +15,5 @@ import java.awt.*;
  * @create 2022-11-23 15:33
  */
 public record QRMousePointIndexData(Point mousePoint, Rectangle r, Integer caretPosition, int line, int row,
-                                    Object... objects) {
+                                    Object... objects) implements Serializable {
 }

@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
 /**
  * @author Kiarelemb QR
@@ -13,7 +14,7 @@ import java.awt.event.MouseEvent;
  * @apiNote: 按键事件类
  * @create 2022-11-04 16:11
  **/
-public class QRButtonMouseListener extends MouseAdapter {
+public class QRButtonMouseListener extends MouseAdapter implements Serializable {
 	public boolean isNotCloseButton = true;
 	JButton btn;
 	private Color defaultBackColor = QRColorsAndFonts.FRAME_COLOR_BACK;
