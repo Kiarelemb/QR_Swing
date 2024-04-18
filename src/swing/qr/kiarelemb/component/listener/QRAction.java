@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import java.io.Serializable;
@@ -13,8 +14,6 @@ public class QRAction implements Serializable {
 	}
 
 	protected void action(Object e) {
-		for (QRActionRegister register : list) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(list, e);
 	}
 }

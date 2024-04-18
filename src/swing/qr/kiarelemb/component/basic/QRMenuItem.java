@@ -4,7 +4,6 @@ import method.qr.kiarelemb.utils.QRFontUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.inter.QRActionRegister;
-import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
@@ -16,7 +15,7 @@ import java.awt.*;
  * @apiNote: 菜单栏按钮
  * @create 2022-11-04 16:21
  **/
-public class QRMenuItem extends QRButton implements QRComponentUpdate {
+public class QRMenuItem extends QRButton {
 	private final QRLabel tip;
 	private final QRActionRegister ar = e -> this.actionEvent(null);
 	private String quickTip;
