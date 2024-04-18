@@ -256,7 +256,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 		clickListener.actionPerformed(null);
 	}
 
-	@Deprecated
+	@Deprecated(since = "推荐使用本类中的 addClickAction(QRActionRegister ar) 方法")
 	@Override
 	public void addActionListener(ActionListener l) {
 		super.addActionListener(l);

@@ -14,6 +14,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -197,6 +198,27 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
 	protected void mouseExit(MouseEvent e) {
 	}
 	//endregion
+
+	/**
+	 * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
+	 * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发
+	 */
+	public void click() {
+		clickListener.actionPerformed(null);
+	}
+
+	@Deprecated(since = "推荐使用本类中的 addClickAction(QRActionRegister ar) 方法")
+	@Override
+	public void addActionListener(ActionListener l) {
+		super.addActionListener(l);
+	}
+
+	@Deprecated(since = "已被本类中的 click() 方法取代")
+	@Override
+	public void doClick() {
+		super.doClick();
+	}
+
 
 	@Override
 	public JToolTip createToolTip() {
