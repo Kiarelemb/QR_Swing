@@ -3,9 +3,9 @@
     <output-path>$PROJECT_DIR$/</output-path>
     <root id="archive" name="QR_Swing.jar">
       <element id="module-source" name="QR_Swing" />
-      <element id="module-output" name="QR_Swing" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-collections4-4.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../QR_Method/QR_Method.jar" path-in-jar="/" />
+      <element id="module-output" name="QR_Swing" />
     </root>
   </artifact>
 </component>
