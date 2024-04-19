@@ -220,7 +220,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(13f));
 			}
 		};
-		this.minimumButton.addActionListener(e -> minWindow());
+		this.minimumButton.addClickAction(e -> minWindow());
 		this.windowFunctionPanel.add(this.minimumButton);
 
 		this.maximumButton = new QRButton(MAX_MARK) {
@@ -230,13 +230,13 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 				setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(16f));
 			}
 		};
-		this.maximumButton.addActionListener(e -> maxWindow());
+		this.maximumButton.addClickAction(e -> maxWindow());
 		this.windowFunctionPanel.add(this.maximumButton);
 
 		this.closeButton = new QRCloseButton();
 		this.closeButton.setCloseButton();
 		this.closeButton.setToolTipText("关闭");
-		this.closeButton.addActionListener(e -> dispose());
+		this.closeButton.addClickAction(e -> dispose());
 		this.windowFunctionPanel.add(this.closeButton);
 
 		addMouseListener(mouseAdapte);
@@ -335,7 +335,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	 * 设置单击关闭按钮后退出程序
 	 */
 	public void setCloseButtonSystemExit() {
-		this.closeButton.addActionListener(e -> dispose(true));
+		this.closeButton.addClickAction(e -> dispose(true));
 	}
 
 	/**

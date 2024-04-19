@@ -120,7 +120,7 @@ public final class QROpinionDialog extends QRDialog {
 		QRRoundButton sureButton = new QRRoundButton("确定");
 		sureButton.setToolTipText("Enter");
 		sureButton.setBounds(155, 124, 70, 33);
-		sureButton.addActionListener(e -> sure());
+		sureButton.addClickAction(e -> sure());
 		mainPanel.add(sureButton);
 		setVisible(true);
 	}
@@ -130,12 +130,12 @@ public final class QROpinionDialog extends QRDialog {
 		setMessage(message);
 		QRRoundButton sureButton = new QRRoundButton("确定");
 		sureButton.setToolTipText("Enter");
-		sureButton.addActionListener(e -> sure());
+		sureButton.addClickAction(e -> sure());
 		mainPanel.add(sureButton);
 
 		QRRoundButton cancelButton = new QRRoundButton("取消");
 		cancelButton.setToolTipText("Esc");
-		cancelButton.addActionListener(e -> cancel());
+		cancelButton.addClickAction(e -> cancel());
 		mainPanel.add(cancelButton);
 		sureButton.setBounds(104, 124, 71, 33);
 		cancelButton.setBounds(204, 124, 71, 33);

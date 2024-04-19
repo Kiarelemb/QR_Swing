@@ -25,7 +25,7 @@ public class QRPopupItem extends QRButton {
 
 	public QRPopupItem(int index, String text, QRActionRegister ar) {
 		this(index, text);
-		addActionListener(ar::action);
+		addClickAction(ar);
 	}
 
 	public int index() {

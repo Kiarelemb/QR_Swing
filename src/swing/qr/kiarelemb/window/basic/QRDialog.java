@@ -252,7 +252,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.closeButton = new QRCloseButton();
         this.closeButton.setCloseButton();
         this.closeButton.setToolTipText("关闭");
-        this.closeButton.addActionListener(e -> dispose());
+        this.closeButton.addClickAction(e -> dispose());
         titlePanel.add(this.closeButton, BorderLayout.EAST);
 
         MouseAdapte adapte = new MouseAdapte();

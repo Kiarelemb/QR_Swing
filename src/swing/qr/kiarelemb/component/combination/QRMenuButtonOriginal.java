@@ -100,7 +100,7 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 	public void add(QRMenuItem qmi) {
 		this.jpm.add(qmi);
 		this.buttons.add(qmi);
-		qmi.addActionListener(e -> {
+		qmi.addClickAction(e -> {
 			closePopupMenu();
 			qmi.componentFresh();
 		});

@@ -73,7 +73,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         mainPanel.add(topicCB);
         mainPanel.add(topicInput);
 
-        topicInput.addActionListener(e -> {
+        topicInput.addClickAction(e -> {
             final File file = QRFileUtils.fileSelect(QRSwingThemeDesigner.this, "小启主题文件", "xq");
             if (file != null) {
                 if (QRColorsAndFonts.isThemeFile(file)) {
@@ -467,7 +467,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         QRSlider transparencySlider = new QRSlider();
         QRRoundButton randomColors = new QRRoundButton("随机");
 
-        designIntroductionButton.addActionListener(e -> {
+        designIntroductionButton.addClickAction(e -> {
             String content = "1. 单击右侧的颜色方块或修改色值文本框都可以改变对应的颜色；\n" +
                     "\n2. 内置的默认主题无法修改，但可以在此基础上新建一个，在编辑好主题后，单击“新建并保存”即可；\n" +
                     "\n3. 导入的主题在小启软件根目录的theme文件夹中，仅当设计器中的主题是选择的导入的主题时，才可以点击“修改并保存”；\n" +
@@ -479,12 +479,12 @@ public class QRSwingThemeDesigner extends QRDialog {
             textShowDialog.setVisible(true);
         });
 
-        changeAndSaveButton.addActionListener(e -> {
+        changeAndSaveButton.addClickAction(e -> {
             final String topicName = topicCB.getText();
             saveToFile(topicName);
         });
 
-        newOneAndSaveButton.addActionListener(e -> {
+        newOneAndSaveButton.addClickAction(e -> {
             final QRValueInputDialog fileName = new QRValueInputDialog(QRSwingThemeDesigner.this, "不包含扩展名的文件名（其文件名不能为dark、light、pink、brown、gray）", "请输入文件名（不包含扩展名）") {
                 @Override
                 public boolean meetCondition() {
@@ -516,11 +516,11 @@ public class QRSwingThemeDesigner extends QRDialog {
             final int value = transparencySlider.getValue();
             QRSystemUtils.setWindowTrans(QRSwingThemeDesigner.this, 0.9999f - value / 100f);
         });
-        abandonAndExitButton.addActionListener(e -> dispose());
+        abandonAndExitButton.addClickAction(e -> dispose());
 
         transparencySlider.setMaximum(50);
         transparencySlider.setValue(0);
-        randomColors.addActionListener(e -> {
+        randomColors.addClickAction(e -> {
             new Thread(() -> {
                 setCursorWait();
                 for (QRRGBColorPane pane : panes) {

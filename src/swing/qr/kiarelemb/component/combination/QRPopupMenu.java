@@ -5,7 +5,6 @@ import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.component.basic.QRButton;
 import swing.qr.kiarelemb.component.basic.QRMenuItem;
-import swing.qr.kiarelemb.component.listener.QRActionListener;
 import swing.qr.kiarelemb.component.listener.QRFocusListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
@@ -26,7 +25,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 	protected int itemNums;
 	protected int itemMaxLen;
 	protected int itemMaxTipLen;
-	private final QRActionListener actionListener;
+	private final QRActionRegister actionRegister;
 	private QRFocusListener focusListener;
 
 	public QRPopupMenu(Window parent) {
@@ -34,8 +33,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 		this.contentPane.setLayout(new GridLayout(0, 1, 3, this.vgap));
 		setFreelyMotionFailed();
 		setFocusable(true);
-		this.actionListener = new QRActionListener();
-		this.actionListener.add(e -> QRPopupMenu.this.buttonSelectAction((ActionEvent) e));
+		this.actionRegister = e -> QRPopupMenu.this.buttonSelectAction((ActionEvent) e);
 	}
 
 	/**
@@ -95,18 +93,19 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
 	 */
 	public void add(QRMenuItem menuItem) {
 		this.contentPane.add(menuItem);
-		menuItem.addActionListener(this.actionListener);
+		menuItem.addClickAction(this.actionRegister);
 		this.itemNums++;
 		int textInWidth = QRFontUtils.getTextInWidth(menuItem, menuItem.getText());
 		if (menuItem.quickTip() != null) {
-			this.itemMaxTipLen = Math.max(this.itemMaxTipLen, QRFontUtils.getTextInWidth(menuItem, menuItem.quickTip()));
+			this.itemMaxTipLen = Math.max(this.itemMaxTipLen, QRFontUtils.getTextInWidth(menuItem,
+					menuItem.quickTip()));
 		}
 		this.itemMaxLen = Math.max(this.itemMaxLen, textInWidth);
 	}
 
 	public void add(QRButton button) {
 		this.contentPane.add(button);
-		button.addActionListener(this.actionListener);
+		button.addClickAction(this.actionRegister);
 		this.itemNums++;
 		int textInWidth = QRFontUtils.getTextInWidth(button, button.getText());
 		this.itemMaxLen = Math.max(this.itemMaxLen, textInWidth);
