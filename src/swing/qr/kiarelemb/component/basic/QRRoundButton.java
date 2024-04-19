@@ -202,23 +202,37 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
 	/**
 	 * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
 	 * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发
+	 * <p>需要注意的是，若运行的事件中大量包含界面 UI 的绘制，那本方法可能比 {@link #click()} 更合适</p>
+	 */
+	public void clickInvokeLater() {
+		SwingUtilities.invokeLater(this::click);
+	}
+
+	/**
+	 * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
+	 * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发
 	 */
 	public void click() {
 		clickListener.actionPerformed(null);
 	}
 
-	@Deprecated(since = "推荐使用本类中的 addClickAction(QRActionRegister ar) 方法")
+	/**
+	 * 推荐使用本类中的 {@link #addClickAction(QRActionRegister)} 方法
+	 */
+	@Deprecated()
 	@Override
 	public void addActionListener(ActionListener l) {
 		super.addActionListener(l);
 	}
 
-	@Deprecated(since = "已被本类中的 click() 方法取代")
+	/**
+	 * 已被本类中的 {@link #click()} 方法取代
+	 */
+	@Deprecated()
 	@Override
 	public void doClick() {
 		super.doClick();
 	}
-
 
 	@Override
 	public JToolTip createToolTip() {

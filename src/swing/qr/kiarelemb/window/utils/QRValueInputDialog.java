@@ -52,7 +52,7 @@ public class QRValueInputDialog extends QREmptyDialog {
 		contentPane.add(label);
 
 		QRRoundButton buttonSure = new QRRoundButton("确定");
-		buttonSure.addActionListener(e -> {
+		buttonSure.addClickAction(e -> {
 			if (meetCondition()) {
 				if (setAnswer(textField.getText())) {
 					dispose();
@@ -64,7 +64,7 @@ public class QRValueInputDialog extends QREmptyDialog {
 		contentPane.add(buttonSure);
 
 		QRRoundButton buttonCancel = new QRRoundButton("取消");
-		buttonCancel.addActionListener(e -> dispose());
+		buttonCancel.addClickAction(e -> dispose());
 		buttonCancel.setBounds(158, 118, 66, 29);
 		buttonCancel.setToolTipText("ESC");
 		contentPane.add(buttonCancel);
@@ -74,10 +74,10 @@ public class QRValueInputDialog extends QREmptyDialog {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyChar()) {
 					case KeyEvent.VK_ENTER:
-						buttonSure.doClick();
+						buttonSure.click();
 						break;
 					case KeyEvent.VK_ESCAPE:
-						buttonCancel.doClick();
+						buttonCancel.click();
 						break;
 					default:
 						QRTools.doNothing();
