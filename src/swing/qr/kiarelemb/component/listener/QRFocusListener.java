@@ -30,12 +30,12 @@ public class QRFocusListener extends QRAction implements FocusListener {
 	}
 
 	@Override
-	public void focusGained(FocusEvent e) {
+	public final void focusGained(FocusEvent e) {
 		QRComponentUtils.runActions(gain, e);
 	}
 
 	@Override
-	public void focusLost(FocusEvent e) {
+	public final void focusLost(FocusEvent e) {
 		QRComponentUtils.runActions(lost, e);
 	}
 }

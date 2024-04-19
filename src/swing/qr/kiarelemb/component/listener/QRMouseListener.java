@@ -35,27 +35,27 @@ public class QRMouseListener implements MouseListener {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public final void mouseClicked(MouseEvent e) {
 		QRComponentUtils.runActions(click, e);
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public final void mousePressed(MouseEvent e) {
 		QRComponentUtils.runActions(press, e);
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public final void mouseReleased(MouseEvent e) {
 		QRComponentUtils.runActions(release, e);
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public final void mouseEntered(MouseEvent e) {
 		QRComponentUtils.runActions(enter, e);
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public final void mouseExited(MouseEvent e) {
 		QRComponentUtils.runActions(exit, e);
 	}
 }

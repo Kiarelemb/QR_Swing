@@ -30,30 +30,18 @@ public class QRKeyListener implements KeyListener {
 		}
 	}
 
-	public void addType(QRActionRegister ar) {
-		type.add(ar);
-	}
-
-	public void addPress(QRActionRegister ar) {
-		press.add(ar);
-	}
-
-	public void addRelease(QRActionRegister ar) {
-		release.add(ar);
-	}
-
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public final void keyTyped(KeyEvent e) {
 		QRComponentUtils.runActions(type, e);
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public final void keyPressed(KeyEvent e) {
 		QRComponentUtils.runActions(press, e);
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
+	public final void keyReleased(KeyEvent e) {
 		QRComponentUtils.runActions(release, e);
 	}
 }

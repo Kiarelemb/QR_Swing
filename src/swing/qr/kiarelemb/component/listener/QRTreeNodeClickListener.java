@@ -21,7 +21,7 @@ public class QRTreeNodeClickListener extends QRAction implements QRTreeNodeLis {
 	private final Map<TreePath, ArrayList<QRActionRegister>> vagueMap = new HashMap<>();
 
 	@Override
-	public void nodeClicked(QRTreeNodeEvent e) {
+	public final void nodeClicked(QRTreeNodeEvent e) {
 		TreePath clickedPath = e.clickedPath();
 		if (clickedPath != null) {
 			runAction(precisionMap, clickedPath, e);

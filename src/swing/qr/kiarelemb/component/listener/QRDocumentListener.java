@@ -22,7 +22,7 @@ public class QRDocumentListener implements DocumentListener {
 	private final LinkedList<QRActionRegister> remove = new LinkedList<>();
 	private final LinkedList<QRActionRegister> changed = new LinkedList<>();
 
-	public final void add(TYPE type, QRActionRegister ar) {
+	public void add(TYPE type, QRActionRegister ar) {
 		switch (type) {
 			case INSERT -> this.insert.add(ar);
 			case REMOVE -> this.remove.add(ar);
