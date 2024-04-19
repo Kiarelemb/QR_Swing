@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import java.awt.event.MouseEvent;
@@ -35,38 +36,26 @@ public class QRMouseListener implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		for (QRActionRegister register : click) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(click, e);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		for (QRActionRegister register : press) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(press, e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		for (QRActionRegister register : release) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(release, e);
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		for (QRActionRegister register : enter) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(enter, e);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		for (QRActionRegister register : exit) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(exit, e);
 	}
-
-
 }

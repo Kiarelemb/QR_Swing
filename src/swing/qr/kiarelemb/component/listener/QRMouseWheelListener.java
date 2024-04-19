@@ -11,7 +11,7 @@ import java.awt.event.MouseWheelListener;
  **/
 public class QRMouseWheelListener extends QRAction implements MouseWheelListener {
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	public final void mouseWheelMoved(MouseWheelEvent e) {
 		action(e);
 	}
 }

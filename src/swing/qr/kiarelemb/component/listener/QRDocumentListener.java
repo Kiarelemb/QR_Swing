@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.event.DocumentEvent;
@@ -21,7 +22,7 @@ public class QRDocumentListener implements DocumentListener {
 	private final LinkedList<QRActionRegister> remove = new LinkedList<>();
 	private final LinkedList<QRActionRegister> changed = new LinkedList<>();
 
-	public void add(TYPE type, QRActionRegister ar) {
+	public final void add(TYPE type, QRActionRegister ar) {
 		switch (type) {
 			case INSERT -> this.insert.add(ar);
 			case REMOVE -> this.remove.add(ar);
@@ -30,24 +31,18 @@ public class QRDocumentListener implements DocumentListener {
 	}
 
 	@Override
-	public void insertUpdate(DocumentEvent e) {
-		for (QRActionRegister register : insert) {
-			register.action(e);
-		}
+	public final void insertUpdate(DocumentEvent e) {
+		QRComponentUtils.runActions(insert, e);
+
 	}
 
 	@Override
-	public void removeUpdate(DocumentEvent e) {
-		for (QRActionRegister register : remove) {
-			register.action(e);
-		}
+	public final void removeUpdate(DocumentEvent e) {
+		QRComponentUtils.runActions(remove, e);
 	}
 
 	@Override
-	public void changedUpdate(DocumentEvent e) {
-		for (QRActionRegister register : changed) {
-			register.action(e);
-		}
-
+	public final void changedUpdate(DocumentEvent e) {
+		QRComponentUtils.runActions(changed, e);
 	}
 }

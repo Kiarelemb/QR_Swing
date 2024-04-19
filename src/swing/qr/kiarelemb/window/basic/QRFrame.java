@@ -83,6 +83,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	public QRFrame() {
 		QRFileUtils.fileCreate(QRSwing.WINDOW_PROP_PATH);
 		this.prop = QRPropertiesUtils.loadProp(QRSwing.WINDOW_PROP_PATH);
+		addWindowListener();
 
 		//region 加载资源
 		final int[] screenSize = QRSystemUtils.getScreenSize();
@@ -254,7 +255,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			}
 		};
 		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
-		addWindowListener();
 		addWindowAction(QRWindowListener.TYPE.OPEN, e -> this.minimumSize = getMinimumSizes());
 	}
 	//endregion class-MouseAdapte
@@ -465,7 +465,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
 	/**
 	 * 在窗体退出前的操作。
-	 * <p>当调用 {@link QRFrame#dispose(boolean)} 时，不确定 {@link QRFrame#windowClosing(WindowEvent)} 和 {@link QRFrame#windowClosed(WindowEvent)} 是否起作用
+	 * <p>当调用 {@link QRFrame#dispose(boolean)} 时，不确定 {@link QRFrame#windowClosing(WindowEvent)} 和
+	 * {@link QRFrame#windowClosed(WindowEvent)} 是否起作用
 	 * <p>但本方法一定起作用
 	 *
 	 * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@code null}
@@ -475,7 +476,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	}
 
 	public Dimension getMinimumSizes() {
-		int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.windowFunctionPanel.getWidth() + 20;
+		int titleWidth =
+				this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.windowFunctionPanel.getWidth() + 20;
 		return new Dimension(titleWidth, titleWidth / 2);
 	}
 
@@ -518,6 +520,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 	@Override
 	public void setLocation(int x, int y) {
 		super.setLocation(x, y);
+		if (windowListener == null) {
+			return;
+		}
 		windowListener.windowMoved(new Point(x, y));
 	}
 
@@ -712,7 +717,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 					eXOnScreen = (int) Math.min(eXOnScreen, eYOnScreen * QRFrame.this.imageRatio);
 					eYOnScreen = (int) (eXOnScreen / QRFrame.this.imageRatio);
 				}
-				setBounds(eXOnScreen, eYOnScreen, this.width + this.pressPointX - eXOnScreen, this.height + this.pressPointY - eYOnScreen);
+				setBounds(eXOnScreen, eYOnScreen, this.width + this.pressPointX - eXOnScreen,
+						this.height + this.pressPointY - eYOnScreen);
 				setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 			} else if (this.upAndRight) {
 				if (backgroundImageSet) {

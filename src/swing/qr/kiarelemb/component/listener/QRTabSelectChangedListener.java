@@ -11,7 +11,7 @@ import swing.qr.kiarelemb.inter.listener.QRTabSelectLis;
  **/
 public class QRTabSelectChangedListener extends QRAction implements QRTabSelectLis {
 	@Override
-	public void tabSelectChangeAction(QRTabSelectEvent event) {
+	public final void tabSelectChangeAction(QRTabSelectEvent event) {
 		action(event);
 	}
 }

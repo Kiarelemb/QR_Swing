@@ -403,8 +403,7 @@ public class QRSwingThemeDesigner extends QRDialog {
             public void componentFresh() {
                 final Component[] components = getComponents();
                 for (Component component : components) {
-                    if (component instanceof QRButton) {
-                        QRButton button = (QRButton) component;
+                    if (component instanceof QRButton button) {
                         button.setEnterColor(bottonEnterColorColorValue.getColor());
                         button.setPressColor(bottonPressColorColorValue.getColor());
                         button.setBackColor(frameColorBackColorValue.getColor());

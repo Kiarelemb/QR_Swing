@@ -11,7 +11,7 @@ import swing.qr.kiarelemb.inter.listener.QRItemLis;
  **/
 public class QRItemListener extends QRAction implements QRItemLis {
 	@Override
-	public void itemChangedAction(QRItemEvent event) {
+	public final void itemChangedAction(QRItemEvent event) {
 		action(event);
 	}
 }

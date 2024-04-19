@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import java.awt.event.KeyEvent;
@@ -43,22 +44,16 @@ public class QRKeyListener implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		for (QRActionRegister register : type) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(type, e);
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		for (QRActionRegister register : press) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(press, e);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		for (QRActionRegister register : release) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(release, e);
 	}
 }

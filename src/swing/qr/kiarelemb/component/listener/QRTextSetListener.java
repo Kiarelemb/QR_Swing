@@ -11,7 +11,7 @@ import swing.qr.kiarelemb.inter.listener.QRTextSetLis;
  **/
 public class QRTextSetListener extends QRAction implements QRTextSetLis {
 	@Override
-	public void setTextAction(QREventObject e) {
+	public final void setTextAction(QREventObject e) {
 		action(e);
 	}
 }

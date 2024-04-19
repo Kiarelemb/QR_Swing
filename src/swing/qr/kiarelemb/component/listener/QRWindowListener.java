@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import java.awt.*;
@@ -42,56 +43,40 @@ public class QRWindowListener implements WindowListener {
 
 	@Override
 	public final void windowOpened(WindowEvent e) {
-		for (QRActionRegister register : this.open) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.open, e);
 	}
 
 	@Override
 	public final void windowClosing(WindowEvent e) {
-		for (QRActionRegister register : this.closing) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.closing, e);
 	}
 
 	@Override
 	public final void windowClosed(WindowEvent e) {
-		for (QRActionRegister register : this.closed) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.closed, e);
 	}
 
 	@Override
 	public final void windowIconified(WindowEvent e) {
-		for (QRActionRegister register : this.iconified) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.iconified, e);
 	}
 
 	@Override
 	public final void windowDeiconified(WindowEvent e) {
-		for (QRActionRegister register : this.deiconified) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.deiconified, e);
 	}
 
 	@Override
 	public final void windowActivated(WindowEvent e) {
-		for (QRActionRegister register : this.activated) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.activated, e);
 	}
 
 	@Override
 	public final void windowDeactivated(WindowEvent e) {
-		for (QRActionRegister register : this.deactivated) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(this.deactivated, e);
 	}
 
 	public final void windowMoved(Point p) {
-		for (QRActionRegister register : this.move) {
-			register.action(p);
-		}
+		QRComponentUtils.runActions(this.move, p);
 	}
 }

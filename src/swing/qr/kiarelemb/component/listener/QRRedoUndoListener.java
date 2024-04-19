@@ -11,7 +11,7 @@ import swing.qr.kiarelemb.inter.listener.QRRedoUndoLis;
  **/
 public class QRRedoUndoListener extends QRAction implements QRRedoUndoLis {
 	@Override
-	public void redoUndoAction(QRRedoUndoEvent event) {
+	public final void redoUndoAction(QRRedoUndoEvent event) {
 		action(event);
 	}
 }

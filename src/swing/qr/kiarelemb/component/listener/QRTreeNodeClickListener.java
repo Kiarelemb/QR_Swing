@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.component.event.QRTreeNodeEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.listener.QRTreeNodeLis;
@@ -55,10 +56,6 @@ public class QRTreeNodeClickListener extends QRAction implements QRTreeNodeLis {
 
 	private void runAction(Map<TreePath, ArrayList<QRActionRegister>> map, TreePath treePath, QRTreeNodeEvent e) {
 		ArrayList<QRActionRegister> list = map.get(treePath);
-		if (list != null) {
-			for (QRActionRegister a : list) {
-				a.action(e);
-			}
-		}
+		QRComponentUtils.runActions(list, e);
 	}
 }

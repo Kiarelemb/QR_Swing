@@ -134,7 +134,7 @@ public class QRComponentUtils {
 	 * @param list 任务列表
 	 */
 	public static void runActions(List<QRActionRegister> list, Object obj) {
-		if (!list.isEmpty()) {
+		if (list != null && !list.isEmpty()) {
 			ArrayList<QRActionRegister> temp = new ArrayList<>(list);
 			temp.forEach(e -> {
 				//确保每个都能完成而不影响之后的事件

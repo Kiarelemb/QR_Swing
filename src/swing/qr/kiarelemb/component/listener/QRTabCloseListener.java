@@ -11,7 +11,7 @@ import swing.qr.kiarelemb.inter.listener.QRTabCloseLis;
  **/
 public class QRTabCloseListener extends QRAction implements QRTabCloseLis {
 	@Override
-	public void tabCloseButtonAction(QRTabbedPaneCloseEvent e) {
+	public final void tabCloseButtonAction(QRTabbedPaneCloseEvent e) {
 		action(e);
 	}
 }

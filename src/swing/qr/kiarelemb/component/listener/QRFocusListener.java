@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.component.listener;
 
+import swing.qr.kiarelemb.component.QRComponentUtils;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import java.awt.event.FocusEvent;
@@ -30,15 +31,11 @@ public class QRFocusListener extends QRAction implements FocusListener {
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		for (QRActionRegister register : gain) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(gain, e);
 	}
 
 	@Override
 	public void focusLost(FocusEvent e) {
-		for (QRActionRegister register : lost) {
-			register.action(e);
-		}
+		QRComponentUtils.runActions(lost, e);
 	}
 }

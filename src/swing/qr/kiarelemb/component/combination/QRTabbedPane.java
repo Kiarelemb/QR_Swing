@@ -6,7 +6,6 @@ import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.event.QRTabSelectEvent;
 import swing.qr.kiarelemb.component.event.QRTabbedPaneCloseEvent;
-import swing.qr.kiarelemb.component.listener.QRActionListener;
 import swing.qr.kiarelemb.component.listener.QRTabCloseListener;
 import swing.qr.kiarelemb.component.listener.QRTabSelectChangedListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -15,10 +14,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
@@ -39,7 +35,7 @@ public class QRTabbedPane extends QRPanel {
 	private boolean loadCloseButton = false;
 	private QRTabPanel selectedTab;
 	private QRTabCloseListener closeButtonActionListener;
-	private QRActionListener actionListener;
+	private ActionListener actionListener;
 
 	private final QRTabSelectChangedListener tabSelectChangedListener = new QRTabSelectChangedListener();
 
@@ -55,7 +51,8 @@ public class QRTabbedPane extends QRPanel {
 	/**
 	 * 创建一个标签显示可自定义的标签面板
 	 *
-	 * @param tabPositionFromBorderLayout 值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH}, {@link BorderLayout#WEST} 和 {@link BorderLayout#EAST} 中选择
+	 * @param tabPositionFromBorderLayout 值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH},
+	 * {@link BorderLayout#WEST} 和 {@link BorderLayout#EAST} 中选择
 	 */
 	public QRTabbedPane(String tabPositionFromBorderLayout) {
 		super(false);
@@ -103,7 +100,7 @@ public class QRTabbedPane extends QRPanel {
 		this.loadCloseButton = true;
 		this.closeButtonActionListener = new QRTabCloseListener();
 		this.closeButtonActionListener.add(e -> closeButtonAction((QRTabbedPaneCloseEvent) e));
-		this.actionListener = new QRActionListener() {
+		this.actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				QRTabbedPane.this.closeButtonActionListener.tabCloseButtonAction(new QRTabbedPaneCloseEvent(QRTabbedPane.this));
@@ -270,7 +267,7 @@ public class QRTabbedPane extends QRPanel {
 			}
 		}
 
-		public void setCloseButtonAction(QRActionListener action) {
+		public void setCloseButtonAction(ActionListener action) {
 			if (this.closeButton != null) {
 				this.closeButton.addActionListener(action);
 			}
