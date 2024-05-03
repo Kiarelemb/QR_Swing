@@ -255,7 +255,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 			}
 		};
 		this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
+		setBackgroundImage(QRSwing.windowBackgroundImagePath);
 		addWindowAction(QRWindowListener.TYPE.OPEN, e -> this.minimumSize = getMinimumSizes());
+
 	}
 	//endregion class-MouseAdapte
 

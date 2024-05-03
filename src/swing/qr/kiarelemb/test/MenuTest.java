@@ -56,11 +56,6 @@ public class MenuTest extends QRFrame {
 	}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
-
-	}
-
-	@Override
 	public void windowClosed(WindowEvent e) {
 		QRSwing.globalPropSave();
 	}

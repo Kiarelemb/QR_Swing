@@ -328,7 +328,6 @@ public class QRSwingThemeDesigner extends QRDialog {
         previewTopPanel.add(titleLabel, BorderLayout.CENTER);
 
         QRLabel iconLabel = QRLabel.getIconLabel();
-//        iconLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
         previewTopPanel.add(iconLabel, BorderLayout.WEST);
 
         QRPanel previewPanel = new QRPanel();
@@ -468,12 +467,18 @@ public class QRSwingThemeDesigner extends QRDialog {
         QRRoundButton randomColors = new QRRoundButton("随机");
 
         designIntroductionButton.addClickAction(e -> {
-            String content = "1. 单击右侧的颜色方块或修改色值文本框都可以改变对应的颜色；\n" +
-                    "\n2. 内置的默认主题无法修改，但可以在此基础上新建一个，在编辑好主题后，单击“新建并保存”即可；\n" +
-                    "\n3. 导入的主题在小启软件根目录的theme文件夹中，仅当设计器中的主题是选择的导入的主题时，才可以点击“修改并保存”；\n" +
-                    "\n4. 色值文本框选择一个，并ctrl c后复制的是整个颜色值到剪贴板，可以在其它任意一个文本框内直接粘贴；\n" +
-                    "\n5. 色值文本框支持两种形式的粘贴，一种是以#开头的6位16进制色值，一种是以任意长度任意非数字隔开的3个色值，例如：“#BBBBBB”、“77 77 77”、“77,77, 77”、“77c77b77”；\n" +
-                    "\n6. 主题的选择请在“设置” -> “跟打设置” -> “字体颜色设置”处修改。";
+            String content = """
+                    1. 单击右侧的颜色方块或修改色值文本框都可以改变对应的颜色；
+
+                    2. 内置的默认主题无法修改，但可以在此基础上新建一个，在编辑好主题后，单击“新建并保存”即可；
+
+                    3. 导入的主题在小启软件根目录的theme文件夹中，仅当设计器中的主题是选择的导入的主题时，才可以点击“修改并保存”；
+
+                    4. 色值文本框选择一个，并ctrl c后复制的是整个颜色值到剪贴板，可以在其它任意一个文本框内直接粘贴；
+
+                    5. 色值文本框支持两种形式的粘贴，一种是以#开头的6位16进制色值，一种是以任意长度任意非数字隔开的3个色值，例如：“#BBBBBB”、“77 77 77”、“77,77, 77”、“77c77b77”；
+
+                    6. 主题的选择请在“设置” -> “跟打设置” -> “字体颜色设置”处修改。""";
             QRResizableTextShowDialog textShowDialog = new QRResizableTextShowDialog(this, width / 5 * 3, height / 5 * 3, "设计器使用说明", content, true);
             QRSystemUtils.setWindowNotTrans(textShowDialog);
             textShowDialog.setVisible(true);
@@ -558,10 +563,8 @@ public class QRSwingThemeDesigner extends QRDialog {
 
 
     private void topicChangedAction(String result) {
-//        System.out.println("result = " + result);
         final Color[] colors = QRColorsAndFonts.getThemeColors(result);
         if (colors != null) {
-//            System.out.println("colors.length = " + colors.length);
             for (int i = 0; i < panes.length; i++) {
                 panes[i].setColor(colors[i]);
             }

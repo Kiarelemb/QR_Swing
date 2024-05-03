@@ -220,7 +220,6 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
 
 	@Override
 	public void componentFresh() {
-//		panelLoop();
 		componentLoop(this, e -> {
 			if (e instanceof QRComponentUpdate com) {
 				com.componentFresh();

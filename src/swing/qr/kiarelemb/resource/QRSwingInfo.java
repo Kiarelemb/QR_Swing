@@ -5,7 +5,6 @@ import swing.qr.kiarelemb.QRSwing;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -54,16 +53,6 @@ public class QRSwingInfo {
             throw new RuntimeException("文件" + file.getName() + "不存在");
         }
     }
-
-    public static BufferedImage loadBufferedImage(String filePath) {
-        File file = new File(filePath);
-        try {
-            return ImageIO.read(file);
-        } catch (IOException e) {
-            throw new RuntimeException("文件" + file.getName() + "不存在");
-        }
-    }
-
 
     /**
      * 从全局默认配置文件中读取配置

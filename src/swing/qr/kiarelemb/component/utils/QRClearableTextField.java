@@ -31,6 +31,7 @@ public class QRClearableTextField extends QRPanel {
 	}
 
 	public QRClearableTextField(boolean right) {
+        super(false);
 		textField = new TextField();
 		setLayout(new BorderLayout());
 

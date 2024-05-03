@@ -30,19 +30,10 @@ public class QRBackgroundBorder implements Border, QRComponentUpdate {
 	@Override
 	public void paintBorder(Component component, Graphics graphics, int x, int y, int width, int height) {
 		Graphics2D g2 = (Graphics2D) graphics;
-//		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-//		int w = image.getWidth(null);
-//		for (int ix = x; ix < (x + width); ix += w) {
-//			int h = image.getHeight(null);
-//			for (int iy = y; iy < (y + height); iy += h) {
-//				g2.drawImage(image, ix, iy, component);
-//			}
-//		}
 
 		if (scale) {
 			AffineTransform scale = new AffineTransform();
-			//scale.scale(((double) width) / ((double) image.getWidth()), ((double) height) / ((double) image.getHeight()));
 			double proportion = ((double) width) / ((double) image.getWidth(null));
 			scale.scale(proportion, proportion);
 			g2.drawImage(image, scale, component);

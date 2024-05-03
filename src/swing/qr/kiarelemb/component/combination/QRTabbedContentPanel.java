@@ -10,6 +10,9 @@ import swing.qr.kiarelemb.component.event.QRTabSelectEvent;
  * @create 2022-11-27 15:07
  **/
 public class QRTabbedContentPanel extends QRPanel {
+	public QRTabbedContentPanel() {
+		super(false);
+	}
 
 	/**
 	 * 当前标签选择后，将自动触发该事件。

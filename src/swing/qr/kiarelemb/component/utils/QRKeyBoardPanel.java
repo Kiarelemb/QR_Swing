@@ -24,6 +24,7 @@ public class QRKeyBoardPanel extends QRPanel {
 
     public QRKeyBoardPanel() {
         setLayout(null);
+        setSize(0, 0);
         text = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "←", "Q", "W", "E", "R", "Y",
                 "T", "U", "I", "O", "P", "[", "]", "\\", "A", "S", "D", "F", "H", "G", "J", "K", "L", ";", "'", "ENTER",
                 "SHIFT", "Z", "X", "C", "B", "V", "N", "M", ",", ".", "/", "SHIFT", "ALT", "SPACE"};
@@ -49,6 +50,12 @@ public class QRKeyBoardPanel extends QRPanel {
         }
     }
 
+    /**
+     * 大小固定，但还是需要调用来设置它的大小
+     *
+     * @param width  the new width of this component in pixels
+     * @param height the new height of this component in pixels
+     */
     @Override
     public void setSize(int width, int height) {
         super.setSize(1270, 515);
@@ -84,7 +91,6 @@ public class QRKeyBoardPanel extends QRPanel {
      * @param g     绘制工具
      */
     protected void labelPaint(QRLabel label, Graphics g) {
-
     }
 
     private boolean checkIndex(int index) {

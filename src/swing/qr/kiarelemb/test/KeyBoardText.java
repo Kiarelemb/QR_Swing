@@ -57,12 +57,9 @@ public class KeyBoardText extends QRFrame {
                 g2.drawString(title, x, 30);
             }
         };
-
         keyBoardPanel.setLocation(10, 10);
-        keyBoardPanel.setSize(220, 200);
         this.mainPanel.add(keyBoardPanel);
         setSize(1400, 600);
-
     }
 
     public static void main(String[] args) {
