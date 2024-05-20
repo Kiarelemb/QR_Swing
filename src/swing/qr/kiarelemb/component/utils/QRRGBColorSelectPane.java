@@ -20,7 +20,7 @@ import java.util.LinkedList;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description: 一个集成多个控件的颜色选择、显示、设置的面板
  * @create 2022-11-30 14:54
  **/

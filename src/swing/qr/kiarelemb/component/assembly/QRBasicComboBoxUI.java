@@ -14,6 +14,8 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusListener;
 
 /**
  * @author Kiarelemb
@@ -23,87 +25,98 @@ import java.awt.*;
  * @create 2024/4/14 22:20
  */
 public class QRBasicComboBoxUI extends BasicComboBoxUI implements QRComponentUpdate {
-	private QRTextField textField;
-	private QRButton button;
-	private QRScrollPane scrollPane;
+    private QRTextField textField;
+    private QRButton button;
+    private QRScrollPane scrollPane;
 
-	@Override
-	protected ComboBoxEditor createEditor() {
-		return new BasicComboBoxEditor() {
-			@Override
-			protected JTextField createEditorComponent() {
-				textField = new QRTextField() {
-					@Override
-					public void setBorder(Border border) {
-						super.setBorder(new EmptyBorder(5, 5, 5, 5));
-					}
-				};
-				textField.setBorder(null);
-				return textField;
-			}
+    @Override
+    protected ComboBoxEditor createEditor() {
+        return new BasicComboBoxEditor() {
+            @Override
+            protected JTextField createEditorComponent() {
+                textField = new QRTextField() {
+                    @Override
+                    public void setBorder(Border border) {
+                        super.setBorder(new EmptyBorder(5, 5, 5, 5));
+                    }
+                };
+                textField.setBorder(null);
+                return textField;
+            }
 
-		};
-	}
+        };
+    }
 
-	@Override
-	protected JButton createArrowButton() {
-		button = new QRButton(" ▼ ");
-		button.setForeground(QRColorsAndFonts.SCROLL_COLOR);
-		button.setFont(button.getFont().deriveFont(14f));
-		button.setName("ComboBox.arrowButton");
-		return button;
-	}
+    @Override
+    protected FocusListener createFocusListener() {
+        return super.createFocusListener();
+    }
 
-	@Override
-	protected ComboPopup createPopup() {
-		return new BasicComboPopup(comboBox) {
-			@Override
-			protected JMenuItem createActionComponent(Action a) {
-				JMenuItem item = super.createActionComponent(a);
-				item.setHorizontalTextPosition(SwingConstants.CENTER);
-				return item;
-			}
+    @Override
+    protected JButton createArrowButton() {
+        button = new QRButton(" ▼ ") {
+            @Override
+            protected void actionEvent(ActionEvent o) {
+                System.out.println("点了");
+            }
+        };
+        button.setForeground(QRColorsAndFonts.SCROLL_COLOR);
+        button.setFont(button.getFont().deriveFont(14f));
+        button.setName("ComboBox.arrowButton");
+        return button;
+    }
 
-			@Override
-			protected JScrollPane createScroller() {
-				scrollPane = new QRScrollPane();
-				scrollPane.setViewportView(list);
-				scrollPane.setHorizontalScrollBar(null);
-				return scrollPane;
-			}
-		};
-	}
+    @Override
+    protected ComboPopup createPopup() {
+        return new BasicComboPopup(comboBox) {
 
-	@Override
-	public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
-		Color t = g.getColor();
-		g.setColor(QRColorsAndFonts.TEXT_COLOR_BACK);
-		g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-		g.setColor(t);
-	}
+            @Override
+            protected JMenuItem createActionComponent(Action a) {
+                JMenuItem item = super.createActionComponent(a);
+                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                return item;
+            }
 
-	public QRTextField textField() {
-		return textField;
-	}
+            @Override
+            protected JScrollPane createScroller() {
+                scrollPane = new QRScrollPane();
+                scrollPane.setViewportView(list);
+                scrollPane.setHorizontalScrollBar(null);
+                return scrollPane;
+            }
+        };
+    }
 
-	public QRButton button() {
-		return button;
-	}
+    @Override
+    public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+        Color t = g.getColor();
+        g.setColor(QRColorsAndFonts.TEXT_COLOR_BACK);
+        g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(t);
+    }
 
-	public QRScrollPane scrollPane() {
-		return scrollPane;
-	}
+    public QRTextField textField() {
+        return textField;
+    }
 
-	@Override
-	public void componentFresh() {
-		if (textField != null) {
-			textField.componentFresh();
-		}
-		if (button != null) {
-			button.componentFresh();
-		}
-		if (scrollPane != null) {
-			scrollPane.componentFresh();
-		}
-	}
+    public QRButton button() {
+        return button;
+    }
+
+    public QRScrollPane scrollPane() {
+        return scrollPane;
+    }
+
+    @Override
+    public void componentFresh() {
+        if (textField != null) {
+            textField.componentFresh();
+        }
+        if (button != null) {
+            button.componentFresh();
+        }
+        if (scrollPane != null) {
+            scrollPane.componentFresh();
+        }
+    }
 }

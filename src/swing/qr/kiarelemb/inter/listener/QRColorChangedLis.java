@@ -6,7 +6,7 @@ import java.util.EventListener;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2022-11-30 15:58
  **/

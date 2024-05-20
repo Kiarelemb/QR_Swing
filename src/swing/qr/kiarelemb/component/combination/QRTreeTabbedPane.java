@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.beans.BeanProperty;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,11 +20,11 @@ import java.util.Map;
  * @create 2023-01-29 14:39
  **/
 public class QRTreeTabbedPane extends QRPanel {
-	private final QRTree tree;
-	private final QRScrollPane scrollPane;
-	private final Map<TreeNode, JPanel> map;
-	private final String treePositionFromBorderLayout;
-	private boolean positionVague = false;
+	protected final QRTree tree;
+	protected final QRScrollPane scrollPane;
+	protected final Map<TreeNode, JPanel> map;
+	protected String treePositionFromBorderLayout;
+	protected boolean positionVague = false;
 
 	public QRTreeTabbedPane() {
 		this(BorderLayout.WEST);
@@ -86,6 +85,10 @@ public class QRTreeTabbedPane extends QRPanel {
 		tree.addTreeNodeListener();
 	}
 
+//	public JPanel addTreeNode(String nodeName){
+//		tree.add
+//	}
+
 	public void addTreeNodePointToPanel(Map<TreeNode, ? extends JPanel> map) {
 		this.map.putAll(map);
 		map.forEach((this::putAction));
@@ -107,6 +110,19 @@ public class QRTreeTabbedPane extends QRPanel {
 
 	public JPanel getPanel(TreeNode node) {
 		return map.get(node);
+	}
+
+	/**
+	 * 设置后，调用 {@link #componentFresh()} 以刷新
+	 *
+	 * @param treePositionFromBorderLayout {@link #tree} 的位置
+	 */
+	public void setTreePositionFromBorderLayout(String treePositionFromBorderLayout) {
+		this.treePositionFromBorderLayout = treePositionFromBorderLayout;
+	}
+
+	public String treePositionFromBorderLayout() {
+		return treePositionFromBorderLayout;
 	}
 
 	/**

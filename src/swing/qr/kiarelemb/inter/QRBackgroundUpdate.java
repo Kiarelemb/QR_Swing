@@ -2,7 +2,7 @@ package swing.qr.kiarelemb.inter;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2023-01-11 15:25
  **/

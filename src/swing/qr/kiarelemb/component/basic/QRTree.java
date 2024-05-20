@@ -61,6 +61,11 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		return new TreePath(nodes);
 	}
 
+    public void select(TreeNode node) {
+        TreePath path = getTreePath(node);
+        setSelectionPath(path);
+    }
+
 	public void expend(TreeNode node) {
 		TreePath path = getTreePath(node);
 		expandPath(path);
@@ -310,7 +315,8 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 			setBackgroundNonSelectionColor(new Color(0, 0, 0, 0));
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 //			label.setForeground(sel ? QRColorsAndFonts.CARET_COLOR : QRColorsAndFonts.BORDER_COLOR);
-			setForeground(sel ? QRColorsAndFonts.CARET_COLOR : QRColorsAndFonts.BORDER_COLOR);
+            // 树的文本颜色设置
+            setForeground(sel ? QRColorsAndFonts.PRESS_COLOR : QRColorsAndFonts.TEXT_COLOR_FORE);
 			return this;
 //
 //			// 得到每个节点的TreeNode
@@ -347,7 +353,7 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		public QRTreeUI(QRTree tree) {
 			this.tree = tree;
 			//线条的颜色
-			setHashColor(QRColorsAndFonts.DEFAULT_COLOR_LABEL);
+            setHashColor(QRColorsAndFonts.LINE_COLOR);
 			setLeftChildIndent(20);
 		}
 	}

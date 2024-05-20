@@ -5,7 +5,7 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2023-01-08 13:49
  **/

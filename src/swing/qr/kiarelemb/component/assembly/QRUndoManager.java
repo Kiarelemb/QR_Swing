@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2022-11-30 14:38
  **/

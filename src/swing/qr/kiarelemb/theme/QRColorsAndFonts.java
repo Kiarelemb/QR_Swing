@@ -163,7 +163,7 @@ public class QRColorsAndFonts {
 					colors[index++] = new Color(194, 194, 194);
 					colors[index++] = new Color(215, 213, 213);
 					colors[index++] = new Color(30, 30, 30);
-					colors[index] = new Color(252, 229, 102);
+                    colors[index] = new Color(0, 200, 0);
 					return colors;
 				case "灰色":
 					colors[index++] = new Color(30, 30, 30);

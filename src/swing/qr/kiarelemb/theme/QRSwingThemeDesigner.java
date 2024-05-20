@@ -74,20 +74,20 @@ public class QRSwingThemeDesigner extends QRDialog {
         mainPanel.add(topicInput);
 
         topicInput.addClickAction(e -> {
-            final File file = QRFileUtils.fileSelect(QRSwingThemeDesigner.this, "小启主题文件", "xq");
+            final File file = QRFileUtils.fileSelect(QRSwingThemeDesigner.this, "主题文件", "xq");
             if (file != null) {
-                if (QRColorsAndFonts.isThemeFile(file)) {
-                    try {
-                        QRFileUtils.fileCopy(file, QRSwing.THEME_DIRECTORY);
-                        QRSmallTipShow.display(QRSwingThemeDesigner.this, "导入成功！");
-                        topicCB.setModel(new DefaultComboBoxModel(getThemes()));
-                        topicCB.setText(QRColorsAndFonts.getThemeFileName(file));
-                    } catch (IOException ex) {
-                        QROpinionDialog.messageErrShow(QRSwingThemeDesigner.this, "导入失败！");
-                        ex.printStackTrace();
-                    }
-                } else {
-                    QROpinionDialog.messageErrShow(QRSwingThemeDesigner.this, "您选中的文件不是小启主题文件！");
+                if (!QRColorsAndFonts.isThemeFile(file)) {
+                    QROpinionDialog.messageErrShow(QRSwingThemeDesigner.this, "您选中的文件不是主题文件！");
+                    return;
+                }
+                try {
+                    QRFileUtils.fileCopy(file, QRSwing.THEME_DIRECTORY);
+                    QRSmallTipShow.display(QRSwingThemeDesigner.this, "导入成功！");
+                    topicCB.setModel(new DefaultComboBoxModel<>(getThemes()));
+                    topicCB.setText(QRColorsAndFonts.getThemeFileName(file));
+                } catch (IOException ex) {
+                    QROpinionDialog.messageErrShow(QRSwingThemeDesigner.this, "导入失败！");
+                    ex.printStackTrace();
                 }
             }
         });

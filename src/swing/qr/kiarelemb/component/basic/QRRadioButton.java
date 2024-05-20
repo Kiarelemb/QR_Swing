@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2023-01-09 16:52
  **/

@@ -5,7 +5,7 @@ import swing.qr.kiarelemb.inter.listener.QRItemLis;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2022-12-10 21:28
  **/

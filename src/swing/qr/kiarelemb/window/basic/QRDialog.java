@@ -351,7 +351,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     @Override
     public final void setSize(int width, int height) {
-//		if (resizable) {
         final int minSize = 20;
         if (width < minSize || height < minSize) {
             return;
@@ -361,7 +360,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     @Override
     public final void setBounds(int x, int y, int width, int height) {
-        super.setBounds(Math.max(x, 0), Math.max(y, 0), width, height);
+        super.setBounds(0, 0, width, height);
         windowStateUpdate();
     }
 

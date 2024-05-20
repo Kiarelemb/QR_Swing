@@ -25,8 +25,8 @@ import java.util.List;
  **/
 public class QRList extends JList<String> implements QRComponentUpdate {
 	protected QRScrollPane scrollPane;
-	private final LinkedList<String> contents;
-	private boolean noRepeat;
+    protected final LinkedList<String> contents;
+    protected boolean noRepeat;
 	private QRMouseMotionListener mouseMotionListener;
 	private QRMouseListener mouseListener;
 

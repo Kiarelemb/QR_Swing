@@ -5,7 +5,7 @@ import swing.qr.kiarelemb.inter.listener.QRColorChangedLis;
 
 /**
  * @author Kiarelemb QR
- * @program: EnglishAnalyzer
+ * @program: QR_Swing
  * @description:
  * @create 2022-11-30 16:02
  **/
