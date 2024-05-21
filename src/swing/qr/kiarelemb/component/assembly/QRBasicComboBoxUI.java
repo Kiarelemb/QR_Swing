@@ -14,7 +14,6 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusListener;
 
 /**
@@ -54,12 +53,7 @@ public class QRBasicComboBoxUI extends BasicComboBoxUI implements QRComponentUpd
 
     @Override
     protected JButton createArrowButton() {
-        button = new QRButton(" ▼ ") {
-            @Override
-            protected void actionEvent(ActionEvent o) {
-                System.out.println("点了");
-            }
-        };
+        button = new QRButton(" ▼ ");
         button.setForeground(QRColorsAndFonts.SCROLL_COLOR);
         button.setFont(button.getFont().deriveFont(14f));
         button.setName("ComboBox.arrowButton");
