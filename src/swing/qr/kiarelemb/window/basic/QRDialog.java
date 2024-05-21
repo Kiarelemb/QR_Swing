@@ -360,7 +360,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     @Override
     public final void setBounds(int x, int y, int width, int height) {
-        super.setBounds(0, 0, width, height);
+        super.setBounds(x, y, width, height);
         windowStateUpdate();
     }
 
