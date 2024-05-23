@@ -7,6 +7,7 @@ import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
+import swing.qr.kiarelemb.component.event.QRColorChangedEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
@@ -130,8 +131,19 @@ public class QRRGBColorPane extends QRPanel {
         }
     }
 
+    public QRRGBColorPane(Window tew, Color color, QRActionRegister colorChangedAction) {
+        this(tew, color, new QRLabel(), colorChangedAction);
+    }
+
+    /**
+     * 构造方法，初始化一个RGB颜色面板。
+     *
+     * @param tew                包含该面板的窗口对象
+     * @param color              面板显示的初始颜色
+     * @param showColorLabel     显示颜色的标签
+     * @param colorChangedAction 颜色改变时触发的动作，参数是 {@link QRColorChangedEvent}
+     */
     public QRRGBColorPane(Window tew, Color color, QRLabel showColorLabel, QRActionRegister colorChangedAction) {
-//        setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
         this.showColorLabel = showColorLabel;
         this.color = color;
         this.colorChangedAction = colorChangedAction;
@@ -184,15 +196,24 @@ public class QRRGBColorPane extends QRPanel {
     }
 
     public void colorChanged() {
-        if (bt == null || rt.getText().isEmpty() || gt.getText().isEmpty() || bt.getText().isEmpty()) {
+        if (rt == null || gt == null || bt == null) {
             return;
         }
+        if (rt.getText().isEmpty() || gt.getText().isEmpty() || bt.getText().isEmpty()) {
+            return;
+        }
+        Color from = this.color;
         setColor(new Color(rt.getValue(), gt.getValue(), bt.getValue()));
-        colorChangedAction.action(null);
+        Color to = this.color;
+        colorChangedAction.action(new QRColorChangedEvent(from, to));
     }
 
     public Color getColor() {
         return color;
+    }
+
+    public QRLabel showColorLabel() {
+        return showColorLabel;
     }
 
     public void setColor(Color color) {
@@ -226,15 +247,11 @@ public class QRRGBColorPane extends QRPanel {
         }
     }
 
-    private String getColor(Color c) {
-        return c.getRed() + "," + c.getGreen() + "," + c.getBlue();
-    }
-
-    private int colorValueCheckBound(int value) {
+    public static int colorValueCheckBound(int value) {
         return Math.max(Math.min(value, 255), 0);
     }
 
-    private Color parseColor(String hexLen) {
+    public static Color parseColor(String hexLen) {
         final LinkedList<String> split = QRArrayUtils.splitWithLength(hexLen, 2);
         assert split.size() == 3;
         int[] rgb = new int[3];
@@ -243,5 +260,15 @@ public class QRRGBColorPane extends QRPanel {
             rgb[i++] = Integer.parseInt(s, 16);
         }
         return new Color(rgb[0], rgb[1], rgb[2]);
+    }
+
+    public static String getColor(Color c) {
+        return c.getRed() + "," + c.getGreen() + "," + c.getBlue();
+    }
+
+
+    public static Color parseColor(String rgb, char seperator) {
+        int[] values = QRArrayUtils.splitToInt(rgb, seperator);
+        return new Color(values[0], values[1], values[2]);
     }
 }

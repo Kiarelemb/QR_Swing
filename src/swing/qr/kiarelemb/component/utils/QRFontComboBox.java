@@ -7,6 +7,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * @author Kiarelemb QR
@@ -102,17 +103,22 @@ public class QRFontComboBox extends QRComboBox {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             if (showAllFont) {
-                Font font = QRFontUtils.getFont(value.toString(), QRColorsAndFonts.DEFAULT_FONT_MENU.getSize());
-                label.setFont(font);
+                fontUpdate(label, value.toString());
             } else {
                 if (isSelected) {
-                    Font font = QRFontUtils.getFont(value.toString(), QRColorsAndFonts.DEFAULT_FONT_MENU.getSize());
-                    label.setFont(font);
+                    fontUpdate(label, value.toString());
                 } else {
                     label.setFont(QRColorsAndFonts.DEFAULT_FONT_MENU);
                 }
             }
             return label;
+        }
+
+        private void fontUpdate(JLabel label, String fontName) {
+            if (!Objects.equals(label.getFont().getFontName(), fontName)) {
+                Font font = QRFontUtils.getFont(fontName, QRColorsAndFonts.DEFAULT_FONT_MENU.getSize());
+                label.setFont(font);
+            }
         }
     }
 }

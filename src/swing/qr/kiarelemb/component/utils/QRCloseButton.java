@@ -42,7 +42,6 @@ public class QRCloseButton extends QRButton {
 	@Override
 	protected void paintBorder(Graphics g) {
 		super.paintBorder(g);
-		QRComponentUtils.componentStringDraw(this, g, QRFrame.CLOSE_MARK, font, QRColorsAndFonts.MENU_COLOR,
-				getHeight() / 1.7f);
+		QRComponentUtils.componentStringDraw(this, g, QRFrame.CLOSE_MARK, font, QRColorsAndFonts.MENU_COLOR);
 	}
 }

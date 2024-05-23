@@ -10,7 +10,6 @@ import swing.qr.kiarelemb.component.combination.QRMenuButton;
 import swing.qr.kiarelemb.component.combination.QRMenuPanel;
 import swing.qr.kiarelemb.component.event.QRItemEvent;
 import swing.qr.kiarelemb.component.utils.QRRGBColorPane;
-import swing.qr.kiarelemb.component.utils.QRRGBColorSelectPane;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 import swing.qr.kiarelemb.window.basic.QRFrame;
@@ -584,7 +583,7 @@ public class QRSwingThemeDesigner extends QRDialog {
             String filePath = QRSwing.THEME_DIRECTORY + fileName + ".th.xq";
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < panes.length; i++) {
-                String rgbValue = QRRGBColorSelectPane.getColor(panes[i].getColor());
+                String rgbValue = QRRGBColorPane.getColor(panes[i].getColor());
                 String lineText = QRColorsAndFonts.COLOR_ATTRIBUTES[i] + "=" + rgbValue;
                 sb.append(QRCodePack.encrypt(lineText, "theme")).append("\n");
             }

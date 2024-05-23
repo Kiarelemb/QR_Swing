@@ -1,9 +1,7 @@
 package swing.qr.kiarelemb.component.utils;
 
-import method.qr.kiarelemb.utils.QRArrayUtils;
 import method.qr.kiarelemb.utils.QRSleepUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
-import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
@@ -16,7 +14,6 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.LinkedList;
 
 /**
  * @author Kiarelemb QR
@@ -47,8 +44,8 @@ public class QRRGBColorSelectPane extends QRPanel {
 
 		@Override
 		public void copy() {
-			String c = getColor(color);
-			QRSystemUtils.putTextToClipboard(c);
+//			String c = getColor(color);
+//			QRSystemUtils.putTextToClipboard(c);
 		}
 
 		@Override
@@ -112,13 +109,13 @@ public class QRRGBColorSelectPane extends QRPanel {
 
 		public int getValue() {
 			final String text = getText();
-			final int value = colorValueCheckBound(Integer.parseInt(text));
-			setText(value);
-			return value;
+//			final int value = colorValueCheckBound(Integer.parseInt(text));
+//			setText(value);
+            return 0;
 		}
 
 		public void setValue(int value) {
-			setText(colorValueCheckBound(value));
+//			setText(colorValueCheckBound(value));
 		}
 
 		private boolean valueInRange(int value) {
@@ -228,22 +225,22 @@ public class QRRGBColorSelectPane extends QRPanel {
 	}
 
 	private void pasteAction() {
-		final String text = QRSystemUtils.getSysClipboardText();
-		if (text != null) {
-			final int[] ints = QRStringUtils.splitWithNotNumber(text);
-			Color c = null;
-			if (ints.length == 3) {
-				c = new Color(colorValueCheckBound(ints[0]), colorValueCheckBound(ints[1]), colorValueCheckBound(ints[2]));
-			} else {
-				final String tmp = QRStringUtils.spaceClear(text, true);
-				if (tmp.length() == 7 && tmp.startsWith("#")) {
-					c = parseColor(tmp.substring(1));
-				}
-			}
-			if (c != null) {
-				setColor(c);
-			}
-		}
+//		final String text = QRSystemUtils.getSysClipboardText();
+//		if (text != null) {
+//			final int[] ints = QRStringUtils.splitWithNotNumber(text);
+//			Color c = null;
+//			if (ints.length == 3) {
+//				c = new Color(colorValueCheckBound(ints[0]), colorValueCheckBound(ints[1]), colorValueCheckBound(ints[2]));
+//			} else {
+//				final String tmp = QRStringUtils.spaceClear(text, true);
+//				if (tmp.length() == 7 && tmp.startsWith("#")) {
+//					c = parseColor(tmp.substring(1));
+//				}
+//			}
+//			if (c != null) {
+//				setColor(c);
+//			}
+//		}
 	}
 
 	@Override
@@ -251,36 +248,4 @@ public class QRRGBColorSelectPane extends QRPanel {
 		super.componentFresh();
 		this.showColorLabel.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1));
 	}
-
-	//region 静态方法
-
-	public static String getColor(Color c) {
-		return c.getRed() + "," + c.getGreen() + "," + c.getBlue();
-	}
-
-
-	public static Color parseColor(String rgb, char seperator) {
-		int[] values = QRArrayUtils.splitToInt(rgb, seperator);
-		return new Color(values[0], values[1], values[2]);
-	}
-
-	/**
-	 * 将一个16进制的rgb值转成Color类
-	 */
-	public static Color parseColor(String hexLen) {
-		final LinkedList<String> split = QRArrayUtils.splitWithLength(hexLen, 2);
-		assert split.size() == 3;
-		int[] rgbs = new int[3];
-		int i = 0;
-		for (String s : split) {
-			rgbs[i++] = Integer.parseInt(s, 16);
-		}
-		return new Color(rgbs[0], rgbs[1], rgbs[2]);
-	}
-
-	public static int colorValueCheckBound(int value) {
-		return Math.max(Math.min(value, 255), 0);
-	}
-
-	//endregion
 }

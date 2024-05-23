@@ -196,13 +196,15 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     /**
      * 创建一个默认标题居中、窗体大小不可调整、禁用父窗体的对话框，
-     * <p>使用方法
-     * <p>super(parent);
-     * <p>setTitle("");
-     * <p>setTitlePlace(QRDialog.CENTER);
-     * <p>setSize(400, 300);
+     * <p>使用方法：
+     * <pre>
+     * {@code
+     * super(parent);
+     * setTitle("");
+     * setTitlePlace(QRDialog.CENTER);
+     * setSize(400, 300);
+     * }</pre>
      * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
-     *
      * @param parent 父窗体
      */
     public QRDialog(Window parent) {
@@ -211,14 +213,17 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     /**
      * 创建一个默认标题居中、窗体大小不可调整、可用父窗体的对话框，
-     * <p>使用方法
-     * <p>super(parent);
-     * <p>setTitle("");
-     * <p>setTitlePlace(QRDialog.CENTER);
-     * <p>setSize(400, 300);
+     * <p>使用方法：
+     * <pre>{@code
+     * super(parent);
+     * setTitle("");
+     * setTitlePlace(QRDialog.CENTER);
+     * setSize(400, 300);
+     * }</pre>
      * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
      *
      * @param parent 父窗体
+     * @param parentUnable 是否禁用父窗体
      */
     public QRDialog(Window parent, boolean parentUnable) {
         super(parent, null, parentUnable ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);

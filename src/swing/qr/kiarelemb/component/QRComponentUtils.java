@@ -53,6 +53,22 @@ public class QRComponentUtils {
 		parent.add(comToAdd);
 	}
 
+
+	/**
+	 * 横纵居中绘制文字
+	 *
+	 * @param com   控件
+	 * @param g     工具
+	 * @param text  内容
+	 * @param font  字体
+	 * @param color 前景色
+	 */
+	public static void componentStringDraw(JComponent com, Graphics g, String text, Font font, Color color) {
+		// 1.7f 的由来经测试，是最佳的
+		float y = com.getHeight() / 1.7f;
+		componentStringDraw(com, g, text, font, color, y);
+	}
+
 	/**
 	 * 居中绘制文字
 	 *

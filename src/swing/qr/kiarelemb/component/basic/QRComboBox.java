@@ -137,7 +137,6 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
 
 	}
 
-
 	@Override
 	public void setSelectedIndex(int anIndex) {
 		itemChangeLock = true;
