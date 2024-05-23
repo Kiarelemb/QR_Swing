@@ -28,6 +28,7 @@ public class QRListTabbedPane extends QRPanel {
     protected final ArrayList<QRTabbedContentPanel> panels = new ArrayList<>();
     private int maxLength = 0;
     private final QRTabSelectChangedListener tabSelectChangedListener = new QRTabSelectChangedListener();
+    private int selectedIndex = -1;
 
     /**
      * 创建一个QRListTabbedPane对象。
@@ -55,17 +56,18 @@ public class QRListTabbedPane extends QRPanel {
 
         AtomicReference<QRTabbedContentPanel> current = new AtomicReference<>();
         this.list.addMouseListener(QRMouseListener.TYPE.CLICK, e -> {
-            int selectedIndex = list.getSelectedIndex();
-            QRTabbedContentPanel tabbedContentPanel = panels.get(selectedIndex);
-            if (tabbedContentPanel == null) {
+            selectedIndex = list.getSelectedIndex();
+            if (selectedIndex == -1) {
                 return;
             }
+            QRTabbedContentPanel tabbedContentPanel = panels.get(selectedIndex);
             int beforeIndex = -1;
             QRTabbedContentPanel before = current.get();
             if (before != null) {
                 beforeIndex = panels.indexOf(before);
                 this.remove(before);
             }
+
             current.set(tabbedContentPanel);
             this.add(tabbedContentPanel, BorderLayout.CENTER);
             QRTabSelectEvent tabSelectEvent = new QRTabSelectEvent(beforeIndex, selectedIndex, tabbedContentPanel);
@@ -159,8 +161,11 @@ public class QRListTabbedPane extends QRPanel {
 
     }
 
-
     public QRList getList() {
         return list;
+    }
+
+    public int selectedIndex() {
+        return selectedIndex;
     }
 }
