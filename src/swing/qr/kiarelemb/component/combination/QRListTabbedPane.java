@@ -56,11 +56,7 @@ public class QRListTabbedPane extends QRPanel {
         this.list.addMouseListener();
 
         this.list.addMouseListener(QRMouseListener.TYPE.CLICK, e -> {
-            selectedIndex = list.getSelectedIndex();
-            if (selectedIndex == -1) {
-                return;
-            }
-            setSelectedTab(selectedIndex);
+            setSelectedTab(list.getSelectedIndex());
         });
 
         List<String> contents = this.list.contents();
@@ -127,8 +123,9 @@ public class QRListTabbedPane extends QRPanel {
      * @throws IllegalArgumentException 若索引位置超过 {@link QRList} 内容的范围，则抛出此异常
      */
     public void addPanel(int index, QRTabbedContentPanel panel) {
-        boundCheck(index);
-        panels.add(index, panel);
+        if (boundCheck(index)) {
+            panels.add(index, panel);
+        }
     }
 
     /**
@@ -145,10 +142,15 @@ public class QRListTabbedPane extends QRPanel {
      * @throws IndexOutOfBoundsException 如果传入的索引超出范围，则抛出此异常
      */
     public void setSelectedTab(int selectedIndex) {
-        boundCheck(selectedIndex);
+        if (!boundCheck(selectedIndex)) {
+            return;
+        }
         QRTabbedContentPanel tabbedContentPanel = panels.get(selectedIndex);
-        int beforeIndex = -1;
         QRTabbedContentPanel before = current.get();
+        if (before == tabbedContentPanel) {
+            return;
+        }
+        int beforeIndex = -1;
         if (before != null) {
             beforeIndex = panels.indexOf(before);
             this.remove(before);
@@ -163,6 +165,8 @@ public class QRListTabbedPane extends QRPanel {
         QRTabSelectEvent tabSelectEvent = new QRTabSelectEvent(beforeIndex, selectedIndex, tabbedContentPanel);
         tabbedContentPanel.thisTabSelectChangeAction(tabSelectEvent);
         this.tabSelectChangedListener.tabSelectChangeAction(tabSelectEvent);
+        this.revalidate();
+        this.repaint();
     }
 
     /**
@@ -182,9 +186,7 @@ public class QRListTabbedPane extends QRPanel {
         return selectedIndex;
     }
 
-    private void boundCheck(int index) {
-        if (index < 0 || index > list.getListSize()) {
-            throw new IndexOutOfBoundsException(index);
-        }
+    private boolean boundCheck(int index) {
+        return index >= 0 && index <= list.getListSize();
     }
 }

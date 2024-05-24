@@ -270,9 +270,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
         this.mainPanel.setLayout(null);
 
-        if (parent instanceof QRFrame frame) {
-            frame.addChildWindow(this);
-        }
         this.disposeAction = e -> {
             if (QRDialog.this.isFocused()) {
                 QRDialog.this.dispose();
@@ -336,6 +333,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     public void setVisible(boolean b) {
         if (b) {
             if (this.parent != null) {
+                if (this.parent instanceof QRFrame frame) {
+                    frame.addChildWindow(this);
+                }
                 setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
             } else {
                 setLocationRelativeTo(null);
