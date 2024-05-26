@@ -486,8 +486,15 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
         setText(null);
     }
 
+    @Override
+    public void setText(String t) {
+        super.setText(t);
+        focusLost(null);
+    }
+
     public void setText(int value) {
         setText(String.valueOf(value));
+
     }
 
     public int getValue() {

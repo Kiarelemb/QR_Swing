@@ -8,6 +8,7 @@ import swing.qr.kiarelemb.component.basic.QRLabel;
 import swing.qr.kiarelemb.component.basic.QRPanel;
 import swing.qr.kiarelemb.component.basic.QRTextField;
 import swing.qr.kiarelemb.component.event.QRColorChangedEvent;
+import swing.qr.kiarelemb.component.listener.QRMouseListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
@@ -15,8 +16,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
 /**
@@ -27,9 +26,9 @@ import java.util.LinkedList;
 public class QRRGBColorPane extends QRPanel {
 
     private final QRLabel showColorLabel;
-    private final ColorTextField rt;
-    private final ColorTextField gt;
-    private final ColorTextField bt;
+    private ColorTextField rt;
+    private ColorTextField gt;
+    private ColorTextField bt;
     private final QRActionRegister colorChangedAction;
     private Color color;
 
@@ -42,7 +41,6 @@ public class QRRGBColorPane extends QRPanel {
             setPreferredSize(new Dimension(50, 30));
             setTextCenter();
             addDocumentListener();
-            focusLost(null);
         }
 
         @Override
@@ -131,25 +129,40 @@ public class QRRGBColorPane extends QRPanel {
         }
     }
 
-    public QRRGBColorPane(Window tew, Color color, QRActionRegister colorChangedAction) {
-        this(tew, color, new QRLabel(), colorChangedAction);
+    /**
+     * 构造方法，初始化一个RGB颜色面板。自加添加显示颜色的标签。
+     *
+     * @param color              面板显示的初始颜色
+     * @param colorChangedAction 颜色改变时触发的动作，参数是 {@link QRColorChangedEvent}
+     */
+    public QRRGBColorPane(Color color, QRActionRegister colorChangedAction) {
+        this.showColorLabel = new QRLabel();
+        this.color = color;
+        this.colorChangedAction = colorChangedAction;
+        showColorLabel.setPreferredSize(new Dimension(30, 30));
+        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        add(showColorLabel);
+        initComponents(color);
+        setSize(250, 30);
     }
 
     /**
      * 构造方法，初始化一个RGB颜色面板。
      *
-     * @param tew                包含该面板的窗口对象
      * @param color              面板显示的初始颜色
-     * @param showColorLabel     显示颜色的标签
+     * @param showColorLabel     显示颜色的标签。注意，该构造器不会把标签添加到面板中，需要手动添加。
      * @param colorChangedAction 颜色改变时触发的动作，参数是 {@link QRColorChangedEvent}
      */
-    public QRRGBColorPane(Window tew, Color color, QRLabel showColorLabel, QRActionRegister colorChangedAction) {
+    public QRRGBColorPane(Color color, QRLabel showColorLabel, QRActionRegister colorChangedAction) {
         this.showColorLabel = showColorLabel;
         this.color = color;
         this.colorChangedAction = colorChangedAction;
-        showColorLabel.setOpaque(true);
-        showColorLabel.setBackground(color);
         setLayout(new GridLayout(1, 0, 0, 5));
+        initComponents(color);
+        setSize(202, 30);
+    }
+
+    private void initComponents(Color color) {
         rt = new ColorTextField(color.getRed());
         gt = new ColorTextField(color.getGreen());
         bt = new ColorTextField(color.getBlue());
@@ -157,34 +170,30 @@ public class QRRGBColorPane extends QRPanel {
         QRLabel gl = new QRLabel("g:");
         QRLabel bl = new QRLabel("b:");
         Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 3);
-        rl.setBorder(emptyBorder);
+        rl.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 3));
         gl.setBorder(emptyBorder);
         bl.setBorder(emptyBorder);
         rl.setHorizontalAlignment(SwingConstants.RIGHT);
         gl.setHorizontalAlignment(SwingConstants.RIGHT);
         bl.setHorizontalAlignment(SwingConstants.RIGHT);
-        showColorLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Color selected = JColorChooser.showDialog(QRRGBColorPane.this, "选择颜色", QRRGBColorPane.this.color);
-                if (selected != null) {
-                    rt.setValue(selected.getRed());
-                    gt.setValue(selected.getGreen());
-                    bt.setValue(selected.getBlue());
-                    colorChanged();
-                }
-            }
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                tew.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }
+        showColorLabel.setOpaque(true);
+        showColorLabel.setBackground(color);
+        showColorLabel.setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.LINE_COLOR, 1));
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                tew.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        showColorLabel.addMouseListener();
+        showColorLabel.addMouseAction(QRMouseListener.TYPE.CLICK, e -> {
+            Color selected = JColorChooser.showDialog(QRRGBColorPane.this, "选择颜色", QRRGBColorPane.this.color);
+            if (selected != null) {
+                rt.setValue(selected.getRed());
+                gt.setValue(selected.getGreen());
+                bt.setValue(selected.getBlue());
+                colorChanged();
             }
         });
+        showColorLabel.addMouseAction(QRMouseListener.TYPE.ENTER, e -> showColorLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)));
+        showColorLabel.addMouseAction(QRMouseListener.TYPE.EXIT, e -> showColorLabel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)));
+
 
         add(rl);
         add(rt);
@@ -192,7 +201,6 @@ public class QRRGBColorPane extends QRPanel {
         add(gt);
         add(bl);
         add(bt);
-        setSize(192, 30);
     }
 
     public void colorChanged() {
