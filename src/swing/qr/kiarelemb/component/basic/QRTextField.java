@@ -494,7 +494,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
     public void setText(int value) {
         setText(String.valueOf(value));
-
     }
 
     public int getValue() {
