@@ -45,7 +45,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     public static final Cursor EDIT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
     public static final int INSECT = 10;
-    public final QRCaret caret;
+    public QRCaret caret;
     /**
      * 使用前请先调用 {@link #addUndoManager()}
      */

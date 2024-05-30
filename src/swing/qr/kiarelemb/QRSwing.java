@@ -212,16 +212,18 @@ public class QRSwing implements Serializable {
 
     /**
      * 获取全局默认配置的资源文件，该文件的内容为：
-     * <p>window.absorb=true
-     * <p>window.always.top=false
-     * <p>window.background.image.alpha=0.8
-     * <p>window.background.image.scale=true
-     * <p>window.image.enable=true
-     * <p>window.image.path=
-     * <p>window.round=true
-     * <p>window.theme=深色
-     * <p>window.title.menu=false
-     * <p>window.transparency=0.8
+     * <pre><code>
+     * window.absorb=true
+     * window.always.top=false
+     * window.background.image.alpha=0.8
+     * window.background.image.scale=true
+     * window.image.enable=true
+     * window.image.path=
+     * window.round=true
+     * window.theme=深色
+     * window.title.menu=false
+     * window.transparency=0.8
+     * </code></pre>
      */
     public static Properties getDefaultSettingsProp() {
         URL url = QRSwingInfo.loadUrl("default_settings.properties");
