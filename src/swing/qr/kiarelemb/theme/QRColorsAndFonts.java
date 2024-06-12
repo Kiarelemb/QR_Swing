@@ -152,7 +152,7 @@ public class QRColorsAndFonts {
 			switch (themeName) {
 				case "浅色":
 					colors[index++] = new Color(30, 30, 30);
-					colors[index++] = new Color(235, 235, 235);
+					colors[index++] = new Color(245, 245, 245);
 					colors[index++] = new Color(220, 220, 220);
 					colors[index++] = new Color(205, 205, 205);
 					colors[index++] = new Color(220, 220, 220);

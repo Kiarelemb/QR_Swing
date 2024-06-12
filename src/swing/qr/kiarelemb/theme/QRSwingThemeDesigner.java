@@ -48,6 +48,15 @@ public class QRSwingThemeDesigner extends QRDialog {
     private final QRPanel statisticsPanel;
     private boolean currentThemeChanged = false;
 
+    /**
+     * 主题设计器，大小和位置已设置。<p>使用方法：</p>
+     * <pre><code>
+     * QRSwingThemeDesigner designer = new QRSwingThemeDesigner(MainWindow.INSTANCE);
+     * designer.setVisible(true);
+     * </code></pre>
+     *
+     * @param parent
+     */
     public QRSwingThemeDesigner(QRFrame parent) {
         super(parent);
         setTitle("主题设计器");
@@ -56,6 +65,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         final int width = 1145;
         final int height = 680;
         setSize(width, height);
+        setLocationRelativeTo(parent);
 
         topicCB = new QRComboBox(getThemes());
         QRRoundButton topicInput = new QRRoundButton("导入主题");
