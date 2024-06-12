@@ -22,7 +22,7 @@ import static java.io.File.separator;
  * @apiNote: 总设计类
  * @create 2022-11-04 15:05
  **/
-public class QRSwing implements Serializable {
+public final class QRSwing implements Serializable {
     public static final String WINDOW_IMAGE_ENABLE = "window.image.enable";
     public static final String WINDOW_THEME = "window.theme";
     public static final String WINDOW_IMAGE_PATH = "window.image.path";

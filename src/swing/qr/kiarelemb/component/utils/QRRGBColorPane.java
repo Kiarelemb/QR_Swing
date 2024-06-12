@@ -211,7 +211,11 @@ public class QRRGBColorPane extends QRPanel {
             return;
         }
         Color from = this.color;
-        setColor(new Color(rt.getValue(), gt.getValue(), bt.getValue()));
+        Color newColor = new Color(rt.getValue(), gt.getValue(), bt.getValue());
+        if (newColor.equals(from)) {
+            return;
+        }
+        setColor(newColor);
         Color to = this.color;
         colorChangedAction.action(new QRColorChangedEvent(from, to));
     }
