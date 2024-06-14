@@ -1216,6 +1216,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         }
     }
 
+    public void setEnterAutoFocus() {
+        addMouseListener();
+        addMouseAction(QRMouseListener.TYPE.ENTER, event -> requestFocus());
+    }
+
     public void setSelectable(boolean selectable) {
         if (selectable) {
             Highlighter highlighter = getHighlighter();
