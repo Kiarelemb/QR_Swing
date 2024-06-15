@@ -54,10 +54,21 @@ public class QRTabbedPane extends QRPanel {
     /**
      * 创建一个标签显示可自定义的标签面板
      *
-     * @param tabPositionFromBorderLayout 值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH},
+     * @param tabPositionFromBorderLayout 标签与中心内容的位置，值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH},
      *                                    {@link BorderLayout#WEST} 和 {@link BorderLayout#EAST} 中选择
      */
     public QRTabbedPane(String tabPositionFromBorderLayout) {
+        this(tabPositionFromBorderLayout, FlowLayout.LEFT);
+    }
+
+    /**
+     * 创建一个标签显示可自定义的标签面板
+     *
+     * @param tabPositionFromBorderLayout 标签与中心内容的位置，值从 {@link BorderLayout#NORTH}, {@link BorderLayout#SOUTH},
+     *                                    {@link BorderLayout#WEST} 和 {@link BorderLayout#EAST} 中选择
+     * @param tabsPositionFromFlowLayout  标签在标签列中的对齐，值从 {@link FlowLayout#LEFT}, {@link FlowLayout#CENTER}  和 {@link FlowLayout#RIGHT}  中选择
+     */
+    public QRTabbedPane(String tabPositionFromBorderLayout, int tabsPositionFromFlowLayout) {
         super(false);
         this.arrTabs = new ArrayList<>();
         this.tabPositionFromBorderLayout = tabPositionFromBorderLayout;
@@ -68,10 +79,11 @@ public class QRTabbedPane extends QRPanel {
             }
         };
         this.tabs.addMouseMotionListener();
+        int tabsPosition = Math.min(Math.max(tabsPositionFromFlowLayout, 0), 2);
         switch (tabPositionFromBorderLayout) {
             case BorderLayout.SOUTH -> {
                 this.tabs.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.LINE_COLOR));
-                this.tabs.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                this.tabs.setLayout(new FlowLayout(tabsPosition, 0, 0));
             }
             case BorderLayout.EAST -> {
                 this.tabs.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.LINE_COLOR));
@@ -84,13 +96,14 @@ public class QRTabbedPane extends QRPanel {
             default -> {
                 tabPositionFromBorderLayout = BorderLayout.NORTH;
                 this.tabs.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
-                this.tabs.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                this.tabs.setLayout(new FlowLayout(tabsPosition, 0, 0));
             }
         }
         setLayout(new BorderLayout());
         add(this.tabs, tabPositionFromBorderLayout);
         this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
     }
+
 
     /**
      * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
