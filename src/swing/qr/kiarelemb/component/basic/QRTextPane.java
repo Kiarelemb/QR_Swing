@@ -1204,16 +1204,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public void setEditableFalseButCursorEdit() {
         setEditable(false);
         setCursorEdit();
-        if (this.mouseListener != null) {
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> this.caret.setVisible(true));
-        } else {
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    QRTextPane.this.caret.setVisible(true);
-                }
-            });
-        }
+        QRTextPane.this.caret.setVisible(true);
     }
 
     public void setEnterAutoFocus() {

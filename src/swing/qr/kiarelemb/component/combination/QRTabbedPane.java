@@ -234,6 +234,12 @@ public class QRTabbedPane extends QRPanel {
         return this.arrTabs.get(index).getContentPane();
     }
 
+    @Override
+    public void componentFresh() {
+        super.componentFresh();
+        arrTabs.forEach(QRPanel::componentFresh);
+    }
+
     /**
      * @author Kiarelemb QR
      * @program: QR_Swing
