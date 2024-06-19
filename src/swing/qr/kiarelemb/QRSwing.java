@@ -293,9 +293,6 @@ public final class QRSwing implements Serializable {
     }
 
     public static void setWindowBackgroundImagePath(String value) {
-        if (Objects.equals(QRSwing.windowBackgroundImagePath, value)) {
-            return;
-        }
         if (value == null) {
             QRSwing.windowBackgroundImagePath = null;
             GLOBAL_PROP.remove(WINDOW_IMAGE_PATH);

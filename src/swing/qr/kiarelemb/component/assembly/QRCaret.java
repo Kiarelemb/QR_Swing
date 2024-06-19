@@ -99,6 +99,13 @@ public class QRCaret extends DefaultCaret implements QRComponentUpdate {
     }
 
     @Override
+    public void setVisible(boolean e) {
+        if (this.isVisible() != e) {
+            super.setVisible(e);
+        }
+    }
+
+    @Override
     protected final synchronized void damage(Rectangle r) {
         //让黑影仅为光标大小
         if (r != null) {
