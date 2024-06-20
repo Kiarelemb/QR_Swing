@@ -374,7 +374,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     }
 
     public final void setBackgroundImage(String filePath) {
-        if (filePath == null && this.backgroundImageSet) {
+        if (filePath == null) {
             this.mainPanel.setBorder(null);
             this.backgroundBorder = null;
             imagePath = null;
@@ -383,7 +383,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             QRSwing.setWindowBackgroundImagePath(null);
             return;
         }
-        if (!QRFileUtils.fileExists(filePath)) {
+        if (!QRSwing.windowImageEnable || !QRFileUtils.fileExists(filePath)) {
             return;
         }
         Image imageToSet = QRSwingInfo.loadImage(filePath);
