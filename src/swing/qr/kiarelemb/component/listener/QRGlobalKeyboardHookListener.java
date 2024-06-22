@@ -98,7 +98,7 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 		int modifiers = -1;
 		int modifiersCount = 0;
 		if (e.isControlPressed()) {
-			sb.append("Ctrl ");
+			sb.append("Control ");
 			modifiersCount++;
 			modifiers = KeyEvent.CTRL_DOWN_MASK;
 		}
