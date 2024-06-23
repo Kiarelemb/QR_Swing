@@ -1066,7 +1066,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param length 从开始位置的长度
      * @param attrs  新样式
      */
-    public final void changeTextsStyle(int offset, int length, AttributeSet attrs) {
+    public void changeTextsStyle(int offset, int length, AttributeSet attrs) {
         changeTextsStyle(offset, length, attrs, false);
     }
 
@@ -1077,7 +1077,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param length 从开始位置的长度
      * @param attrs  新样式
      */
-    public final void changeTextsStyle(int offset, int length, AttributeSet attrs, boolean replace) {
+    public void changeTextsStyle(int offset, int length, AttributeSet attrs, boolean replace) {
         ((DefaultStyledDocument) getDocument()).setCharacterAttributes(offset, length, attrs, replace);
     }
 
@@ -1088,7 +1088,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param str    内容
      * @param a      样式
      */
-    public final void insertString(int offset, String str, AttributeSet a) {
+    public void insertString(int offset, String str, AttributeSet a) {
         try {
             getDocument().insertString(offset, str, a);
         } catch (BadLocationException e) {
@@ -1096,7 +1096,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         }
     }
 
-    public final void removeText(int offset, int length) {
+    public void removeText(int offset, int length) {
         try {
             if (length <= 0) {
                 return;
@@ -1114,7 +1114,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param text   要更新的文本
      * @param attrs  样式
      */
-    public final void replaceText(int offset, String text, AttributeSet attrs) {
+    public void replaceText(int offset, String text, AttributeSet attrs) {
         replaceText(offset, text.length(), text, attrs);
     }
 
@@ -1126,7 +1126,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param text   新文本
      * @param attrs  样式
      */
-    public final void replaceText(int offset, int length, String text, AttributeSet attrs) {
+    public void replaceText(int offset, int length, String text, AttributeSet attrs) {
         try {
             ((DefaultStyledDocument) getDocument()).replace(offset, length, text, attrs);
         } catch (BadLocationException e) {
