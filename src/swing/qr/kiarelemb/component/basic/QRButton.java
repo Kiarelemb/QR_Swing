@@ -26,7 +26,7 @@ import java.awt.event.MouseListener;
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @apiNote: 按键
+ * @apiNote: 按扭
  * @create 2022-11-04 16:13
  **/
 public class QRButton extends JButton implements QRComponentUpdate, QRActionListenerAdd, QRMouseMotionListenerAdd,

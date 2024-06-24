@@ -247,4 +247,53 @@ public class QRComponentUtils {
         }, millis);
     }
 
+    /**
+     * 遍历组件数组，对每个组件执行不同的操作取决于它是否是 {@code aClass} 的实例。
+     *
+     * @param jc            容器面板，从中获取组件数组进行遍历。
+     * @param aClass        要匹配的类，用于判断组件是否属于该类，该类是 {@link JComponent} 的子类
+     * @param isClassAction 可为 {@code null}，如果组件是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
+     */
+    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister isClassAction) {
+        // 获取控件里的所有组件
+        Component[] components = jc.getComponents();
+        // 遍历所有组件
+        for (Component com : components) {
+            // 判断组件是否为 aClass 的实例
+            if (aClass.isInstance(com)) {
+                // 如果是指定 aClass 的实例，调用 isClassAction
+                if (isClassAction != null) {
+                    isClassAction.action(com);
+                }
+            }
+        }
+    }
+
+    /**
+     * 遍历组件数组，对每个组件执行不同的操作取决于它是否是 {@code aClass} 的实例。
+     *
+     * @param jc            容器面板，从中获取组件数组进行遍历。
+     * @param aClass        要匹配的类，用于判断组件是否属于该类，该类是 {@link JComponent} 的子类
+     * @param isClassAction 可为 {@code null}，如果组件是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
+     * @param elseAction    可为 {@code null}，如果组件不是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
+     */
+    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister isClassAction, QRActionRegister elseAction) {
+        // 获取控件里的所有组件
+        Component[] components = jc.getComponents();
+        // 遍历所有组件
+        for (Component com : components) {
+            // 判断组件是否为 aClass 的实例
+            if (aClass.isInstance(com)) {
+                // 如果是指定 aClass 的实例，调用 isClassAction
+                if (isClassAction != null) {
+                    isClassAction.action(com);
+                }
+            } else {
+                // 如果不是 aClass 的实例，调用 elseAction
+                if (elseAction != null) {
+                    elseAction.action(com);
+                }
+            }
+        }
+    }
 }

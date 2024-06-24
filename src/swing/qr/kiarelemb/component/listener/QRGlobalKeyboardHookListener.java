@@ -128,7 +128,7 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 		if (modifiers == -1) {
 			return QRStringUtils.getKeyStroke(keyCode);
 		} else {
-			KeyStroke stroke = null;
+			KeyStroke stroke;
 			if (modifiersCount == 2) {
 				if (e.isControlPressed() && e.isShiftPressed()) {
 					modifiers = 195;

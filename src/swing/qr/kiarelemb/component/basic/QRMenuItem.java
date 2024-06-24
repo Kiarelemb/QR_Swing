@@ -17,7 +17,7 @@ import java.awt.*;
  **/
 public class QRMenuItem extends QRButton {
 	private final QRLabel tip;
-	private final QRActionRegister ar = e -> this.actionEvent(null);
+	private final QRActionRegister ar = e -> this.clickInvokeLater();
 	private String quickTip;
 
 	public QRMenuItem(String text) {

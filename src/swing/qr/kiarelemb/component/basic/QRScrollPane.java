@@ -140,15 +140,18 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         }
         int extent0 = this.scrollHeight * this.scrollLine;
         final int range;
-        int extent = 2;
+        // 确保在循环 50 次内把滚动条更新完
+        int extent;
         if (up) {
             range = Math.min(value, extent0);
+            extent = Math.max(range / 50, 2);
             for (int i = 0; i < range; i += extent) {
                 bar.minusValue(extent);
                 QRSleepUtils.sleep(scrollSpeed);
             }
         } else {
             range = value + extent0 > maxValue ? maxValue - value : extent0;
+            extent = Math.max(range / 50, 2);
             for (int i = 0; i < range; i += extent) {
                 bar.plusValue(extent);
                 QRSleepUtils.sleep(scrollSpeed);
@@ -175,7 +178,6 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
     public boolean borderPaint() {
         return this.borderPaint;
     }
-
 
     @Override
     public void setViewportView(Component view) {
