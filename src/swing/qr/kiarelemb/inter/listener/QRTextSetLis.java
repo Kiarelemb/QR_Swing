@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QREventObject;
+import swing.qr.kiarelemb.event.QREventObject;
 
 import java.util.EventListener;
 

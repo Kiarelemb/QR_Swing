@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener.add;
 
-import swing.qr.kiarelemb.component.listener.QRMouseMotionListener;
+import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 public interface QRMouseMotionListenerAdd {

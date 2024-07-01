@@ -1,8 +1,8 @@
 package swing.qr.kiarelemb;
 
 import method.qr.kiarelemb.utils.*;
-import swing.qr.kiarelemb.component.QRComponentUtils;
-import swing.qr.kiarelemb.component.listener.QRGlobalKeyboardHookListener;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
+import swing.qr.kiarelemb.listener.QRGlobalKeyboardHookListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -49,12 +49,12 @@ public final class QRSwing implements Serializable {
     /**
      * 主窗体不处于焦点时的事件集
      */
-    private static final Map<KeyStroke, ArrayList<QRActionRegister>> GLOBAL_KEY_EVENTS = new HashMap<>();
+    public static final Map<KeyStroke, ArrayList<QRActionRegister>> GLOBAL_KEY_EVENTS = new HashMap<>();
     /**
      * 所有事件集
      */
-    private static final Map<KeyStroke, ArrayList<QRActionRegister>> ALL_KEY_EVENTS = new HashMap<>();
-    private static final ArrayList<QRActionRegister> actionAfterClose = new ArrayList<>();
+    public static final Map<KeyStroke, ArrayList<QRActionRegister>> ALL_KEY_EVENTS = new HashMap<>();
+    public static final ArrayList<QRActionRegister> actionAfterClose = new ArrayList<>();
     /**
      * {@link swing.qr.kiarelemb.window.basic.QRFrame} 的资源文件
      */

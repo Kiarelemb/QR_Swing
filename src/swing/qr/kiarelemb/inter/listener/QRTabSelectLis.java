@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRTabSelectEvent;
+import swing.qr.kiarelemb.event.QRTabSelectEvent;
 
 import java.util.EventListener;
 

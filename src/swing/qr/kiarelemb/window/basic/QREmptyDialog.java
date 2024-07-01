@@ -2,9 +2,9 @@ package swing.qr.kiarelemb.window.basic;
 
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.basic.QRPanel;
-import swing.qr.kiarelemb.component.combination.QRBorderContentPanel;
-import swing.qr.kiarelemb.component.listener.QRWindowListener;
+import swing.qr.kiarelemb.basic.QRPanel;
+import swing.qr.kiarelemb.combination.QRBorderContentPanel;
+import swing.qr.kiarelemb.listener.QRWindowListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;

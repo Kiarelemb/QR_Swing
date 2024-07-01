@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRRedoUndoEvent;
+import swing.qr.kiarelemb.event.QRRedoUndoEvent;
 
 import java.util.EventListener;
 

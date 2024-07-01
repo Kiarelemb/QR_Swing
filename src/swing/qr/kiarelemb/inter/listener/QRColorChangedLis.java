@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRColorChangedEvent;
+import swing.qr.kiarelemb.event.QRColorChangedEvent;
 
 import java.util.EventListener;
 

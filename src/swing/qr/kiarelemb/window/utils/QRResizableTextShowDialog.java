@@ -1,7 +1,7 @@
 package swing.qr.kiarelemb.window.utils;
 
-import swing.qr.kiarelemb.component.basic.QRTextArea;
-import swing.qr.kiarelemb.component.listener.QRMouseListener;
+import swing.qr.kiarelemb.basic.QRTextArea;
+import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 
 import java.awt.*;

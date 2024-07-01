@@ -4,8 +4,8 @@ import method.qr.kiarelemb.utils.QRSleepUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import method.qr.kiarelemb.utils.QRThreadBuilder;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.basic.QRPanel;
+import swing.qr.kiarelemb.basic.QRLabel;
+import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 

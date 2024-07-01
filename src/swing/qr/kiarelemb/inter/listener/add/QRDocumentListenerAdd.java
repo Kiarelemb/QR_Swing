@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener.add;
 
-import swing.qr.kiarelemb.component.listener.QRDocumentListener;
+import swing.qr.kiarelemb.listener.QRDocumentListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 public interface QRDocumentListenerAdd {

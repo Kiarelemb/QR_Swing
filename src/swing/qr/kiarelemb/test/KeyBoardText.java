@@ -2,8 +2,8 @@ package swing.qr.kiarelemb.test;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.utils.QRKeyBoardPanel;
+import swing.qr.kiarelemb.basic.QRLabel;
+import swing.qr.kiarelemb.utils.QRKeyBoardPanel;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 

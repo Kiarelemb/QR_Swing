@@ -1,9 +1,9 @@
 package swing.qr.kiarelemb.window.utils;
 
 import method.qr.kiarelemb.utils.QRTools;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.basic.QRRoundButton;
-import swing.qr.kiarelemb.component.basic.QRTextField;
+import swing.qr.kiarelemb.basic.QRLabel;
+import swing.qr.kiarelemb.basic.QRRoundButton;
+import swing.qr.kiarelemb.basic.QRTextField;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 

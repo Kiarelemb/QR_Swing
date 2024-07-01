@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRTabbedPaneCloseEvent;
+import swing.qr.kiarelemb.event.QRTabbedPaneCloseEvent;
 
 import java.util.EventListener;
 

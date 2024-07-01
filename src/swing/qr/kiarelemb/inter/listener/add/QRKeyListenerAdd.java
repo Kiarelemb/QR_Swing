@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener.add;
 
-import swing.qr.kiarelemb.component.listener.QRKeyListener;
+import swing.qr.kiarelemb.listener.QRKeyListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 /**

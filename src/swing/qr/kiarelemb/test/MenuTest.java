@@ -2,11 +2,11 @@ package swing.qr.kiarelemb.test;
 
 import method.qr.kiarelemb.utils.QRRandomUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.basic.QRButton;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.basic.QRMenuItem;
-import swing.qr.kiarelemb.component.basic.QRTextPane;
-import swing.qr.kiarelemb.component.combination.QRStatePanel;
+import swing.qr.kiarelemb.basic.QRButton;
+import swing.qr.kiarelemb.basic.QRLabel;
+import swing.qr.kiarelemb.basic.QRMenuItem;
+import swing.qr.kiarelemb.basic.QRTextPane;
+import swing.qr.kiarelemb.combination.QRStatePanel;
 import swing.qr.kiarelemb.theme.QRSwingThemeDesigner;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 

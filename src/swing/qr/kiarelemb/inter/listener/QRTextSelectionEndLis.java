@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRTextSelectionEndEvent;
+import swing.qr.kiarelemb.event.QRTextSelectionEndEvent;
 
 import java.util.EventListener;
 

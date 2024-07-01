@@ -2,8 +2,8 @@ package swing.qr.kiarelemb.window.enhance;
 
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.component.basic.QRLabel;
-import swing.qr.kiarelemb.component.basic.QRRoundButton;
+import swing.qr.kiarelemb.basic.QRLabel;
+import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;

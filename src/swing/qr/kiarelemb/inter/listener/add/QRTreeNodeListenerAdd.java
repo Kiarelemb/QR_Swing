@@ -12,12 +12,12 @@ import javax.swing.tree.TreePath;
  **/
 public interface QRTreeNodeListenerAdd {
 	/**
-	 * 添加 {@link swing.qr.kiarelemb.component.listener.QRTreeNodeClickListener} 事件
+     * 添加 {@link swing.qr.kiarelemb.listener.QRTreeNodeClickListener} 事件
 	 */
 	void addTreeNodeListener();
 
 	/**
-	 * 为 {@link swing.qr.kiarelemb.component.listener.QRTreeNodeClickListener} 事件添加操作
+     * 为 {@link swing.qr.kiarelemb.listener.QRTreeNodeClickListener} 事件添加操作
 	 *
 	 * @param ar 操作
 	 */

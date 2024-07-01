@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.inter.listener;
 
-import swing.qr.kiarelemb.component.event.QRTreeNodeEvent;
+import swing.qr.kiarelemb.event.QRTreeNodeEvent;
 
 /**
  * @author Kiarelemb QR
