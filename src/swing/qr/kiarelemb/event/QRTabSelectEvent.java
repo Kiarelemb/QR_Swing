@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.event;
 
+
 import swing.qr.kiarelemb.combination.QRTabbedContentPanel;
 
 import java.util.EventObject;
