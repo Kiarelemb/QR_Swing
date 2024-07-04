@@ -48,7 +48,8 @@ public class QRMenuPanel extends QRPanel {
      * @return 菜单按钮
      */
     public QRButton add(String name) {
-        QRButton button = QRSystemUtils.IS_OSX ? new QRMenuButtonOriginal(name, this) : new QRMenuButton(name, this);
+        QRButton button = QRSystemUtils.IS_OSX ? new QRMenuButtonOriginal(name, this)
+                : new QRMenuButton(name, this);
         button.addMouseListener();
         button.addMouseAction(QRMouseListener.TYPE.PRESS, e -> mousePressAction(button));
         button.addMouseAction(QRMouseListener.TYPE.ENTER, e -> mouseEnterAction(button));

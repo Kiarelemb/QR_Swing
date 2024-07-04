@@ -28,8 +28,6 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 
 	public QRMenuButton(String text, QRMenuPanel menuPanel) {
 		super(text);
-		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
-		setForeground(QRColorsAndFonts.MENU_COLOR);
 		this.menuPanel = menuPanel;
 
 		this.jpm = new QRPopupMenu(SwingUtilities.getWindowAncestor(menuPanel)) {
@@ -77,6 +75,8 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
 	@Override
 	public void componentFresh() {
 		super.componentFresh();
+		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
+		setForeground(QRColorsAndFonts.MENU_COLOR);
 		if (this.jpm != null) {
 			this.jpm.componentFresh();
 		}

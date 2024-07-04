@@ -1,18 +1,24 @@
 package swing.qr.kiarelemb;
 
 import method.qr.kiarelemb.utils.*;
-import swing.qr.kiarelemb.utils.QRComponentUtils;
-import swing.qr.kiarelemb.listener.QRGlobalKeyboardHookListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.listener.QRGlobalKeyboardHookListener;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.io.File.separator;
 
@@ -23,6 +29,7 @@ import static java.io.File.separator;
  * @create 2022-11-04 15:05
  **/
 public final class QRSwing implements Serializable {
+
     public static final String WINDOW_IMAGE_ENABLE = "window.image.enable";
     public static final String WINDOW_THEME = "window.theme";
     public static final String WINDOW_IMAGE_PATH = "window.image.path";
@@ -110,10 +117,28 @@ public final class QRSwing implements Serializable {
      */
     public static Font globalFont;
     public static String GLOBAL_PROP_PATH;
+    /**
+     * 为 Windows 系统设置的按键监听器
+     */
     private static QRGlobalKeyboardHookListener keyboardHook;
+    /**
+     * 为 Windows 以外的其他系统设置的按键监听器
+     */
+    private static KeyboardFocusManager keyRecord;
 
 
     private QRSwing(String propPath) {
+        System.out.println("""
+                                
+                 .88888.    888888ba  .d88888b             oo                  
+                d8'   `8b   88    `8b 88.    "'                                
+                88     88  a88aaaa8P' `Y88888b. dP  dP  dP dP 88d888b. .d8888b.
+                88  db 88   88   `8b.       `8b 88  88  88 88 88'  `88 88'  `88
+                Y8.  Y88P   88     88 d8'   .8P 88.88b.88' 88 88    88 88.  .88
+                 `8888PY8b  dP     dP  Y88888P  8888P Y8P  dP dP    dP `8888P88
+                oooooooooooooooooooooooooooooooooooooooooooooooooooooooo~~~~.88~
+                                                                        d8888P 
+                """);
         GLOBAL_PROP_PATH = propPath;
         //动画优化
         Toolkit.getDefaultToolkit().sync();
@@ -344,13 +369,22 @@ public final class QRSwing implements Serializable {
      * @param mainWindow 主窗体
      */
     public static void registerGlobalKeyEvents(Window mainWindow) {
-        if (keyboardHook == null) {
+        if (keyboardHook == null && QRSystemUtils.IS_WINDOWS) {
             keyboardHook = new QRGlobalKeyboardHookListener() {
                 @Override
                 protected void keyPress(KeyStroke keyStroke) {
                     invokeAction(mainWindow, keyStroke, mainWindow != null && mainWindow.isFocused());
                 }
             };
+        } else if (keyRecord == null && !QRSystemUtils.IS_WINDOWS) {
+            keyRecord = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            keyRecord.addKeyEventPostProcessor(e -> {
+                if (e.getID() != KeyEvent.KEY_LAST) {
+                    return false;
+                }
+                invokeAction(mainWindow, QRStringUtils.getKeyStroke(e), mainWindow != null && mainWindow.isFocused());
+                return true;
+            });
         }
     }
 
@@ -380,6 +414,35 @@ public final class QRSwing implements Serializable {
     }
 
     /**
+     * 当已另注册了一个内部的键盘监听器时，可以直接设置，而不用新实例化
+     *
+     * @param listener   已设置的监听器
+     * @param mainWindow 主窗体
+     */
+    public static void setGlobalKeyEventsListener(KeyboardFocusManager listener, Window mainWindow) {
+        if (keyRecord == null && listener != null) {
+            keyRecord = listener;
+            listener.addKeyEventPostProcessor(e -> {
+                if (e.getID() != KeyEvent.KEY_LAST) {
+                    return false;
+                }
+                KeyStroke keyStroke = QRStringUtils.getKeyStroke(e);
+                ArrayList<QRActionRegister> list;
+                if (mainWindow != null && mainWindow.isFocused()) {
+                    list = ALL_KEY_EVENTS.get(keyStroke);
+                } else {
+                    list = GLOBAL_KEY_EVENTS.get(keyStroke);
+                }
+                if (list != null) {
+                    ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+                    temp.forEach(ef -> ef.action(keyStroke));
+                }
+                return true;
+            });
+        }
+    }
+
+    /**
      * 添加键盘按键事件，提供多个快捷键对应一个Action的功能
      * <p> 方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
      *
@@ -391,16 +454,11 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
     public static void registerGlobalAction(String key, QRActionRegister ar, boolean mainWindowFocus) {
-//        if (key.indexOf(',') == -1) {
-//            KeyStroke keyStroke = QRStringUtils.getKeyStroke(key);
-//            registerGlobalAction(keyStroke, ar, mainWindowFocus);
-//        } else {
         String[] keys = key.split(",");
         for (String k : keys) {
             KeyStroke keyStroke = QRStringUtils.getKeyStroke(k);
             registerGlobalAction(keyStroke, ar, mainWindowFocus);
         }
-//        }
     }
 
     /**

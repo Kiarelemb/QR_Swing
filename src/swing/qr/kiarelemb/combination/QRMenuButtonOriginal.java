@@ -94,8 +94,9 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 				}
 			}
 		}
+		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
+		setForeground(QRColorsAndFonts.MENU_COLOR);
 	}
-
 	@Override
 	public void add(QRMenuItem qmi) {
 		this.jpm.add(qmi);
