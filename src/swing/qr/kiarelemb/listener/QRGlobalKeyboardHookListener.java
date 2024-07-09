@@ -49,7 +49,6 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 		addKeyListener(new GlobalKeyListener() {
 			@Override
 			public void keyPressed(GlobalKeyEvent globalKeyEvent) {
-//				System.out.println("globalKeyEvent = " + globalKeyEvent);
 				KeyStroke keyStroke = getKeyEvents(globalKeyEvent);
 				if (keyStroke != null) {
 					if (press.size() == 1) {
@@ -123,7 +122,6 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 			return k;
 		}
 		int keyCode = e.getVirtualKeyCode();
-//		System.out.println("VirtualKeyCode() = " + keyCode);
 		Integer code = GLOBAL_SHIFT_TO_KEY_EVENT.get(keyCode);
 		keyCode = code != null ? code : keyCode;
 		if (modifiers == -1) {

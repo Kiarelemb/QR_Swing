@@ -59,6 +59,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     protected char blankMark = ' ';
     protected char lineMark = '\n';
     protected boolean caretBlock = false;
+    protected boolean lineWrap = true;
 
     //region 高级操作变量，用于鼠标取文
     /**
@@ -97,7 +98,6 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      */
     public QRTextPane() {
         setMargin(new Insets(INSECT, INSECT, INSECT, INSECT));
-//		setPreferredSize(new Dimension(800, 400));
         this.caret = new QRCaret();
         setCaret(this.caret);
         componentFresh();
@@ -1223,6 +1223,16 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
             setHighlighter(null);
         }
     }
+
+    /**
+     * 设置文本的换行方式。
+     *
+     * @param lineWrap true表示启用行包装，false表示禁用行包装。
+     */
+    public void setLineWrap(boolean lineWrap) {
+        this.lineWrap = lineWrap;
+    }
+
     //endregion
 
     //region 鼠标处理
@@ -1737,6 +1747,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         if (this.caret != null) {
             this.caret.setFont(font).update();
         }
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return lineWrap;
     }
 
     @Override

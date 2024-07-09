@@ -12,5 +12,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="QR_Method" level="project" />
     <orderEntry type="library" name="commons-collections4-4.4" level="project" />
+    <orderEntry type="library" name="jnativehook-2.2.2-sources" level="project" />
   </component>
 </module>

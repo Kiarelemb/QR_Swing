@@ -174,19 +174,63 @@ public class QRComponentUtils {
      * @param list 任务列表
      */
     public static void runActions(List<QRActionRegister> list, Object obj) {
-        if (list != null && !list.isEmpty()) {
-            ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+        temp.forEach(e -> {
+            //确保每个都能完成而不影响之后的事件
+            try {
+                e.action(obj);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+
+    /**
+     * 在GUI的事件调度线程中异步以参数 null 执行一系列动作。
+     * 此方法用于将一系列操作推迟到GUI线程中执行，以确保这些操作不会阻塞当前线程，
+     * 并且能够正确地与GUI组件交互。
+     *
+     * @param list 操作注册表列表，包含待执行的操作。
+     */
+    public static void runActionsLater(List<QRActionRegister> list) {
+        runActionsLater(list, null);
+    }
+
+    /**
+     * 在GUI的事件调度线程中异步执行一系列动作。
+     * 此方法用于将一系列操作推迟到GUI线程中执行，以确保这些操作不会阻塞当前线程，
+     * 并且能够正确地与GUI组件交互。
+     *
+     * @param list 操作注册表列表，包含待执行的操作。
+     * @param obj  传递给每个操作的对象，用于执行操作时使用。
+     */
+    public static void runActionsLater(List<QRActionRegister> list, Object obj) {
+        // 检查列表是否为空，以避免无意义的线程调度
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+
+        // 创建列表的副本，以避免在异步操作中修改原始列表
+        ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+
+        // 使用SwingUtilities的invokeLater方法将操作推迟到GUI线程中执行
+        SwingUtilities.invokeLater(() -> {
+            // 遍历副本列表中的每个操作，并异步执行
             temp.forEach(e -> {
-                //确保每个都能完成而不影响之后的事件
+                // 尝试执行操作，并捕获任何异常，以防止线程中断
+                // 确保每个都能完成而不影响之后的事件
                 try {
                     e.action(obj);
                 } catch (Exception ex) {
+                    // 将异常转换为运行时异常，以在调用栈中抛出
                     throw new RuntimeException(ex);
                 }
             });
-        }
+        });
     }
-
 
     /**
      * 如果设置背景图片，调用此方法。窗体刷新会延迟 30 毫秒
