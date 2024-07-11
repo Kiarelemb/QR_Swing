@@ -23,7 +23,7 @@ public class QRKeyBoardPanel extends QRPanel {
     protected final String[] text;
 
     public QRKeyBoardPanel() {
-        setLayout(null);
+        super(null);
         setSize(0, 0);
         text = new String[]{"`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "←", "Tab", "Q", "W", "E", "R", "Y",
                 "T", "U", "I", "O", "P", "[", "]", "\\", "Caps", "A", "S", "D", "F", "H", "G", "J", "K", "L", ";", "'", "ENTER",

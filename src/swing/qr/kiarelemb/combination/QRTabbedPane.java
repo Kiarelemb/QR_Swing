@@ -2,15 +2,15 @@ package swing.qr.kiarelemb.combination;
 
 
 import method.qr.kiarelemb.utils.QRFontUtils;
-import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.event.QRTabSelectEvent;
 import swing.qr.kiarelemb.event.QRTabbedPaneCloseEvent;
+import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRTabCloseListener;
 import swing.qr.kiarelemb.listener.QRTabSelectChangedListener;
-import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -69,7 +69,7 @@ public class QRTabbedPane extends QRPanel {
      * @param tabsPositionFromFlowLayout  标签在标签列中的对齐，值从 {@link FlowLayout#LEFT}, {@link FlowLayout#CENTER}  和 {@link FlowLayout#RIGHT}  中选择
      */
     public QRTabbedPane(String tabPositionFromBorderLayout, int tabsPositionFromFlowLayout) {
-        super(false);
+        super(false, new BorderLayout());
         this.arrTabs = new ArrayList<>();
         this.tabPositionFromBorderLayout = tabPositionFromBorderLayout;
         this.tabs = new QRPanel() {
@@ -99,7 +99,6 @@ public class QRTabbedPane extends QRPanel {
                 this.tabs.setLayout(new FlowLayout(tabsPosition, 0, 0));
             }
         }
-        setLayout(new BorderLayout());
         add(this.tabs, tabPositionFromBorderLayout);
         this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
     }

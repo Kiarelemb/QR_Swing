@@ -432,7 +432,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @return 滚动条本身，实例是 {@link QRScrollPane}
      */
     public QRScrollPane addScrollPane() {
-        return addScrollPane(5);
+        return addScrollPane(3);
     }
 
     /**

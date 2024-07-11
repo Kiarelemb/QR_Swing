@@ -337,7 +337,7 @@ public class QRContractiblePanel extends QRPanel {
 		}
 
 		private QRColumnContentPanel(int height) {
-			setLayout(null);
+			super(null);
 			setPreferredSize(new Dimension(DEFAULT_DIMENSION.width - GAP * 2, height));
 		}
 

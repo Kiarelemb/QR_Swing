@@ -4,9 +4,9 @@ import method.qr.kiarelemb.utils.QRFontUtils;
 import swing.qr.kiarelemb.basic.QRList;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.event.QRTabSelectEvent;
+import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRTabSelectChangedListener;
-import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,10 +48,9 @@ public class QRListTabbedPane extends QRPanel {
     }
 
     public QRListTabbedPane(QRList alist, String listPositionFromBorderLayout) {
-        super(false);
+        super(false, new BorderLayout(10, 10));
         this.list = alist;
         this.listPositionFromBorderLayout = listPositionFromBorderLayout;
-        this.setLayout(new BorderLayout(10, 10));
         this.add(this.list.addScrollPane(), listPositionFromBorderLayout);
         this.list.addMouseListener();
 

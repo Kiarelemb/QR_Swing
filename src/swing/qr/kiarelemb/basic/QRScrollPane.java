@@ -8,9 +8,9 @@ import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.assembly.QRCaret;
 import swing.qr.kiarelemb.assembly.QRLineNumberComponent;
 import swing.qr.kiarelemb.assembly.QRScrollBarUI;
-import swing.qr.kiarelemb.listener.QRMouseWheelListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.listener.QRMouseWheelListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
@@ -57,6 +57,8 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         setVerticalScrollBar(this.vBar);
         this.horUI = this.hBar.barUi();
         this.verUI = this.vBar.barUi();
+        setBorder(null);
+        setOpaque(false);
         componentFresh();
     }
 
@@ -112,7 +114,7 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
      * @param e 传入的事件
      */
     private void mouseWheelMove(MouseWheelEvent e) {
-        if (e.isControlDown()) {
+        if (e.isShiftDown()) {
             if (this.hBar.isVisible()) {
                 ThreadPoolExecutor scroll = QRThreadBuilder.singleThread("scroll");
                 scroll.submit(() -> setScrollBarRollSmoothly(this.hBar, e.getWheelRotation() < 0));
@@ -218,23 +220,16 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
 
     @Override
     public void componentFresh() {
-
-        setBorder(null);
-//		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-//		setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
-//		setBorder(BorderFactory.createLineBorder(QRColorsAndFonts.FRAME_COLOR_BACK, 5));
-//		setBorder(null);
-        setOpaque(false);
-        getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-//		setBackground(new Color(0,0,0,0));
         this.horUI.componentFresh();
         this.verUI.componentFresh();
         this.vBar.componentFresh();
         this.hBar.componentFresh();
         final Component view = getViewport().getView();
-        if (view instanceof QRComponentUpdate) {
-            ((QRComponentUpdate) view).componentFresh();
+        if (view instanceof QRComponentUpdate v) {
+            v.componentFresh();
+        } else {
+            getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         }
     }
 }

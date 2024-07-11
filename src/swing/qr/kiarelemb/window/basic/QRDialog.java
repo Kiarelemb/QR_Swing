@@ -249,7 +249,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
         MouseAdapte adapte = new MouseAdapte();
 
-        QRPanel titlePanel = new QRPanel() {
+        QRPanel titlePanel = new QRPanel(new BorderLayout(2, 0)) {
             @Override
             public void mousePress(MouseEvent e) {
                 adapte.mousePressed(e);
@@ -275,7 +275,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
                 adapte.mouseMoved(e);
             }
         };
-        titlePanel.setLayout(new BorderLayout(2, 0));
         this.topPanel.add(titlePanel, BorderLayout.CENTER);
 
         QRLabel iconLabel = QRLabel.getIconLabel();
@@ -292,10 +291,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.closeButton.addClickAction(e -> dispose());
         titlePanel.add(this.closeButton, BorderLayout.EAST);
 
-        this.mainPanel = new QRPanel();
+        this.mainPanel = new QRPanel(null);
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
-        this.mainPanel.setLayout(null);
 
         addMouseMotionListener(adapte);
         addMouseListener(adapte);

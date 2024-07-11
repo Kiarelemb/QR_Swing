@@ -62,12 +62,11 @@ public class QRTreeTabbedPane extends QRPanel {
 	 * @param treePositionFromBorderLayout 树的位置
 	 */
 	public QRTreeTabbedPane(QRTree tree, String treePositionFromBorderLayout) {
-		super(false);
+		super(false, new BorderLayout(5, 5));
 		this.tree = tree;
 		this.treePositionFromBorderLayout = treePositionFromBorderLayout;
 		this.map = new HashMap<>();
 		scrollPane = new QRScrollPane();
-		setLayout(new BorderLayout(5, 5));
 		switch (treePositionFromBorderLayout) {
 			case BorderLayout.SOUTH ->
 					this.tree.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.LINE_COLOR));

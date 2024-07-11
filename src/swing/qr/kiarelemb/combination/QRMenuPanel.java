@@ -3,8 +3,8 @@ package swing.qr.kiarelemb.combination;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRPanel;
-import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.inter.QRMenuButtonProcess;
+import swing.qr.kiarelemb.listener.QRMouseListener;
 
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -30,10 +30,8 @@ public class QRMenuPanel extends QRPanel {
      * 实现一个菜单条，可以在其中加入菜单按钮
      */
     public QRMenuPanel() {
-        super();
-        this.buttonsPanel = new QRPanel();
-        this.buttonsPanel.setLayout(new GridLayout(1, 0, 2, 0));
-        setLayout(new BorderLayout());
+        super(new BorderLayout());
+        this.buttonsPanel = new QRPanel(new GridLayout(1, 0, 2, 0));
         add(this.buttonsPanel, BorderLayout.WEST);
         addFocusListener();
         this.buttons = new LinkedList<>();

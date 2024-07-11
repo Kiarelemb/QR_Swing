@@ -34,8 +34,18 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
     }
 
     public QRPanel(boolean opaque) {
-        this();
+        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setOpaque(opaque);
+    }
+    
+    public QRPanel(LayoutManager layout){
+        super(layout);
+        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+    }
+
+    public QRPanel(boolean opaque,LayoutManager layout) {
+        this(opaque);
+        setLayout(layout);
     }
 
     public void setPreferredSize(int width, int height) {

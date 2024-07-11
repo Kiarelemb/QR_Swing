@@ -24,13 +24,12 @@ public class QRStatePanel extends QRPanel {
 	 * 一个状态栏一般情况下分为三部分：左、中、右。其中，“中”又用得很少。
 	 */
 	public QRStatePanel() {
-		super();
+		super(new BorderLayout());
 		EmptyBorder border = new EmptyBorder(10, 10, 10, 10);
 		setBorder(border);
 		this.leftPane = new QRPanel(false);
 		this.rightPane = new QRPanel(false);
 
-		setLayout(new BorderLayout());
 		add(this.leftPane, BorderLayout.WEST);
 		add(this.rightPane, BorderLayout.EAST);
 		this.leftPane.setLayout(new GridLayout());
