@@ -18,6 +18,9 @@ import javax.swing.text.Caret;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -47,6 +50,7 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
      * 文本面整的行高
      */
     private int scrollHeight = 10;
+    private final ArrayList<QRScrollPane> followedToScroll = new ArrayList<>();
 
     public QRScrollPane() {
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -99,6 +103,15 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
     }
 
     /**
+     * 添加同步滚动的滚动面板
+     *
+     * @param scrollPane 其他滚动面板
+     */
+    public void addFollowedToScrollPane(QRScrollPane scrollPane) {
+        this.followedToScroll.add(scrollPane);
+    }
+
+    /**
      * 设置平滑滚动
      *
      * @param line 单次滚动的值
@@ -117,17 +130,17 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         if (e.isShiftDown()) {
             if (this.hBar.isVisible()) {
                 ThreadPoolExecutor scroll = QRThreadBuilder.singleThread("scroll");
-                scroll.submit(() -> setScrollBarRollSmoothly(this.hBar, e.getWheelRotation() < 0));
+                scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.hBar, followedToScroll.stream().map(QRScrollPane::getHorizontalScrollBar).filter(Objects::nonNull).toList()));
             }
         } else {
             if (this.vBar.isVisible()) {
                 ThreadPoolExecutor scroll = QRThreadBuilder.singleThread("scroll");
-                scroll.submit(() -> setScrollBarRollSmoothly(this.vBar, e.getWheelRotation() < 0));
+                scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.vBar, followedToScroll.stream().map(QRScrollPane::getVerticalScrollBar).filter(Objects::nonNull).toList()));
             }
         }
     }
 
-    private void setScrollBarRollSmoothly(QRScrollBar bar, boolean up) {
+    private void setScrollBarRollSmoothly(boolean up, QRScrollBar bar, List<JScrollBar> otherBar) {
         int value = bar.getValue();
         final int maxValue = bar.getMaximum();
         Rectangle2D r = null;
@@ -149,6 +162,10 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
             extent = Math.max(range / 50, 2);
             for (int i = 0; i < range; i += extent) {
                 bar.minusValue(extent);
+                if (!otherBar.isEmpty())
+                    for (JScrollBar b : otherBar) {
+                        b.setValue(Math.max(b.getMinimum(), b.getValue() - extent));
+                    }
                 QRSleepUtils.sleep(scrollSpeed);
             }
         } else {
@@ -156,6 +173,10 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
             extent = Math.max(range / 50, 2);
             for (int i = 0; i < range; i += extent) {
                 bar.plusValue(extent);
+                if (!otherBar.isEmpty())
+                    for (JScrollBar b : otherBar) {
+                        b.setValue(Math.min(b.getMaximum(), b.getValue() + extent));
+                    }
                 QRSleepUtils.sleep(scrollSpeed);
             }
         }
@@ -192,7 +213,6 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
             if (caret instanceof QRCaret c) {
                 scrollHeight = c.caretHeight();
             } else {
-
                 Font font = v.getFont();
                 Rectangle2D stringBounds = QRFontUtils.getStringBounds("中文", font);
                 scrollHeight = Math.max((int) (stringBounds.getHeight() * this.scrollLine), scrollHeight);
