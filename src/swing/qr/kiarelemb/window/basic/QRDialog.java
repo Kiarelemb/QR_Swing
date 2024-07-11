@@ -82,11 +82,13 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
             int eY = e.getY();
             int eX = e.getX();
             if (this.upAndLeft) {
-                setBounds(eXOnScreen, eYOnScreen, this.width + this.pressPointX - eXOnScreen, this.height + this.pressPointY - eYOnScreen);
+                setBounds(eXOnScreen, eYOnScreen, this.width + this.pressPointX - eXOnScreen,
+                        this.height + this.pressPointY - eYOnScreen);
                 setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
             } else if (this.upAndRight) {
+                int height = this.height + this.pressPointY - eYOnScreen;
                 setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-                setBounds(getX(), eYOnScreen, eX, this.height + this.pressPointY - eYOnScreen);
+                setBounds(getX(), eYOnScreen, eX, height);
             } else if (this.downAndLeft) {
                 int width = this.width + this.pressPointX - eXOnScreen;
                 setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
@@ -167,6 +169,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
                 this.down = true;
             } else {
                 setCursorDefault();
+                mainPanel.setCursorDefault();
                 clear();
             }
         }
@@ -205,6 +208,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
      * setSize(400, 300);
      * }</pre>
      * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
+     *
      * @param parent 父窗体
      */
     public QRDialog(Window parent) {
@@ -222,7 +226,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
      * }</pre>
      * <p><code>mainPanel</code> 是已自带的主面板，默认布局为 {@code null}
      *
-     * @param parent 父窗体
+     * @param parent       父窗体
      * @param parentUnable 是否禁用父窗体
      */
     public QRDialog(Window parent, boolean parentUnable) {
@@ -242,7 +246,35 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE_COLOR));
         this.contentPane.add(this.topPanel, BorderLayout.NORTH);
 
-        QRPanel titlePanel = new QRPanel();
+
+        MouseAdapte adapte = new MouseAdapte();
+
+        QRPanel titlePanel = new QRPanel() {
+            @Override
+            public void mousePress(MouseEvent e) {
+                adapte.mousePressed(e);
+            }
+
+            @Override
+            public void mouseRelease(MouseEvent e) {
+                adapte.mouseReleased(e);
+            }
+
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                setCursorDefault();
+            }
+
+            @Override
+            public void mouseDrag(MouseEvent e) {
+                adapte.mouseDragged(e);
+            }
+
+            @Override
+            public void mouseMove(MouseEvent e) {
+                adapte.mouseMoved(e);
+            }
+        };
         titlePanel.setLayout(new BorderLayout(2, 0));
         this.topPanel.add(titlePanel, BorderLayout.CENTER);
 
@@ -260,15 +292,21 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.closeButton.addClickAction(e -> dispose());
         titlePanel.add(this.closeButton, BorderLayout.EAST);
 
-        MouseAdapte adapte = new MouseAdapte();
-        addMouseMotionListener(adapte);
-
-        addMouseListener(adapte);
         this.mainPanel = new QRPanel();
-
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
         this.mainPanel.setLayout(null);
+
+        addMouseMotionListener(adapte);
+        addMouseListener(adapte);
+        mainPanel.addMouseListener(adapte);
+        mainPanel.addMouseMotionListener(adapte);
+
+        if (this.parent != null) {
+            setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
+        } else {
+            setLocationRelativeTo(null);
+        }
 
         this.disposeAction = e -> {
             if (QRDialog.this.isFocused()) {
@@ -332,13 +370,8 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     @Override
     public void setVisible(boolean b) {
         if (b) {
-            if (this.parent != null) {
-                if (this.parent instanceof QRFrame frame) {
-                    frame.addChildWindow(this);
-                }
-                setLocation(this.parent.getX() + this.parent.getWidth() / 2 - getWidth() / 2, this.parent.getY() + this.parent.getHeight() / 2 - getHeight() / 2);
-            } else {
-                setLocationRelativeTo(null);
+            if (this.parent != null && this.parent instanceof QRFrame frame) {
+                frame.addChildWindow(this);
             }
         }
         if (b) {
@@ -355,7 +388,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     }
 
     @Override
-    public final void setSize(int width, int height) {
+    public void setSize(int width, int height) {
         final int minSize = 20;
         if (width < minSize || height < minSize) {
             return;
@@ -364,7 +397,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     }
 
     @Override
-    public final void setBounds(int x, int y, int width, int height) {
+    public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
         windowStateUpdate();
     }

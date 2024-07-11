@@ -265,7 +265,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         });
 
     }
-    //endregion class-MouseAdapte
 
     /**
      * 一个简单的开始：
