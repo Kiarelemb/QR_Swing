@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.io.File.separator;
 
@@ -129,8 +127,8 @@ public final class QRSwing implements Serializable {
 
     private QRSwing(String propPath) {
         System.out.println("""
-                                
-                 .88888.    888888ba  .d88888b             oo                  
+                
+                 .88888.    888888ba  .d88888b             oo
                 d8'   `8b   88    `8b 88.    "'                                
                 88     88  a88aaaa8P' `Y88888b. dP  dP  dP dP 88d888b. .d8888b.
                 88  db 88   88   `8b.       `8b 88  88  88 88 88'  `88 88'  `88
@@ -590,8 +588,7 @@ public final class QRSwing implements Serializable {
         windowIcon = iconLoadLead("window.icon.path", "QR.png");
         theme = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_THEME, "深色", true);
         windowBackgroundImagePath = QRPropertiesUtils.getPropInString(GLOBAL_PROP, WINDOW_IMAGE_PATH, null, false);
-        windowBackgroundImageAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f
-                , false);
+        windowBackgroundImageAlpha = QRPropertiesUtils.getPropInFloat(GLOBAL_PROP, WINDOW_BACKGROUND_IMAGE_ALPHA, 0.8f, false);
         windowRound = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_ROUND, true, true);
         windowImageEnable = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_IMAGE_ENABLE, true, true);
         windowTitleMenu = QRPropertiesUtils.getPropInBoolean(GLOBAL_PROP, WINDOW_TITLE_MENU, true, true);
