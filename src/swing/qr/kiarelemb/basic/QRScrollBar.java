@@ -70,6 +70,50 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
         synchronisedScrollBor.add(bar);
     }
 
+    int scrollHeight = 10;
+
+    private void rollSmoothly(boolean up) {
+//        int value = getValue();
+//        final int maxValue = getMaximum();
+//        Rectangle2D r = null;
+//        if (this.view instanceof QRTextPane t) {
+//            r = t.positionRectangle(0);
+//            if (r != null) {
+//                scrollHeight = (int) r.getHeight();
+//            }
+//        }
+//        if (this.view != null && this.view.getCaret() instanceof QRCaret c && r != null) {
+//            scrollHeight = c.caretHeight();
+//        }
+//        int extent0 = this.scrollHeight * this.scrollLine;
+//        final int range;
+//        // 确保在循环 50 次内把滚动条更新完
+//        int extent;
+//        if (up) {
+//            range = Math.min(value, extent0);
+//            extent = Math.max(range / 50, 2);
+//            for (int i = 0; i < range; i += extent) {
+//                minusValue(extent);
+//                if (!otherBar.isEmpty())
+//                    for (JScrollBar b : otherBar) {
+//                        b.setValue(Math.max(b.getMinimum(), b.getValue() - extent));
+//                    }
+//                QRSleepUtils.sleep(scrollSpeed);
+//            }
+//        } else {
+//            range = value + extent0 > maxValue ? maxValue - value : extent0;
+//            extent = Math.max(range / 50, 2);
+//            for (int i = 0; i < range; i += extent) {
+//                plusValue(extent);
+//                if (!otherBar.isEmpty())
+//                    for (JScrollBar b : otherBar) {
+//                        b.setValue(Math.min(b.getMaximum(), b.getValue() + extent));
+//                    }
+//                QRSleepUtils.sleep(scrollSpeed);
+//            }
+//        }
+    }
+
     public void minusValue(int value) {
         setValue(Math.max(getMinimum(), getValue() - value));
     }

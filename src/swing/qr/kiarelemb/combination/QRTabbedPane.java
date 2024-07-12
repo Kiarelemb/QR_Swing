@@ -204,14 +204,7 @@ public class QRTabbedPane extends QRPanel {
     }
 
     private void setContentPane(QRTabPanel tabPanel) {
-        Component[] components = getComponents();
-        if (components != null) {
-            for (Component c : components) {
-                if (c instanceof QRTabbedContentPanel) {
-                    remove(c);
-                }
-            }
-        }
+        QRComponentUtils.componentLoop(this, QRTabbedContentPanel.class, e -> this.remove((Component) e));
         int foreSelectedIndex = this.selectedIndex;
         if (this.selectedIndex != -1) {
             this.arrTabs.get(this.selectedIndex).setClicked(false);
@@ -222,7 +215,7 @@ public class QRTabbedPane extends QRPanel {
         QRTabSelectEvent selectEvent = new QRTabSelectEvent(foreSelectedIndex, this.selectedIndex, tabPanel.content);
         tabPanel.content.thisTabSelectChangeAction(selectEvent);
         this.tabSelectChangedListener.tabSelectChangeAction(selectEvent);
-        this.revalidate();
+        revalidate();
         repaint();
     }
 
@@ -304,28 +297,19 @@ public class QRTabbedPane extends QRPanel {
             if (clicked) {
                 setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
                 switch (tabPositionFromBorderLayout) {
-                    case BorderLayout.SOUTH ->
-                            setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, QRColorsAndFonts.CARET_COLOR));
-                    case BorderLayout.EAST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 3, 0, 0, QRColorsAndFonts.CARET_COLOR));
-                    case BorderLayout.WEST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.SOUTH -> setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.EAST -> setBorder(BorderFactory.createMatteBorder(0, 3, 0, 0, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.WEST -> setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, QRColorsAndFonts.CARET_COLOR));
                     default -> setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
                 }
             } else {
                 switch (tabPositionFromBorderLayout) {
-                    case BorderLayout.SOUTH ->
-                            setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.EAST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.WEST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    default ->
-                            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.SOUTH -> setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.EAST -> setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.WEST -> setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    default -> setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
                 }
             }
-
-
         }
 
         public QRTabbedContentPanel getContentPane() {

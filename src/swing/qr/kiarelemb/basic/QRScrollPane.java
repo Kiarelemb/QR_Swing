@@ -121,6 +121,14 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         setScrollSmoothly();
     }
 
+    public QRScrollBar verticalScrollBar() {
+        return this.vBar;
+    }
+
+    public QRScrollBar horizontalScrollBar() {
+        return this.hBar;
+    }
+
     /**
      * 默认只有滚动文本的功能
      *

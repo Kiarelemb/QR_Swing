@@ -117,7 +117,7 @@ public class QRGlobalKeyboardHookListener extends GlobalKeyboardHook {
 		}
 		sb.append(e.getKeyChar());
 		String key = sb.toString();
-		KeyStroke k = QRStringUtils.getKeyStroke(key.trim());
+		KeyStroke k = QRStringUtils.getKeyStroke(key);
 		if (k != null) {
 			return k;
 		}
