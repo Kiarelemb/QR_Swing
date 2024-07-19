@@ -25,6 +25,7 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
         barUI = new QRScrollBarUI(horizontal);
         setUI(barUI);
         setUnitIncrement(30);
+        setOpaque(false);
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -49,7 +50,7 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
     public void setExistButVisibleFalse() {
         setUI(new QRScrollBarUI(getOrientation() == 0) {
             @Override
-            public Dimension getPreferredSize (JComponent c){
+            public Dimension getPreferredSize(JComponent c) {
                 Dimension preferredSize;
                 preferredSize = new Dimension(0, 0);
                 c.setPreferredSize(preferredSize);
@@ -57,11 +58,16 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
             }
 
             @Override
-            protected void configureScrollBarColors () {
+            protected void configureScrollBarColors() {
                 //滚动条的颜色
                 thumbColor = QRColorsAndFonts.SCROLL_COLOR;
                 thumbDarkShadowColor = thumbColor;
                 setThumbBounds(0, 0, 0, 0);
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+
             }
         });
     }

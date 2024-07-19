@@ -12,14 +12,14 @@ import java.util.EventObject;
  **/
 public class QRTabbedPaneCloseEvent extends EventObject {
 
-	private final QRTabbedPane tabbedPane;
+    private final QRTabbedPane tabbedPane;
 
-	public QRTabbedPaneCloseEvent(QRTabbedPane tabbedPane) {
-		super(tabbedPane);
-		this.tabbedPane = tabbedPane;
-	}
+    public QRTabbedPaneCloseEvent(QRTabbedPane tabbedPane) {
+        super(tabbedPane);
+        this.tabbedPane = tabbedPane;
+    }
 
-	public QRTabbedPane tabbedPane() {
-		return tabbedPane;
-	}
+    public QRTabbedPane tabbedPane() {
+        return tabbedPane;
+    }
 }

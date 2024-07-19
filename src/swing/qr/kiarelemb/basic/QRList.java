@@ -3,10 +3,10 @@ package swing.qr.kiarelemb.basic;
 import method.qr.kiarelemb.utils.QRArrayUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.assembly.QRToolTip;
-import swing.qr.kiarelemb.listener.QRMouseListener;
-import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.listener.QRMouseListener;
+import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;

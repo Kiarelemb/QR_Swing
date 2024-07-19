@@ -11,15 +11,15 @@ import javax.swing.tree.TreePath;
  * @create 2023-01-28 23:42
  **/
 public interface QRTreeNodeListenerAdd {
-	/**
+    /**
      * 添加 {@link swing.qr.kiarelemb.listener.QRTreeNodeClickListener} 事件
-	 */
-	void addTreeNodeListener();
+     */
+    void addTreeNodeListener();
 
-	/**
+    /**
      * 为 {@link swing.qr.kiarelemb.listener.QRTreeNodeClickListener} 事件添加操作
-	 *
-	 * @param ar 操作
-	 */
-	void addTreeNodeClickAction(TreePath path, QRActionRegister ar, boolean vague);
+     *
+     * @param ar 操作
+     */
+    void addTreeNodeClickAction(TreePath path, QRActionRegister ar, boolean vague);
 }

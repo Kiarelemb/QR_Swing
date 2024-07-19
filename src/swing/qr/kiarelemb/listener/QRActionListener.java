@@ -10,8 +10,8 @@ import java.awt.event.ActionListener;
  * @create 2022-11-25 12:20
  **/
 public class QRActionListener extends QRAction implements ActionListener {
-	@Override
-	public final void actionPerformed(ActionEvent e) {
-		action(e);
-	}
+    @Override
+    public final void actionPerformed(ActionEvent e) {
+        action(e);
+    }
 }

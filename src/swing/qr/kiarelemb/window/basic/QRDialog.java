@@ -6,13 +6,13 @@ import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.combination.QRBorderContentPanel;
-import swing.qr.kiarelemb.listener.QRWindowListener;
-import swing.qr.kiarelemb.utils.QRCloseButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
+import swing.qr.kiarelemb.listener.QRWindowListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRCloseButton;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

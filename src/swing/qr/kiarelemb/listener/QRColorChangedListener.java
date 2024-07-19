@@ -10,8 +10,8 @@ import swing.qr.kiarelemb.inter.listener.QRColorChangedLis;
  * @create 2022-11-30 16:02
  **/
 public class QRColorChangedListener extends QRAction implements QRColorChangedLis {
-	@Override
-	public final void colorChanged(QRColorChangedEvent e) {
-		action(e);
-	}
+    @Override
+    public final void colorChanged(QRColorChangedEvent e) {
+        action(e);
+    }
 }

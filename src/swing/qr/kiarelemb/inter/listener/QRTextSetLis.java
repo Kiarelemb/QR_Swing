@@ -11,5 +11,5 @@ import java.util.EventListener;
  * @create 2022-11-27 14:03
  **/
 public interface QRTextSetLis extends EventListener {
-	void setTextAction(QREventObject event);
+    void setTextAction(QREventObject event);
 }

@@ -85,6 +85,7 @@ public final class QRSwing implements Serializable {
      * 是否启用主窗体的背景图片
      */
     public static boolean windowImageEnable;
+    public static boolean windowImageSet;
     /**
      * 菜单栏是否放置于窗体的标题栏
      */
@@ -127,7 +128,7 @@ public final class QRSwing implements Serializable {
 
     private QRSwing(String propPath) {
         System.out.println("""
-                
+                                
                  .88888.    888888ba  .d88888b             oo
                 d8'   `8b   88    `8b 88.    "'                                
                 88     88  a88aaaa8P' `Y88888b. dP  dP  dP dP 88d888b. .d8888b.
@@ -603,8 +604,6 @@ public final class QRSwing implements Serializable {
             setWindowBackgroundImageAlpha(0.8f);
             return;
         }
-        if (windowBackgroundImageAlpha < 0.5) {
-            setWindowBackgroundImageAlpha(1 - windowBackgroundImageAlpha);
-        }
+        windowImageSet = QRFileUtils.fileExists(windowBackgroundImagePath) && windowImageEnable;
     }
 }

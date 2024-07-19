@@ -12,5 +12,5 @@ import java.util.EventListener;
  **/
 public interface QRTabCloseLis extends EventListener {
 
-	void tabCloseButtonAction(QRTabbedPaneCloseEvent e);
+    void tabCloseButtonAction(QRTabbedPaneCloseEvent e);
 }

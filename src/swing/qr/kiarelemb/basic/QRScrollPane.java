@@ -1,6 +1,5 @@
 package swing.qr.kiarelemb.basic;
 
-import method.qr.kiarelemb.utils.QRFontUtils;
 import method.qr.kiarelemb.utils.QRSleepUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import method.qr.kiarelemb.utils.QRThreadBuilder;
@@ -10,11 +9,12 @@ import swing.qr.kiarelemb.assembly.QRLineNumberComponent;
 import swing.qr.kiarelemb.assembly.QRScrollBarUI;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.inter.listener.add.QRMouseWheelListenerAdd;
 import swing.qr.kiarelemb.listener.QRMouseWheelListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
-import javax.swing.text.Caret;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @description:
  * @create 2022-11-21 22:06
  **/
-public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
+public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMouseWheelListenerAdd {
     protected QRScrollBar vBar;
     protected QRScrollBar hBar;
     protected QRMouseWheelListener mouseWheelListener;
@@ -61,6 +61,7 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         setVerticalScrollBar(this.vBar);
         this.horUI = this.hBar.barUi();
         this.verUI = this.vBar.barUi();
+
         setBorder(null);
         setOpaque(false);
         componentFresh();
@@ -84,7 +85,15 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
     public void setScrollSmoothly() {
         this.vBar.setUnitIncrement(0);
         this.hBar.setUnitIncrement(0);
-        getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+//        getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+        addMouseWheelListener();
+    }
+
+    /**
+     * 添加鼠标滚轮监听
+     */
+    @Override
+    public void addMouseWheelListener() {
         if (this.mouseWheelListener == null) {
             this.mouseWheelListener = new QRMouseWheelListener();
             this.mouseWheelListener.add(e -> {
@@ -96,7 +105,13 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         }
     }
 
-    public void addMouseWheelListener(QRActionRegister ar) {
+    /**
+     * 已自动添加
+     *
+     * @param ar 鼠标滚轮事件
+     */
+    @Override
+    public void addMouseWheelAction(QRActionRegister ar) {
         if (this.mouseWheelListener != null) {
             this.mouseWheelListener.add(ar);
         }
@@ -138,28 +153,41 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         if (e.isShiftDown()) {
             if (this.hBar.isVisible()) {
                 ThreadPoolExecutor scroll = QRThreadBuilder.singleThread("scroll");
-                scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.hBar, followedToScroll.stream().map(QRScrollPane::getHorizontalScrollBar).filter(Objects::nonNull).toList()));
+                if (followedToScroll.isEmpty()) {
+                    scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.hBar, empty));
+                } else {
+                    scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.hBar, followedToScroll.stream().map(QRScrollPane::getHorizontalScrollBar).filter(Objects::nonNull).toList()));
+                }
             }
         } else {
             if (this.vBar.isVisible()) {
                 ThreadPoolExecutor scroll = QRThreadBuilder.singleThread("scroll");
-                scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.vBar, followedToScroll.stream().map(QRScrollPane::getVerticalScrollBar).filter(Objects::nonNull).toList()));
+                if (followedToScroll.isEmpty()) {
+                    scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.vBar, empty));
+                } else {
+                    scroll.submit(() -> setScrollBarRollSmoothly(e.getWheelRotation() < 0, this.vBar, followedToScroll.stream().map(QRScrollPane::getVerticalScrollBar).filter(Objects::nonNull).toList()));
+                }
             }
         }
     }
 
+    private static final ArrayList<JScrollBar> empty = new ArrayList<>(0);
+
     private void setScrollBarRollSmoothly(boolean up, QRScrollBar bar, List<JScrollBar> otherBar) {
         int value = bar.getValue();
         final int maxValue = bar.getMaximum();
-        Rectangle2D r = null;
-        if (this.view instanceof QRTextPane t) {
-            r = t.positionRectangle(0);
-            if (r != null) {
-                scrollHeight = (int) r.getHeight();
+        if (this.view != null) {
+            if (this.view.getCaret() instanceof QRCaret c) {
+                scrollHeight = c.caretHeight();
+            } else {
+                try {
+                    Rectangle2D r = view.modelToView2D(0);
+                    if (r != null) {
+                        scrollHeight = (int) r.getHeight();
+                    }
+                } catch (BadLocationException ignored) {
+                }
             }
-        }
-        if (this.view != null && this.view.getCaret() instanceof QRCaret c && r != null) {
-            scrollHeight = c.caretHeight();
         }
         int extent0 = this.scrollHeight * this.scrollLine;
         final int range;
@@ -210,30 +238,44 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         return this.borderPaint;
     }
 
+
+    @Override
+    public void setViewport(JViewport viewport) {
+        super.setViewport(viewport);
+        Component view = viewport.getView();
+        if (view instanceof JEditorPane v) {
+            this.view = v;
+        }
+    }
+
+    @Override
+    public JViewport getViewport() {
+        JViewport viewport = super.getViewport();
+        if (viewport != null) {
+
+            viewport.setOpaque(false);
+        }
+        return viewport;
+    }
+
     @Override
     public void setViewportView(Component view) {
         super.setViewportView(view);
         JViewport viewport = getViewport();
         viewport.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+        viewport.setOpaque(false);
         if (view instanceof JEditorPane v) {
             this.view = v;
-            Caret caret = v.getCaret();
-            if (caret instanceof QRCaret c) {
-                scrollHeight = c.caretHeight();
-            } else {
-                Font font = v.getFont();
-                Rectangle2D stringBounds = QRFontUtils.getStringBounds("中文", font);
-                scrollHeight = Math.max((int) (stringBounds.getHeight() * this.scrollLine), scrollHeight);
-            }
         }
     }
 
     @Override
     protected void paintBorder(Graphics g) {
         if (this.borderPaint) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowImageSet ? 0.5f : 1f));
             if (QRSwing.windowRound) {
                 final int arc = 15;
-                Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(QRColorsAndFonts.BORDER_COLOR);
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
@@ -253,11 +295,12 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate {
         this.verUI.componentFresh();
         this.vBar.componentFresh();
         this.hBar.componentFresh();
-        final Component view = getViewport().getView();
-        if (view instanceof QRComponentUpdate v) {
-            v.componentFresh();
-        } else {
-            getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-        }
+//        final Component view = getViewport().getView();
+//        if (view instanceof QRComponentUpdate v) {
+//            v.componentFresh();
+//        } else {
+//            getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+//        }
     }
+
 }

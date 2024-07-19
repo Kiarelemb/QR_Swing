@@ -5,9 +5,9 @@ import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRMenuItem;
-import swing.qr.kiarelemb.listener.QRFocusListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
+import swing.qr.kiarelemb.listener.QRFocusListener;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 

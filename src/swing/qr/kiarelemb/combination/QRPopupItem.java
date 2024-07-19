@@ -13,22 +13,22 @@ import javax.swing.border.EmptyBorder;
  * @create 2022-11-26 22:39
  **/
 public class QRPopupItem extends QRButton {
-	private final int index;
+    private final int index;
 
-	public QRPopupItem(int index, String text) {
-		super(text);
-		this.index = index;
-		addMouseListener();
-		setBorder(new EmptyBorder(5, 5, 5, 5));
-		setHorizontalAlignment(SwingConstants.LEFT);
-	}
+    public QRPopupItem(int index, String text) {
+        super(text);
+        this.index = index;
+        addMouseListener();
+        setBorder(new EmptyBorder(5, 5, 5, 5));
+        setHorizontalAlignment(SwingConstants.LEFT);
+    }
 
-	public QRPopupItem(int index, String text, QRActionRegister ar) {
-		this(index, text);
-		addClickAction(ar);
-	}
+    public QRPopupItem(int index, String text, QRActionRegister ar) {
+        this(index, text);
+        addClickAction(ar);
+    }
 
-	public int index() {
-		return index;
-	}
+    public int index() {
+        return index;
+    }
 }

@@ -11,5 +11,5 @@ import java.util.EventListener;
  * @create 2023-01-05 12:29
  **/
 public interface QRTabSelectLis extends EventListener {
-	void tabSelectChangeAction(QRTabSelectEvent event);
+    void tabSelectChangeAction(QRTabSelectEvent event);
 }

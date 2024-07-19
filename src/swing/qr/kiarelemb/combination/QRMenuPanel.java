@@ -30,8 +30,8 @@ public class QRMenuPanel extends QRPanel {
      * 实现一个菜单条，可以在其中加入菜单按钮
      */
     public QRMenuPanel() {
-        super(new BorderLayout());
-        this.buttonsPanel = new QRPanel(new GridLayout(1, 0, 2, 0));
+        super(false, new BorderLayout());
+        this.buttonsPanel = new QRPanel(false, new GridLayout(1, 0, 2, 0));
         add(this.buttonsPanel, BorderLayout.WEST);
         addFocusListener();
         this.buttons = new LinkedList<>();

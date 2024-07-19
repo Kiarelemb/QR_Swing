@@ -11,5 +11,5 @@ import java.util.EventListener;
  * @create 2023-01-04 16:51
  **/
 public interface QRRedoUndoLis extends EventListener {
-	void redoUndoAction(QRRedoUndoEvent event);
+    void redoUndoAction(QRRedoUndoEvent event);
 }

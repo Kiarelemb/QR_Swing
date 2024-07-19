@@ -12,20 +12,20 @@ import java.util.EventObject;
  * @create 2023-01-28 23:37
  **/
 public class QRTreeNodeEvent extends EventObject {
-	private final TreePath clickedPath;
-	private final TreePath clickedNearestPath;
+    private final TreePath clickedPath;
+    private final TreePath clickedNearestPath;
 
-	public QRTreeNodeEvent(QRTree tree, TreePath clickedPath, TreePath clickedNearestPath) {
-		super(tree);
-		this.clickedPath = clickedPath;
-		this.clickedNearestPath = clickedNearestPath;
-	}
+    public QRTreeNodeEvent(QRTree tree, TreePath clickedPath, TreePath clickedNearestPath) {
+        super(tree);
+        this.clickedPath = clickedPath;
+        this.clickedNearestPath = clickedNearestPath;
+    }
 
-	public TreePath clickedPath() {
-		return clickedPath;
-	}
+    public TreePath clickedPath() {
+        return clickedPath;
+    }
 
-	public TreePath clickedNearestPath() {
-		return clickedNearestPath;
-	}
+    public TreePath clickedNearestPath() {
+        return clickedNearestPath;
+    }
 }

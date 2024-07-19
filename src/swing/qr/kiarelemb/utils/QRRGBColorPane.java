@@ -8,8 +8,8 @@ import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.basic.QRTextField;
 import swing.qr.kiarelemb.event.QRColorChangedEvent;
-import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;

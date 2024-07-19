@@ -8,11 +8,11 @@ package swing.qr.kiarelemb.inter;
  **/
 public interface QRMenuButtonProcess {
 
-	void showPopupMenu();
+    void showPopupMenu();
 
-	void closePopupMenu();
+    void closePopupMenu();
 
-	void disableAll();
+    void disableAll();
 
-	void enablesAll();
+    void enablesAll();
 }

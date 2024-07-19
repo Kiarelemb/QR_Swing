@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
  * @create 2022-11-30 14:36
  **/
 public class QRTextField extends JTextField implements QRComponentUpdate, QRTextBasicActionSetting,
-		QRCaretListenerAdd, QRFocusListenerAdd,
+        QRCaretListenerAdd, QRFocusListenerAdd,
         QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
     private final StringBuilder forbiddenInputChar = new StringBuilder();
     private final StringBuilder onlyAllowedInputChar = new StringBuilder();

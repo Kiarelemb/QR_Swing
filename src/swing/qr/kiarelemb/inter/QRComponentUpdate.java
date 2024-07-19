@@ -7,5 +7,5 @@ package swing.qr.kiarelemb.inter;
  * @create 2022-11-04 15:10
  **/
 public interface QRComponentUpdate {
-	void componentFresh();
+    void componentFresh();
 }

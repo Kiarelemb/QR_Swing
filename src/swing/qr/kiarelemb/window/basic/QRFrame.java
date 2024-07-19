@@ -5,23 +5,23 @@ import method.qr.kiarelemb.utils.QRFontUtils;
 import method.qr.kiarelemb.utils.QRPropertiesUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
-import swing.qr.kiarelemb.utils.QRComponentUtils;
-import swing.qr.kiarelemb.assembly.QRBackgroundBorder;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.combination.QRMenuPanel;
-import swing.qr.kiarelemb.listener.QRWindowListener;
-import swing.qr.kiarelemb.utils.QRCloseButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
+import swing.qr.kiarelemb.listener.QRWindowListener;
 import swing.qr.kiarelemb.resource.QRSwingInfo;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRCloseButton;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -70,7 +70,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
      */
     protected QRMenuPanel titleMenuPanel;
     private QRWindowListener windowListener;
-    private QRBackgroundBorder backgroundBorder;
+    //    private QRBackgroundBorder backgroundBorder;
     private String imagePath;
     private String title = "";
     private Image backgroundImage;
@@ -78,7 +78,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     private Dimension minimumSize = new Dimension(10, 10);
     private int originalWidth = 500;
     private int titlePlace = SwingConstants.LEFT;
-    private boolean backgroundImageSet = false;
 
     public QRFrame() {
         QRFileUtils.fileCreate(QRSwing.WINDOW_PROP_PATH);
@@ -169,32 +168,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                     windowClickAction();
                 }
             }
-
-            @Override
-            public void mousePress(MouseEvent e) {
-                mouseAdapte.mousePressed(e);
-            }
-
-            @Override
-            public void mouseRelease(MouseEvent e) {
-                mouseAdapte.mouseReleased(e);
-            }
-
-            @Override
-            public void mouseEnter(MouseEvent e) {
-                setCursorDefault();
-            }
-
-            @Override
-            public void mouseDrag(MouseEvent e) {
-                mouseAdapte.mouseDragged(e);
-            }
-
-            @Override
-            public void mouseMove(MouseEvent e) {
-                mouseAdapte.mouseMoved(e);
-            }
         };
+        this.titlePanel.addMouseListener(mouseAdapte);
+        this.titlePanel.addMouseMotionListener(mouseAdapte);
         this.titlePanel.setLayout(new BorderLayout());
         this.titlePanel.setBorder(BorderFactory.createEmptyBorder(1, 5, 0, 0));
         this.topPanel.add(this.titlePanel, BorderLayout.CENTER);
@@ -238,22 +214,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         this.closeButton.addClickAction(e -> dispose());
         this.windowFunctionPanel.add(this.closeButton);
 
-        addMouseListener(mouseAdapte);
-        addMouseMotionListener(mouseAdapte);
+        this.contentPane.addMouseListener(mouseAdapte);
+        this.contentPane.addMouseMotionListener(mouseAdapte);
         this.titlePanel.addMouseMotionListener();
         this.titlePanel.addMouseListener();
 
+
         //子类直接向 mainPanel 中添加控件
-        this.mainPanel = new QRPanel() {
-            @Override
-            public void componentFresh() {
-                super.componentFresh();
-                if (backgroundBorder != null) {
-                    setBorder(backgroundBorder);
-                }
-            }
-        };
+        this.mainPanel = new QRPanel();
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
+        this.contentPane.setBorder(new EmptyBorder(0, 5, 5, 0));
         setBackgroundImage(QRSwing.windowBackgroundImagePath);
         addWindowAction(QRWindowListener.TYPE.OPEN, e -> {
             this.minimumSize = getMinimumSizes();
@@ -374,11 +344,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
     public final void setBackgroundImage(String filePath) {
         if (filePath == null) {
-            this.mainPanel.setBorder(null);
-            this.backgroundBorder = null;
+//            this.mainPanel.setBorder(null);
+//            this.backgroundBorder = null;
             imagePath = null;
             this.backgroundImage = null;
-            this.backgroundImageSet = false;
+            QRSwing.windowImageSet = false;
+            this.contentPane.setImage(null);
             QRSwing.setWindowBackgroundImagePath(null);
             return;
         }
@@ -390,36 +361,30 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             this.backgroundImage = imageToSet;
             imagePath = filePath;
             QRSwing.setWindowBackgroundImagePath(filePath);
-            this.backgroundImageSet = true;
+            QRSwing.windowImageSet = true;
             int height = this.backgroundImage.getHeight(null);
             int width = this.backgroundImage.getWidth(null);
             this.imageRatio = (double) width / height;
-            this.backgroundBorder = new QRBackgroundBorder(this.backgroundImage);
-            this.mainPanel.setBorder(this.backgroundBorder);
-            QRComponentUtils.loopComsForBackgroundSetting(this.mainPanel);
+            this.contentPane.setImage(this.backgroundImage);
             QRSwing.windowTransparency = 0.999f;
             QRSystemUtils.setWindowNotTrans(this);
         }
     }
 
     public final void setBackgroundBorderScale(boolean scale) {
-        if (this.backgroundBorder != null) {
-            this.backgroundBorder.setScale(scale);
+        if (this.contentPane.image() != null) {
+            this.contentPane.setScale(scale);
             QRSwing.setWindowScale(scale);
             QRComponentUtils.windowFresh(this.mainPanel);
         }
     }
 
     public final void setBackgroundBorderAlpha(float alpha) {
-        if (this.backgroundBorder != null) {
-            this.backgroundBorder.setAlpha(alpha);
+        if (this.contentPane.image() != null) {
+            this.contentPane.setAlpha(alpha);
             QRSwing.setWindowBackgroundImageAlpha(alpha);
             QRComponentUtils.windowFresh(this.mainPanel);
         }
-    }
-
-    public final boolean isBackgroundImageSet() {
-        return this.backgroundBorder == null && this.backgroundImage == null;
     }
 
     public void minWindow() {
@@ -445,7 +410,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         } else {
             QRSystemUtils.setWindowNotRound(this);
         }
-        if (backgroundImageSet) {
+        if (QRSwing.windowImageSet) {
             QRSystemUtils.setWindowNotTrans(this);
         } else {
             QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
@@ -461,7 +426,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     }
 
     public boolean backgroundImageSet() {
-        return this.backgroundImageSet;
+        return QRSwing.windowImageSet;
     }
 
     public final void dispose(boolean systemExit) {
@@ -682,6 +647,11 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         private Point p = null;
 
         @Override
+        public void mouseExited(MouseEvent e) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+
+        @Override
         public void mouseClicked(MouseEvent e) {
             windowClickAction();
         }
@@ -718,9 +688,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             int eYOnScreen = e.getYOnScreen();
             int eY = e.getY();
             int eX = e.getX();
-            boolean backgroundImageSet = QRFrame.this.backgroundImage != null && QRFrame.this.backgroundBorder.scale();
+            QRSwing.windowImageSet = QRFrame.this.backgroundImage != null && QRFrame.this.contentPane.scale();
             if (this.upAndLeft) {
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     eXOnScreen = (int) Math.min(eXOnScreen, eYOnScreen * QRFrame.this.imageRatio);
                     eYOnScreen = (int) (eXOnScreen / QRFrame.this.imageRatio);
                 }
@@ -728,7 +698,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                         this.height + this.pressPointY - eYOnScreen);
                 setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
             } else if (this.upAndRight) {
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     eYOnScreen = (int) (eXOnScreen / QRFrame.this.imageRatio);
                 }
                 int height = this.height + this.pressPointY - eYOnScreen;
@@ -736,7 +706,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                 setBounds(getX(), eYOnScreen, eX, height);
             } else if (this.downAndLeft) {
                 int width = this.width + this.pressPointX - eXOnScreen;
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     eXOnScreen = (int) Math.min(eXOnScreen, eYOnScreen * QRFrame.this.imageRatio);
                     width = this.width + this.pressPointX - eXOnScreen;
                     eY = (int) (width / QRFrame.this.imageRatio);
@@ -744,7 +714,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                 setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
                 setBounds(eXOnScreen, getY(), width, eY);
             } else if (this.downAndRight) {
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     final double w = QRFrame.this.imageRatio * eY;
                     if (eX > w) {
                         eX = (int) w;
@@ -757,7 +727,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             } else if (this.up) {
                 int height = this.height + this.pressPointY - eYOnScreen;
                 int width = this.width;
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     width = (int) (height * QRFrame.this.imageRatio);
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
@@ -765,20 +735,20 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             } else if (this.left) {
                 int height = this.height;
                 final int width = this.width + this.pressPointX - eXOnScreen;
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     height = (int) (width / QRFrame.this.imageRatio);
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
                 setBounds(eXOnScreen, getY(), width, height);
             } else if (this.down) {
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     this.width = (int) (QRFrame.this.imageRatio * eY);
                     eY = (int) (this.width / QRFrame.this.imageRatio);
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
                 setSize(this.width, eY);
             } else if (this.right) {
-                if (backgroundImageSet) {
+                if (QRSwing.windowImageSet) {
                     this.height = (int) (eX / QRFrame.this.imageRatio);
                     eX = (int) (QRFrame.this.imageRatio * this.height);
                 }

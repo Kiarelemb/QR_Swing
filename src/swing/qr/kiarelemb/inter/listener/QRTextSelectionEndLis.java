@@ -11,5 +11,5 @@ import java.util.EventListener;
  * @create 2022-11-24 15:23
  **/
 public interface QRTextSelectionEndLis extends EventListener {
-	void selectionEnd(QRTextSelectionEndEvent e);
+    void selectionEnd(QRTextSelectionEndEvent e);
 }

@@ -3,15 +3,15 @@ package swing.qr.kiarelemb.theme;
 import method.qr.kiarelemb.utils.*;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.adapter.QRButtonMouseListener;
-import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.assembly.QRScrollBarUI;
 import swing.qr.kiarelemb.basic.*;
 import swing.qr.kiarelemb.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.combination.QRMenuButton;
 import swing.qr.kiarelemb.combination.QRMenuPanel;
 import swing.qr.kiarelemb.event.QRItemEvent;
-import swing.qr.kiarelemb.utils.QRRGBColorPane;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
+import swing.qr.kiarelemb.utils.QRRGBColorPane;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
@@ -234,7 +234,6 @@ public class QRSwingThemeDesigner extends QRDialog {
 
         QRButton closeButton = new QRButton("  ╳  ");
         closeButton.setFont(QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD));
-        closeButton.disableListener();
         QRButtonMouseListener closeButtonMouseListener = new QRButtonMouseListener(closeButton);
         closeButton.addMouseListener(closeButtonMouseListener);
         previewTopPanel.add(closeButton, BorderLayout.EAST);
@@ -276,7 +275,7 @@ public class QRSwingThemeDesigner extends QRDialog {
                     }
                 });
                 String text = "在工作或学习中遇到不开心的时候，不妨静下来好好想想，自己到底是对是错。生活中不是你对别人好，别人就该对你好，你要明白这个道理，每个人都有自己的原则，有人功利，有人善良，你不可能要求别人什么。有时间的话，不妨到处走走，在雄伟的高山之间，" +
-                        "放声大喊，一吐心中的阴郁，在浪漫的大海之间，看潮起潮落，感悟人生的起伏跌宕，在落日余晖中感受天地的宁静，洗涤心中的贪念。";
+                              "放声大喊，一吐心中的阴郁，在浪漫的大海之间，看潮起潮落，感悟人生的起伏跌宕，在落日余晖中感受天地的宁静，洗涤心中的贪念。";
                 final Color textColorBack = textColorBackColorValue.getColor();
                 previewContentScrollPane.setBackground(frameColorBackColorValue.getColor());
                 previewContentScrollPane.setBorder(BorderFactory.createLineBorder(frameColorBackColorValue.getColor(), 5));

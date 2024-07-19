@@ -14,61 +14,61 @@ import javax.swing.tree.TreePath;
  * @create 2023-01-28 23:15
  **/
 public class QRMutableTreeNode extends DefaultMutableTreeNode {
-	private boolean expendable = true;
-	private boolean collapsable = true;
+    private boolean expendable = true;
+    private boolean collapsable = true;
 
-	/**
-	 * {@link DefaultMutableTreeNode#allowsChildren} 为 {@code false}，但当有子节点时，自动设置为 {@code true}
-	 */
-	public QRMutableTreeNode(String text) {
-		super(text, false);
-	}
+    /**
+     * {@link DefaultMutableTreeNode#allowsChildren} 为 {@code false}，但当有子节点时，自动设置为 {@code true}
+     */
+    public QRMutableTreeNode(String text) {
+        super(text, false);
+    }
 
-	public QRMutableTreeNode addChild(String text) {
-		QRMutableTreeNode node = new QRMutableTreeNode(text);
-		add(node);
-		return node;
-	}
+    public QRMutableTreeNode addChild(String text) {
+        QRMutableTreeNode node = new QRMutableTreeNode(text);
+        add(node);
+        return node;
+    }
 
-	@Override
-	public void add(MutableTreeNode newChild) {
-		allowsChildren = true;
-		super.add(newChild);
-	}
+    @Override
+    public void add(MutableTreeNode newChild) {
+        allowsChildren = true;
+        super.add(newChild);
+    }
 
-	public void addAndExpend(QRTree tree, MutableTreeNode newChild) {
-		add(newChild);
-		TreePath treePath = tree.getTreePath(this);
-		tree.expandPath(treePath);
-	}
+    public void addAndExpend(QRTree tree, MutableTreeNode newChild) {
+        add(newChild);
+        TreePath treePath = tree.getTreePath(this);
+        tree.expandPath(treePath);
+    }
 
-	public void addClickAction(QRTree tree, QRActionRegister ar, boolean positionVague) {
-		TreePath treePath = tree.getTreePath(this);
-		if (treePath != null) {
-			tree.addTreeNodeListener();
-			tree.addTreeNodeClickAction(treePath, ar, positionVague);
-		}
-	}
+    public void addClickAction(QRTree tree, QRActionRegister ar, boolean positionVague) {
+        TreePath treePath = tree.getTreePath(this);
+        if (treePath != null) {
+            tree.addTreeNodeListener();
+            tree.addTreeNodeClickAction(treePath, ar, positionVague);
+        }
+    }
 
-	public boolean expendable() {
-		return expendable;
-	}
+    public boolean expendable() {
+        return expendable;
+    }
 
-	public void setExpendable(boolean expendable) {
-		this.expendable = expendable;
-		if (!expendable && !this.collapsable) {
-			this.collapsable = true;
-		}
-	}
+    public void setExpendable(boolean expendable) {
+        this.expendable = expendable;
+        if (!expendable && !this.collapsable) {
+            this.collapsable = true;
+        }
+    }
 
-	public boolean collapsable() {
-		return collapsable;
-	}
+    public boolean collapsable() {
+        return collapsable;
+    }
 
-	public void setCollapsable(boolean collapsable) {
-		this.collapsable = collapsable;
-		if (!collapsable && !this.expendable) {
-			this.expendable = true;
-		}
-	}
+    public void setCollapsable(boolean collapsable) {
+        this.collapsable = collapsable;
+        if (!collapsable && !this.expendable) {
+            this.expendable = true;
+        }
+    }
 }

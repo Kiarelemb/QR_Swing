@@ -11,14 +11,14 @@ import java.util.EventObject;
  * @create 2023-01-04 16:47
  **/
 public class QRRedoUndoEvent extends EventObject {
-	private final ArrayList<AbstractDocument.DefaultDocumentEvent> edits;
+    private final ArrayList<AbstractDocument.DefaultDocumentEvent> edits;
 
-	public QRRedoUndoEvent(ArrayList<AbstractDocument.DefaultDocumentEvent> list) {
-		super(list);
-		this.edits = list;
-	}
+    public QRRedoUndoEvent(ArrayList<AbstractDocument.DefaultDocumentEvent> list) {
+        super(list);
+        this.edits = list;
+    }
 
-	public ArrayList<AbstractDocument.DefaultDocumentEvent> edits() {
-		return edits;
-	}
+    public ArrayList<AbstractDocument.DefaultDocumentEvent> edits() {
+        return edits;
+    }
 }

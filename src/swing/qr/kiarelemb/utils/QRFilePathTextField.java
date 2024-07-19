@@ -13,47 +13,47 @@ import javax.swing.event.DocumentEvent;
  * @create 2023-02-02 20:42
  **/
 public class QRFilePathTextField extends QRTextField {
-	private final JButton btn;
+    private final JButton btn;
 
-	public QRFilePathTextField(JButton btn) {
-		this.btn = btn;
-		final char[] notAllowed = {'*', '?', '<', '>', '|', '"', '\\', '/', ':'};
-		addForbiddenChar(notAllowed);
-		setTextCenter();
-		//设置使之能够撤回
-		addUndoManager();
-		addDocumentListener();
-	}
+    public QRFilePathTextField(JButton btn) {
+        this.btn = btn;
+        final char[] notAllowed = {'*', '?', '<', '>', '|', '"', '\\', '/', ':'};
+        addForbiddenChar(notAllowed);
+        setTextCenter();
+        //设置使之能够撤回
+        addUndoManager();
+        addDocumentListener();
+    }
 
-	public QRFilePathTextField() {
-		this(null);
-	}
+    public QRFilePathTextField() {
+        this(null);
+    }
 
-	public QRFilePathTextField(String path, JButton btn) {
-		this(btn);
-		setText(path);
-	}
+    public QRFilePathTextField(String path, JButton btn) {
+        this(btn);
+        setText(path);
+    }
 
-	@Override
-	protected boolean meetCondition() {
-		return QRFileUtils.fileExists(getText());
-	}
+    @Override
+    protected boolean meetCondition() {
+        return QRFileUtils.fileExists(getText());
+    }
 
-	@Override
-	public void insertUpdate(DocumentEvent e) {
-		boolean b = meetCondition();
-		if (btn != null) {
-			btn.setEnabled(b);
-		}
-	}
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        boolean b = meetCondition();
+        if (btn != null) {
+            btn.setEnabled(b);
+        }
+    }
 
-	@Override
-	public void removeUpdate(DocumentEvent e) {
-		insertUpdate(e);
-	}
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        insertUpdate(e);
+    }
 
-	@Override
-	protected void changedUpdate(DocumentEvent e) {
-		insertUpdate(e);
-	}
+    @Override
+    protected void changedUpdate(DocumentEvent e) {
+        insertUpdate(e);
+    }
 }

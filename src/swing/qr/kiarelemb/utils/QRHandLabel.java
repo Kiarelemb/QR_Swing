@@ -14,45 +14,45 @@ import java.awt.event.MouseEvent;
  * @create 2023-01-31 15:13
  **/
 public abstract class QRHandLabel extends QRLabel {
-	public QRHandLabel() {
-		addMouseListener();
-	}
+    public QRHandLabel() {
+        addMouseListener();
+    }
 
-	public QRHandLabel(String text) {
-		this();
-		setText(text);
-	}
+    public QRHandLabel(String text) {
+        this();
+        setText(text);
+    }
 
-	public QRHandLabel(Icon icon) {
-		this();
-		setIcon(icon);
-	}
+    public QRHandLabel(Icon icon) {
+        this();
+        setIcon(icon);
+    }
 
-	@Override
-	public void setText(String text) {
-		super.setText("<HTML><U>" + text + "</U></HTML>");
-	}
+    @Override
+    public void setText(String text) {
+        super.setText("<HTML><U>" + text + "</U></HTML>");
+    }
 
-	public abstract void clickAction(MouseEvent e);
+    public abstract void clickAction(MouseEvent e);
 
-	@Override
-	protected final void mouseClick(MouseEvent e) {
-		clickAction(e);
-	}
+    @Override
+    protected final void mouseClick(MouseEvent e) {
+        clickAction(e);
+    }
 
-	@Override
-	protected final void mouseEnter(MouseEvent e) {
-		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-	}
+    @Override
+    protected final void mouseEnter(MouseEvent e) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
 
-	@Override
-	protected final void mouseExit(MouseEvent e) {
-		setCursor(Cursor.getDefaultCursor());
-	}
+    @Override
+    protected final void mouseExit(MouseEvent e) {
+        setCursor(Cursor.getDefaultCursor());
+    }
 
-	@Override
-	public void componentFresh() {
-		super.componentFresh();
-		setForeground(QRColorsAndFonts.BLUE_LIGHT);
-	}
+    @Override
+    public void componentFresh() {
+        super.componentFresh();
+        setForeground(QRColorsAndFonts.BLUE_LIGHT);
+    }
 }

@@ -11,5 +11,5 @@ import java.util.EventListener;
  * @create 2022-11-30 15:58
  **/
 public interface QRColorChangedLis extends EventListener {
-	void colorChanged(QRColorChangedEvent e);
+    void colorChanged(QRColorChangedEvent e);
 }

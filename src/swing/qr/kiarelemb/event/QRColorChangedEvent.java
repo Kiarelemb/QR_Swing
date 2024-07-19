@@ -11,20 +11,20 @@ import java.util.EventObject;
  **/
 public class QRColorChangedEvent extends EventObject {
 
-	private final Color from;
-	private final Color to;
+    private final Color from;
+    private final Color to;
 
-	public QRColorChangedEvent(Color from, Color to) {
-		super(to);
-		this.from = from;
-		this.to = to;
-	}
+    public QRColorChangedEvent(Color from, Color to) {
+        super(to);
+        this.from = from;
+        this.to = to;
+    }
 
-	public Color from() {
-		return from;
-	}
+    public Color from() {
+        return from;
+    }
 
-	public Color to() {
-		return to;
-	}
+    public Color to() {
+        return to;
+    }
 }

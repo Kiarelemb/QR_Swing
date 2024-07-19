@@ -1,10 +1,7 @@
 package swing.qr.kiarelemb.utils;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
-import swing.qr.kiarelemb.combination.QRTabbedContentPanel;
-import swing.qr.kiarelemb.combination.QRTabbedPane;
 import swing.qr.kiarelemb.inter.QRActionRegister;
-import swing.qr.kiarelemb.inter.QRBackgroundUpdate;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -90,33 +87,6 @@ public class QRComponentUtils {
     }
 
     /**
-     * 为添加背景图片时所专设的静态方法
-     *
-     * @param com 需要循环的控件，其中可能有设置了 {@link swing.qr.kiarelemb.assembly.QRBackgroundBorder} 的面板
-     */
-    public static void loopComsForBackgroundSetting(Component com) {
-        if (com instanceof JComponent) {
-            if (com instanceof QRBackgroundUpdate) {
-                ((QRBackgroundUpdate) com).addCaretListenerForBackgroundUpdate();
-            } else if (com instanceof QRTabbedPane pane) {
-                int size = pane.getTabSize();
-                for (int i = 0; i < size; i++) {
-                    QRTabbedContentPanel p = pane.getContentPanel(i);
-                    loopComsForBackgroundSetting(p);
-                }
-            } else {
-                int count = ((JComponent) com).getComponentCount();
-                if (count > 0) {
-                    Component[] coms = ((JComponent) com).getComponents();
-                    for (Component c : coms) {
-                        loopComsForBackgroundSetting(c);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * 创建并返回一个具有指定字体属性的 {@link SimpleAttributeSet} 对象。
      *
      * @param f         字体
@@ -142,7 +112,7 @@ public class QRComponentUtils {
                                                            Color colorFore, Color colorBack) {
         // 初始化一个SimpleAttributeSet对象，用于存储字体属性
         SimpleAttributeSet sas = new SimpleAttributeSet();
-        // 设置字体家族
+        // 设置字体名称
         StyleConstants.setFontFamily(sas, fontFamily);
         // 设置字体大小
         StyleConstants.setFontSize(sas, fontSize);
@@ -340,4 +310,21 @@ public class QRComponentUtils {
             }
         }
     }
+
+
+    /**
+     * 设置颜色的透明度（alpha 值）。
+     * <p>
+     * 该方法通过接收一个已有颜色对象和一个新的透明度值，创建并返回一个新的颜色对象。
+     * 新颜色对象的RGB值与输入颜色对象相同，但透明度（alpha）被更新为指定的新值。
+     * 透明度值被限制在0到255之间，以确保颜色值在整数范围内，适合颜色对象的构造函数。
+     *
+     * @param color 原始颜色对象，其RGB值将被新颜色对象继承。
+     * @param alpha 新的透明度值，范围为0.0（完全透明）到1.0（完全不透明）。
+     * @return 一个新的颜色对象，具有指定的透明度。
+     */
+    public static Color setColorAlpha(Color color, float alpha) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (alpha * 255));
+    }
+
 }

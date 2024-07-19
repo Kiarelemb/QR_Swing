@@ -13,22 +13,22 @@ import java.util.Set;
  **/
 public class QRButtonGroup extends ButtonGroup {
 
-	Map<AbstractButton, Integer> data = new HashMap<>();
-	private int nextIndex = 0;
+    Map<AbstractButton, Integer> data = new HashMap<>();
+    private int nextIndex = 0;
 
-	@Override
-	public void add(AbstractButton b) {
-		super.add(b);
-		data.put(b, nextIndex++);
-	}
+    @Override
+    public void add(AbstractButton b) {
+        super.add(b);
+        data.put(b, nextIndex++);
+    }
 
-	public int getSelectedIndex() {
-		final Set<AbstractButton> abstractButtons = data.keySet();
-		for (AbstractButton abstractButton : abstractButtons) {
-			if (abstractButton.isSelected()) {
-				return data.get(abstractButton);
-			}
-		}
-		return nextIndex - 1;
-	}
+    public int getSelectedIndex() {
+        final Set<AbstractButton> abstractButtons = data.keySet();
+        for (AbstractButton abstractButton : abstractButtons) {
+            if (abstractButton.isSelected()) {
+                return data.get(abstractButton);
+            }
+        }
+        return nextIndex - 1;
+    }
 }

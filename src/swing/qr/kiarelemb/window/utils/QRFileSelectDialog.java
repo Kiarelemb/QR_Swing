@@ -11,7 +11,7 @@ import java.awt.*;
  * @create 2022-11-22 15:26
  **/
 public class QRFileSelectDialog extends QRDialog {
-	public QRFileSelectDialog(Window parent) {
-		super(parent);
-	}
+    public QRFileSelectDialog(Window parent) {
+        super(parent);
+    }
 }

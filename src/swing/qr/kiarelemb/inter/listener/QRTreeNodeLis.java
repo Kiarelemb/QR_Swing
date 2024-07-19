@@ -9,5 +9,5 @@ import swing.qr.kiarelemb.event.QRTreeNodeEvent;
  * @create 2023-01-28 23:35
  **/
 public interface QRTreeNodeLis {
-	void nodeClicked(QRTreeNodeEvent event);
+    void nodeClicked(QRTreeNodeEvent event);
 }

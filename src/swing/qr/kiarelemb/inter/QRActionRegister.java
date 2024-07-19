@@ -7,8 +7,8 @@ package swing.qr.kiarelemb.inter;
  * @create 2022-11-24 13:53
  **/
 public interface QRActionRegister {
-	/**
-	 * 每个控件所添加事件将调用该方法，可以在控件中单独实现该方法再完成一些操作
-	 */
-	void action(Object event);
+    /**
+     * 每个控件所添加事件将调用该方法，可以在控件中单独实现该方法再完成一些操作
+     */
+    void action(Object event);
 }

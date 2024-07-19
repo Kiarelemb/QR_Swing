@@ -4,15 +4,15 @@ import method.qr.kiarelemb.utils.QRArrayUtils;
 import method.qr.kiarelemb.utils.QRStringUtils;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import swing.qr.kiarelemb.assembly.QRBackgroundBorder;
 import swing.qr.kiarelemb.assembly.QRCaret;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
+import swing.qr.kiarelemb.data.QRInternalScrollBarData;
 import swing.qr.kiarelemb.data.QRMousePointIndexData;
 import swing.qr.kiarelemb.drag.QRFileTransferHandler;
 import swing.qr.kiarelemb.event.QRTextSelectionEndEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
-import swing.qr.kiarelemb.inter.QRBackgroundUpdate;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
+import swing.qr.kiarelemb.inter.QRInternalScrollbarUpdate;
 import swing.qr.kiarelemb.inter.listener.add.*;
 import swing.qr.kiarelemb.listener.*;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -24,10 +24,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.plaf.basic.BasicTextUI;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
@@ -39,8 +36,8 @@ import java.util.LinkedList;
  * @create 2022-11-21 20:52D
  **/
 public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretListenerAdd, QRFocusListenerAdd,
-        QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd,
-        QRTextSelectionEndListenerAdd, QRBackgroundUpdate {
+        QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd, QRMouseWheelListenerAdd,
+        QRTextSelectionEndListenerAdd, QRInternalScrollbarUpdate {
 
     public static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     public static final Cursor EDIT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
@@ -56,12 +53,13 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public QRCaretUpdateData caretUpdateData;
     public Font textFont = QRColorsAndFonts.STANDARD_FONT_TEXT;
     protected QRScrollPane scrollPane;
+    protected QRInternalScrollPane internalScrollPane;
     protected char blankMark = ' ';
     protected char lineMark = '\n';
     protected boolean caretBlock = false;
     protected boolean lineWrap = true;
 
-    //region 高级操作变量，用于鼠标取文
+    //region 高级操作
     /**
      * 通过 光标位置 {@link Integer} 及 光标坐标信息 {@link Rectangle} 双向 map 来实现数据相互映射
      */
@@ -83,11 +81,13 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     //endregion
 
     //region 私有变量
+    private QRInternalScrollBarData data;
     private QRCaretListener caretListener;
     private QRDocumentListener documentListener;
     private QRKeyListener keyListener;
     private QRMouseMotionListener mouseMotionListener;
     private QRMouseListener mouseListener;
+    private QRMouseWheelListener mouseWheelListener;
     private QRFocusListener focusListener;
     private QRTextSelectionEndListener selectionEndListener;
     //endregion
@@ -97,6 +97,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * 构造方法
      */
     public QRTextPane() {
+        setOpaque(false);
         setMargin(new Insets(INSECT, INSECT, INSECT, INSECT));
         this.caret = new QRCaret();
         setCaret(this.caret);
@@ -141,12 +142,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addDocumentListener() {
         if (this.documentListener == null) {
             this.documentListener = new QRDocumentListener();
-            this.documentListener.add(QRDocumentListener.TYPE.INSERT,
-                    e -> QRTextPane.this.insertUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.REMOVE,
-                    e -> QRTextPane.this.removeUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.CHANGED,
-                    e -> QRTextPane.this.changedUpdate((DocumentEvent) e));
+            this.documentListener.add(QRDocumentListener.TYPE.INSERT, e -> QRTextPane.this.insertUpdate((DocumentEvent) e));
+            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, e -> QRTextPane.this.removeUpdate((DocumentEvent) e));
+            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, e -> QRTextPane.this.changedUpdate((DocumentEvent) e));
             getDocument().addDocumentListener(this.documentListener);
         }
     }
@@ -244,6 +242,30 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
+        }
+    }
+
+    /**
+     * 添加鼠标滚轮事件
+     */
+    @Override
+    public final void addMouseWheelListener() {
+        if (this.mouseWheelListener == null) {
+            this.mouseWheelListener = new QRMouseWheelListener();
+            this.mouseWheelListener.add(e -> mouseWheel((MouseWheelEvent) e));
+            addMouseWheelListener(this.mouseWheelListener);
+        }
+    }
+
+    /**
+     * 添加鼠标滚轮事件
+     *
+     * @param ar 操作
+     */
+    @Override
+    public final void addMouseWheelAction(QRActionRegister ar) {
+        if (this.mouseWheelListener != null) {
+            this.mouseWheelListener.add(ar);
         }
     }
 
@@ -442,12 +464,65 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @return 滚动条本身，实例是 {@link QRScrollPane}
      */
     public QRScrollPane addScrollPane(int line) {
+        if (internalScrollPane != null) {
+            throw new UnsupportedOperationException("只能添加一个 ScrollPane");
+        }
         if (this.scrollPane == null) {
             this.scrollPane = new QRScrollPane();
-            this.scrollPane.setViewportView(this);
             this.scrollPane.setScrollSmoothly(line);
+            this.scrollPane.setViewportView(this);
+            this.scrollPane.getViewport().setOpaque(false);
         }
         return this.scrollPane;
+    }
+
+    @Deprecated
+    public QRInternalScrollPane addInternalScrollbar() {
+        if (scrollPane != null) {
+            throw new UnsupportedOperationException("只能添加一个 ScrollPane");
+        }
+        if (this.internalScrollPane == null) {
+            this.internalScrollPane = new QRInternalScrollPane(this);
+        }
+        return this.internalScrollPane;
+    }
+
+    @Deprecated
+    @Override
+    public QRInternalScrollBarData getScrollBarData() {
+        if (data == null) {
+            data = new QRInternalScrollBarData();
+        }
+        return data;
+    }
+
+    @Deprecated
+    @Override
+    public void scrollBarValueUpdate() {
+        data.size = getSize();
+        data.location = getLocation();
+        data.parentSize = getParent().getSize();
+        ////// 计算纵向值
+        // 父容器高度
+        double ph = data.parentSize.getHeight();
+        // 文本面板高度
+        int height = data.size.height;
+        // 滚动条高度
+        data.sh = ph * ph / height;
+        data.maxY = ph - data.sh;
+        // 滚动条纵向的位置范围：[0, ph - sh]
+        data.sy = -data.location.y * data.maxY / (height - ph);
+
+        data.verticalScrollbarVisible = (int) ph != (int) data.sh;
+        ////// 计算横向值
+        if (!lineWrap) {
+            double pw = data.parentSize.getWidth();
+            int width = data.size.width;
+            data.sw = pw * pw / width;
+            data.maxX = pw - data.sw;
+            data.sx = -data.location.x * data.maxX / (width - pw);
+            data.horizontalScrollbarVisible = (int) pw != (int) data.sw;
+        }
     }
 
     /**
@@ -1145,38 +1220,6 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         setSelectionEnd(end);
     }
 
-    /**
-     * 当添加了背景图片时，就需要不断更新文本面板，以确保它透明
-     *
-     * <p>确保窗体中有面板设置了 {@link QRBackgroundBorder}
-     */
-    @Override
-    public final void addCaretListenerForBackgroundUpdate() {
-        QRActionRegister action = e -> {
-            if (!this.caretBlock) {
-                try {
-                    SwingUtilities.getWindowAncestor(QRTextPane.this).repaint();
-                } catch (Exception ignore) {
-                }
-            }
-        };
-        if (this.caretListener != null) {
-            addCaretListenerAction(action);
-        } else {
-            addCaretListener(action::action);
-        }
-        if (this.mouseListener != null) {
-            addMouseAction(QRMouseListener.TYPE.CLICK, action);
-        } else {
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    action.action(e);
-                }
-            });
-        }
-    }
-
     //endregion
 
     //region 各种设置
@@ -1255,9 +1298,14 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         this.caretBlock = true;
     }
 
+    public void setCursorDefault() {
+        setCursor(Cursor.getDefaultCursor());
+    }
+
     public final void setCaretUnblock() {
         this.caretBlock = false;
     }
+    //endregion
 
     //region 高级操作
     public void indexesUpdate() {
@@ -1318,7 +1366,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @return 如果找到了，则说明当前光标在文本框的末尾，且这个位置是{@link  #lastWordIndexes}的{@code mid}的取值位置
      * <P>如果没有找到，那么{@link  #lastWordIndexes}的{@code mid}的取值位置是上一行末尾的位置</P>
      * <p>特别地，如果光标在第一行，则返回{@code -1}</p>
-     * <p>返回的这个{@code mid}值{@code +2}，就是当前光标从在的行</p>
+     * <p>返回的这个{@code mid}值{@code +2}，就是当前光标所在的行</p>
      */
     public final int getIndexSearchMid(int index) {
         int start = -1;
@@ -1430,7 +1478,6 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     }
     //endregion
 
-    //endregion
 
     //region 打印的方法
 
@@ -1648,6 +1695,13 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     }
 
     /**
+     * 重写前请先调用 {@link #addMouseWheelListener()}
+     */
+    protected void mouseWheel(MouseWheelEvent e) {
+
+    }
+
+    /**
      * 重写前请先调用 {@link #addFocusListener()}
      */
     protected void focusGain(FocusEvent e) {
@@ -1752,6 +1806,36 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     @Override
     public boolean getScrollableTracksViewportWidth() {
         return lineWrap;
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        // 用于绘制内置滚动条
+        if (internalScrollPane == null) {
+            return;
+        }
+        scrollBarValueUpdate();
+//        if (!data.verticalScrollbarVisible && !data.horizontalScrollbarVisible) {
+        if (true) {
+            return;
+        }
+
+        g.translate(getWidth() - 10, -data.location.y);
+        g.setColor(QRColorsAndFonts.SCROLL_COLOR);
+        Graphics2D g2 = (Graphics2D) g;
+        RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.addRenderingHints(rh);
+        if (data.verticalScrollbarVisible) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, data.mousePressedVertical ? 1f : (data.mouseEnteredVertical ? 0.8f : 0.6f)));
+            g2.fillRect(0, (int) data.sy, 10, (int) data.sh);
+        }
+        if (data.horizontalScrollbarVisible) {
+            g2.translate(0, data.size.height - 10);
+            g2.setColor(QRColorsAndFonts.SCROLL_COLOR);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, data.mousePressedHorizontal ? 1f : (data.mouseEnteredHorizontal ? 0.8f : 0.6f)));
+            g2.fillRect((int) data.sx, 0, (int) data.sw, 10);
+        }
     }
 
     @Override

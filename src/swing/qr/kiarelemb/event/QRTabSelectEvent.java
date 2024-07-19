@@ -12,27 +12,27 @@ import java.util.EventObject;
  * @create 2023-01-05 12:29
  **/
 public class QRTabSelectEvent extends EventObject {
-	private final int before;
-	private final int after;
+    private final int before;
+    private final int after;
 
-	private final QRTabbedContentPanel tabbedContentPanel;
+    private final QRTabbedContentPanel tabbedContentPanel;
 
-	public QRTabSelectEvent(int before, int after, QRTabbedContentPanel tabbedContentPanel) {
-		super(after);
-		this.before = before;
-		this.after = after;
-		this.tabbedContentPanel = tabbedContentPanel;
-	}
+    public QRTabSelectEvent(int before, int after, QRTabbedContentPanel tabbedContentPanel) {
+        super(after);
+        this.before = before;
+        this.after = after;
+        this.tabbedContentPanel = tabbedContentPanel;
+    }
 
-	public int before() {
-		return before;
-	}
+    public int before() {
+        return before;
+    }
 
-	public int after() {
-		return after;
-	}
+    public int after() {
+        return after;
+    }
 
-	public QRTabbedContentPanel tabbedContentPanel() {
-		return tabbedContentPanel;
-	}
+    public QRTabbedContentPanel tabbedContentPanel() {
+        return tabbedContentPanel;
+    }
 }

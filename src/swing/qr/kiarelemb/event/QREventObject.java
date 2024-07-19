@@ -11,21 +11,21 @@ import java.util.EventObject;
  **/
 public class QREventObject extends EventObject {
 
-	private final JComponent component;
-	private final Object[] object;
+    private final JComponent component;
+    private final Object[] object;
 
 
-	public QREventObject(JComponent component, Object... object) {
-		super(component);
-		this.component = component;
-		this.object = object;
-	}
+    public QREventObject(JComponent component, Object... object) {
+        super(component);
+        this.component = component;
+        this.object = object;
+    }
 
-	public JComponent component() {
-		return component;
-	}
+    public JComponent component() {
+        return component;
+    }
 
-	public Object[] object() {
-		return object;
-	}
+    public Object[] object() {
+        return object;
+    }
 }

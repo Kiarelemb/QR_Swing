@@ -297,17 +297,24 @@ public class QRTabbedPane extends QRPanel {
             if (clicked) {
                 setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
                 switch (tabPositionFromBorderLayout) {
-                    case BorderLayout.SOUTH -> setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, QRColorsAndFonts.CARET_COLOR));
-                    case BorderLayout.EAST -> setBorder(BorderFactory.createMatteBorder(0, 3, 0, 0, QRColorsAndFonts.CARET_COLOR));
-                    case BorderLayout.WEST -> setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.SOUTH ->
+                            setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.EAST ->
+                            setBorder(BorderFactory.createMatteBorder(0, 3, 0, 0, QRColorsAndFonts.CARET_COLOR));
+                    case BorderLayout.WEST ->
+                            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, QRColorsAndFonts.CARET_COLOR));
                     default -> setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
                 }
             } else {
                 switch (tabPositionFromBorderLayout) {
-                    case BorderLayout.SOUTH -> setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.EAST -> setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.WEST -> setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    default -> setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.SOUTH ->
+                            setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.EAST ->
+                            setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    case BorderLayout.WEST ->
+                            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.FRAME_COLOR_BACK));
+                    default ->
+                            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
                 }
             }
         }

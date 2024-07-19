@@ -10,8 +10,8 @@ import javax.swing.event.CaretListener;
  * @create 2022-11-24 13:55
  **/
 public class QRCaretListener extends QRAction implements CaretListener {
-	@Override
-	public final void caretUpdate(CaretEvent e) {
-		action(e);
-	}
+    @Override
+    public final void caretUpdate(CaretEvent e) {
+        action(e);
+    }
 }
