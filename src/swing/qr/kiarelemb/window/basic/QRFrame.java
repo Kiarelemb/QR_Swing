@@ -223,7 +223,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         //子类直接向 mainPanel 中添加控件
         this.mainPanel = new QRPanel();
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
-        this.contentPane.setBorder(new EmptyBorder(0, 5, 5, 0));
+        this.contentPane.setBorder(new EmptyBorder(0, 0, 5, 0));
         setBackgroundImage(QRSwing.windowBackgroundImagePath);
         addWindowAction(QRWindowListener.TYPE.OPEN, e -> {
             this.minimumSize = getMinimumSizes();
