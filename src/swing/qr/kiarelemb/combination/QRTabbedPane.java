@@ -334,6 +334,7 @@ public class QRTabbedPane extends QRPanel {
                 setUI(new BasicButtonUI());
                 setContentAreaFilled(false);
                 setFocusable(false);
+                setOpaque(false);
                 setBorderPainted(false);
                 setRolloverEnabled(true);
             }

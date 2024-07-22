@@ -249,32 +249,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
         MouseAdapte adapte = new MouseAdapte();
 
-        QRPanel titlePanel = new QRPanel(new BorderLayout(2, 0)) {
-            @Override
-            public void mousePress(MouseEvent e) {
-                adapte.mousePressed(e);
-            }
-
-            @Override
-            public void mouseRelease(MouseEvent e) {
-                adapte.mouseReleased(e);
-            }
-
-            @Override
-            public void mouseEnter(MouseEvent e) {
-                setCursorDefault();
-            }
-
-            @Override
-            public void mouseDrag(MouseEvent e) {
-                adapte.mouseDragged(e);
-            }
-
-            @Override
-            public void mouseMove(MouseEvent e) {
-                adapte.mouseMoved(e);
-            }
-        };
+        QRPanel titlePanel = new QRPanel(new BorderLayout(2, 0));
         this.topPanel.add(titlePanel, BorderLayout.CENTER);
 
         QRLabel iconLabel = QRLabel.getIconLabel();
@@ -295,10 +270,10 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
 
-        addMouseMotionListener(adapte);
-        addMouseListener(adapte);
-        mainPanel.addMouseListener(adapte);
-        mainPanel.addMouseMotionListener(adapte);
+        titlePanel.addMouseListener(adapte);
+        titlePanel.addMouseMotionListener(adapte);
+        this.contentPane.addMouseListener(adapte);
+        this.contentPane.addMouseMotionListener(adapte);
         this.disposeAction = e -> {
             if (QRDialog.this.isFocused()) {
                 QRDialog.this.dispose();

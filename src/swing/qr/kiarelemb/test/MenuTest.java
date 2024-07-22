@@ -73,10 +73,11 @@ public class MenuTest extends QRFrame {
         QRSwing.setWindowTitleMenu(true);
 
         QRSwing.setWindowRound(false);
+        QRSwing.registerGlobalKeyEvents();
         MenuTest window = new MenuTest("测试窗体");
         window.setBackgroundBorderAlpha(0.5f);
         window.setBackgroundImage("C:\\Users\\Kiarelemb QR\\Desktop\\背景图.png");
-        QRSwing.registerGlobalKeyEvents(window);
+        QRSwing.registerGlobalEventWindow(window);
         QRSwing.registerGlobalAction("ctrl s", (System.out::println), false);
         //设置窗体可见
         window.setVisible(true);

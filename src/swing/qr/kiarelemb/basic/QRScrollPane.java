@@ -252,7 +252,6 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
     public JViewport getViewport() {
         JViewport viewport = super.getViewport();
         if (viewport != null) {
-
             viewport.setOpaque(false);
         }
         return viewport;
@@ -260,12 +259,12 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
 
     @Override
     public void setViewportView(Component view) {
-        super.setViewportView(view);
-        JViewport viewport = getViewport();
-        viewport.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-        viewport.setOpaque(false);
-        if (view instanceof JEditorPane v) {
-            this.view = v;
+        JViewport viewport = new JViewport();
+        viewport.setView(view);
+        setViewport(viewport);
+        getViewport().setOpaque(false);
+        if (view instanceof JComponent com) {
+            com.setOpaque(false);
         }
     }
 

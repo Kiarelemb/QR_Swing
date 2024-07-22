@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.utils;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
+import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.*;
@@ -259,6 +260,26 @@ public class QRComponentUtils {
                 e.action(param);
             }
         }, millis);
+    }
+
+    public static void componentLoopToSetOpaque(JComponent com, boolean opaque){
+        QRActionRegister action = e -> {
+            if (e instanceof JComponent jComponent) {
+                jComponent.setOpaque(opaque);
+            }
+        };
+        QRActionRegister panel = new QRActionRegister() {
+            @Override
+            public void action(Object e) {
+                if (e instanceof JComponent jComponent) {
+                    action.action(jComponent);
+                    if (jComponent.getComponentCount() > 0) {
+                        QRComponentUtils.componentLoop(jComponent, JComponent.class, this, action);
+                    }
+                }
+            }
+        };
+        QRComponentUtils.componentLoop(com, QRPanel.class, panel, action);
     }
 
     /**

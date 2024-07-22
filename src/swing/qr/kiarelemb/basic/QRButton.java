@@ -46,11 +46,9 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         setFocusPainted(false);
         setBorderPainted(false);
         setBorder(null);
-        setOpaque(false);
         addActionListener();
         setText(text);
         componentFresh();
-
         mouseListenerInit();
     }
 
@@ -276,6 +274,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     @Override
     public void componentFresh() {
         setForeground(QRColorsAndFonts.MENU_COLOR);
+        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
     }
 

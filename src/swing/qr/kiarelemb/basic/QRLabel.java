@@ -241,6 +241,7 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
     public void componentFresh() {
         setFont(QRColorsAndFonts.DEFAULT_FONT_MENU);
         setForeground(QRColorsAndFonts.MENU_COLOR);
+        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
     }
 
     //region 静态方法

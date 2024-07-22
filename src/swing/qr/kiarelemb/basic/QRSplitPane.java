@@ -55,7 +55,7 @@ public class QRSplitPane extends JSplitPane implements QRComponentUpdate {
 
     @Override
     public void componentFresh() {
-        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+//        setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setBorder(BorderFactory.createEmptyBorder());
         setBorderPaint(false);
         panelLoop();

@@ -198,7 +198,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
         return this.scrollPane;
     }
 
-    public QRInternalScrollPane addInternalScrollbar() {
+    public QRInternalScrollPane addInternalScrollPane() {
         if (scrollPane != null) {
             throw new UnsupportedOperationException("只能添加一个 ScrollPane");
         }

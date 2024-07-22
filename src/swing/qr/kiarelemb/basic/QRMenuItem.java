@@ -24,9 +24,13 @@ public class QRMenuItem extends QRButton {
 
     /**
      * @param text 菜单按钮显示的内容
-     * @param key  方法 {@link QRSwing#registerGlobalKeyEvents(Window)} 被调用了才生效
+     * @param key  方法 {@link QRSwing#registerGlobalKeyEvents()} 被调用了才生效
      */
     public QRMenuItem(String text, String key) {
+        this(text, key, true);
+    }
+
+    public QRMenuItem(String text, String key, boolean mainWindowFocus) {
         super(text);
         setLayout(new BorderLayout());
         tip = new QRLabel();
@@ -34,7 +38,7 @@ public class QRMenuItem extends QRButton {
         tip.setHorizontalAlignment(SwingConstants.RIGHT);
 
         //设置快捷键
-        setKeyStroke(key);
+        setKeyStroke(key, mainWindowFocus);
 
         add(tip, BorderLayout.EAST);
         setHorizontalAlignment(SwingConstants.LEFT);
@@ -47,7 +51,7 @@ public class QRMenuItem extends QRButton {
      *
      * @param key 快捷键
      */
-    public final void setKeyStroke(String key) {
+    public final void setKeyStroke(String key, boolean mainWindowFocus) {
         if (key != null) {
             KeyStroke keyStroke = null;
             String[] keys = key.split(",");
@@ -55,8 +59,8 @@ public class QRMenuItem extends QRButton {
             for (int i = keys.length - 1; i >= 0; i--) {
                 String k = keys[i];
                 keyStroke = QRStringUtils.getKeyStroke(k);
-                QRSwing.registerGlobalActionRemove(keyStroke, actionRegister, true);
-                QRSwing.registerGlobalAction(keyStroke, actionRegister, true);
+                QRSwing.registerGlobalActionRemove(keyStroke, actionRegister, mainWindowFocus);
+                QRSwing.registerGlobalAction(keyStroke, actionRegister, mainWindowFocus);
             }
             if (keyStroke != null) {
                 quickTip = QRStringUtils.getKeyStrokeString(keyStroke);

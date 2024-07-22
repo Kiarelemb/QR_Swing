@@ -469,15 +469,14 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         }
         if (this.scrollPane == null) {
             this.scrollPane = new QRScrollPane();
-            this.scrollPane.setScrollSmoothly(line);
             this.scrollPane.setViewportView(this);
-            this.scrollPane.getViewport().setOpaque(false);
+            this.scrollPane.setScrollSmoothly(line);
         }
         return this.scrollPane;
     }
 
     @Deprecated
-    public QRInternalScrollPane addInternalScrollbar() {
+    public QRInternalScrollPane addInternalScrollPane() {
         if (scrollPane != null) {
             throw new UnsupportedOperationException("只能添加一个 ScrollPane");
         }
