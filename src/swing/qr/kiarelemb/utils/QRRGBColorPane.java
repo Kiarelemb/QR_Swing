@@ -29,7 +29,7 @@ public class QRRGBColorPane extends QRPanel {
     private ColorTextField rt;
     private ColorTextField gt;
     private ColorTextField bt;
-    private final QRActionRegister colorChangedAction;
+    private final QRActionRegister<QRColorChangedEvent> colorChangedAction;
     private Color color;
 
     private class ColorTextField extends QRTextField {
@@ -135,7 +135,7 @@ public class QRRGBColorPane extends QRPanel {
      * @param color              面板显示的初始颜色
      * @param colorChangedAction 颜色改变时触发的动作，参数是 {@link QRColorChangedEvent}
      */
-    public QRRGBColorPane(Color color, QRActionRegister colorChangedAction) {
+    public QRRGBColorPane(Color color, QRActionRegister<QRColorChangedEvent> colorChangedAction) {
         this.showColorLabel = new QRLabel();
         this.color = color;
         this.colorChangedAction = colorChangedAction;
@@ -153,7 +153,7 @@ public class QRRGBColorPane extends QRPanel {
      * @param showColorLabel     显示颜色的标签。注意，该构造器不会把标签添加到面板中，需要手动添加。
      * @param colorChangedAction 颜色改变时触发的动作，参数是 {@link QRColorChangedEvent}
      */
-    public QRRGBColorPane(Color color, QRLabel showColorLabel, QRActionRegister colorChangedAction) {
+    public QRRGBColorPane(Color color, QRLabel showColorLabel, QRActionRegister<QRColorChangedEvent> colorChangedAction) {
         this.showColorLabel = showColorLabel;
         this.color = color;
         this.colorChangedAction = colorChangedAction;

@@ -2,7 +2,6 @@ package swing.qr.kiarelemb.basic;
 
 import method.qr.kiarelemb.utils.QRSleepUtils;
 import swing.qr.kiarelemb.data.QRInternalScrollBarData;
-import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRInternalScrollbarUpdate;
 import swing.qr.kiarelemb.inter.listener.add.QRDocumentListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseListenerAdd;
@@ -13,7 +12,6 @@ import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import java.awt.*;
@@ -103,12 +101,6 @@ public class QRInternalScrollPane extends QRPanel {
                 }
             });
 //            QRActionRegister ar = ed -> QRComponentUtils.runLater(1000, es -> {
-            QRActionRegister ar = ed -> {
-                DocumentEvent e = (DocumentEvent) ed;
-
-                Document document = e.getDocument();
-
-            };
 //            da.addDocumentListenerAction(QRDocumentListener.TYPE.INSERT, ar);
 //            da.addDocumentListenerAction(QRDocumentListener.TYPE.REMOVE, ar);
 //            da.addDocumentListenerAction(QRDocumentListener.TYPE.CHANGED, ar);
@@ -117,7 +109,7 @@ public class QRInternalScrollPane extends QRPanel {
         }
 
         mwa.addMouseWheelAction(es -> {
-            MouseWheelEvent e = (MouseWheelEvent) es;
+            MouseWheelEvent e = es;
             int amount;
             if (component instanceof QRTextPane com) {
                 amount = e.getScrollAmount() * com.caret.caretHeight();
@@ -150,7 +142,7 @@ public class QRInternalScrollPane extends QRPanel {
         });
 
         mma.addMouseMotionAction(QRMouseMotionListener.TYPE.MOVE, es -> {
-            MouseEvent e = (MouseEvent) es;
+            MouseEvent e = es;
 
             // 位置是相对于文本面板的顶点
             Point p = e.getPoint();
@@ -166,7 +158,7 @@ public class QRInternalScrollPane extends QRPanel {
         });
 
         mma.addMouseMotionAction(QRMouseMotionListener.TYPE.DRAG, es -> {
-            MouseEvent e = (MouseEvent) es;
+            MouseEvent e = es;
             if (!data.mouseEnteredVertical) {
                 if (editor != null && editor.getHighlighter() == null) {
                     editor.setHighlighter(highlighter);
@@ -196,7 +188,7 @@ public class QRInternalScrollPane extends QRPanel {
         });
 
         ma.addMouseAction(QRMouseListener.TYPE.PRESS, es -> {
-            MouseEvent e = (MouseEvent) es;
+            MouseEvent e = es;
             if (e.getButton() == MouseEvent.BUTTON1) {
                 data.mousePressedVertical = data.mouseEnteredVertical;
                 data.mousePressedHorizontal = data.mouseEnteredHorizontal;

@@ -167,8 +167,8 @@ public class QRList extends JList<String> implements QRComponentUpdate {
     public final void addMouseMotionListener() {
         if (this.mouseMotionListener == null) {
             this.mouseMotionListener = new QRMouseMotionListener();
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, this::mouseDrag);
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, this::mouseMove);
             addMouseMotionListener(this.mouseMotionListener);
         }
     }
@@ -180,7 +180,7 @@ public class QRList extends JList<String> implements QRComponentUpdate {
      * @param type 类型
      * @param ar   操作
      */
-    public final void addMouseMotionListener(QRMouseMotionListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseMotionListener(QRMouseMotionListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseMotionListener != null) {
             this.mouseMotionListener.add(type, ar);
         }
@@ -192,11 +192,11 @@ public class QRList extends JList<String> implements QRComponentUpdate {
     public final void addMouseListener() {
         if (this.mouseListener == null) {
             this.mouseListener = new QRMouseListener();
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> mouseClick((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.PRESS, e -> mousePress((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, e -> mouseRelease((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
+            this.mouseListener.add(QRMouseListener.TYPE.CLICK, this::mouseClick);
+            this.mouseListener.add(QRMouseListener.TYPE.PRESS, this::mousePress);
+            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, this::mouseRelease);
+            this.mouseListener.add(QRMouseListener.TYPE.ENTER, this::mouseEnter);
+            this.mouseListener.add(QRMouseListener.TYPE.EXIT, this::mouseExit);
             addMouseListener(this.mouseListener);
 
         }
@@ -209,7 +209,7 @@ public class QRList extends JList<String> implements QRComponentUpdate {
      * @param type 类型
      * @param ar   操作
      */
-    public final void addMouseListener(QRMouseListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseListener(QRMouseListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
         }

@@ -18,10 +18,10 @@ public class QRMouseMotionListener implements MouseMotionListener {
         DRAG, MOVE
     }
 
-    private final LinkedList<QRActionRegister> drag = new LinkedList<>();
-    private final LinkedList<QRActionRegister> move = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> drag = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> move = new LinkedList<>();
 
-    public void add(TYPE type, QRActionRegister ar) {
+    public void add(TYPE type, QRActionRegister<MouseEvent> ar) {
         if (type == TYPE.DRAG) {
             drag.add(ar);
         } else {

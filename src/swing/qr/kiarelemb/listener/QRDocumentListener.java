@@ -18,11 +18,11 @@ public class QRDocumentListener implements DocumentListener {
         INSERT, REMOVE, CHANGED
     }
 
-    private final LinkedList<QRActionRegister> insert = new LinkedList<>();
-    private final LinkedList<QRActionRegister> remove = new LinkedList<>();
-    private final LinkedList<QRActionRegister> changed = new LinkedList<>();
+    private final LinkedList<QRActionRegister<DocumentEvent>> insert = new LinkedList<>();
+    private final LinkedList<QRActionRegister<DocumentEvent>> remove = new LinkedList<>();
+    private final LinkedList<QRActionRegister<DocumentEvent>> changed = new LinkedList<>();
 
-    public void add(TYPE type, QRActionRegister ar) {
+    public void add(TYPE type, QRActionRegister<DocumentEvent> ar) {
         switch (type) {
             case INSERT -> this.insert.add(ar);
             case REMOVE -> this.remove.add(ar);

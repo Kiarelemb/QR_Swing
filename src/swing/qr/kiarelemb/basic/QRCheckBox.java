@@ -65,7 +65,7 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
     public void addActionListener() {
         if (this.clickListener == null) {
             this.clickListener = new QRActionListener();
-            this.clickListener.add(e -> actionEvent((ActionEvent) e));
+            this.clickListener.add(this::actionEvent);
             addActionListener(this.clickListener);
         }
     }
@@ -76,7 +76,7 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
      * @param ar 操作
      */
     @Override
-    public final void addClickAction(QRActionRegister ar) {
+    public final void addClickAction(QRActionRegister<ActionEvent> ar) {
         if (this.clickListener != null) {
             this.clickListener.add(ar);
         }

@@ -9,7 +9,7 @@ import swing.qr.kiarelemb.inter.listener.QRRedoUndoLis;
  * @description:
  * @create 2023-01-04 16:52
  **/
-public class QRRedoUndoListener extends QRAction implements QRRedoUndoLis {
+public class QRRedoUndoListener extends QRAction<QRRedoUndoEvent> implements QRRedoUndoLis {
     @Override
     public final void redoUndoAction(QRRedoUndoEvent event) {
         action(event);

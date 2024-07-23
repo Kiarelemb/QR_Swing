@@ -45,7 +45,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
      * @param type 欲添加的类型
      * @param ar   操作。其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
      */
-    public void addEvent(QRNativeKeyListener.TYPE type, boolean mainWindowFocus, KeyStroke keyStroke, QRActionRegister ar) {
+    public void addEvent(QRNativeKeyListener.TYPE type, boolean mainWindowFocus, KeyStroke keyStroke, QRActionRegister<KeyStroke> ar) {
         switch (type) {
             case PRESSED -> pressKeyEvents.addEvent(keyStroke, mainWindowFocus, ar);
             case TYPED -> typeKeyEvents.addEvent(keyStroke, mainWindowFocus, ar);
@@ -61,7 +61,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
         }
     }
 
-    public void removeEvent(QRNativeKeyListener.TYPE type, KeyStroke keyStroke, QRActionRegister ar, boolean mainWindowFocus) {
+    public void removeEvent(QRNativeKeyListener.TYPE type, KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         switch (type) {
             case PRESSED -> pressKeyEvents.removeEvent(keyStroke, ar, mainWindowFocus);
             case TYPED -> typeKeyEvents.removeEvent(keyStroke, ar, mainWindowFocus);
@@ -69,13 +69,13 @@ public class QRNativeKeyListener implements NativeKeyListener {
         }
     }
 
-    public void add(boolean mainWindowFocus, QRActionRegister ar) {
+    public void add(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
         this.pressKeyEvents.add(mainWindowFocus, ar);
         this.typeKeyEvents.add(mainWindowFocus, ar);
         this.releaseKeyEvents.add(mainWindowFocus, ar);
     }
 
-    public void remove(boolean mainWindowFocus, QRActionRegister ar) {
+    public void remove(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
         this.pressKeyEvents.remove(mainWindowFocus, ar);
         this.typeKeyEvents.remove(mainWindowFocus, ar);
         this.releaseKeyEvents.remove(mainWindowFocus, ar);
@@ -115,10 +115,10 @@ public class QRNativeKeyListener implements NativeKeyListener {
     }
 
     public static class KeyEvents {
-        private final Map<KeyStroke, ArrayList<QRActionRegister>> GLOBAL_KEY_EVENTS;
-        private final Map<KeyStroke, ArrayList<QRActionRegister>> FOCUS_KEY_EVENTS;
-        private final LinkedList<QRActionRegister> globalEventList;
-        private final LinkedList<QRActionRegister> focusEventList;
+        private final Map<KeyStroke, ArrayList<QRActionRegister<KeyStroke>>> GLOBAL_KEY_EVENTS;
+        private final Map<KeyStroke, ArrayList<QRActionRegister<KeyStroke>>> FOCUS_KEY_EVENTS;
+        private final LinkedList<QRActionRegister<QRNativeKeyEvent>> globalEventList;
+        private final LinkedList<QRActionRegister<QRNativeKeyEvent>> focusEventList;
         private Window mainWindow;
 
         public KeyEvents() {
@@ -128,7 +128,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
             focusEventList = new LinkedList<>();
         }
 
-        public void addEvent(KeyStroke keyStroke, boolean mainWindowFocus, QRActionRegister ar) {
+        public void addEvent(KeyStroke keyStroke, boolean mainWindowFocus, QRActionRegister<KeyStroke> ar) {
             if (keyStroke != null) {
                 if (mainWindowFocus) {
                     this.FOCUS_KEY_EVENTS.computeIfAbsent(keyStroke, k -> new ArrayList<>()).add(ar);
@@ -142,7 +142,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
             removeEvent(keyStroke, null, mainWindowFocus);
         }
 
-        public void removeEvent(KeyStroke keyStroke, QRActionRegister ar, boolean mainWindowFocus) {
+        public void removeEvent(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
             if (ar == null) {
                 if (mainWindowFocus) {
                     this.FOCUS_KEY_EVENTS.remove(keyStroke);
@@ -151,7 +151,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
                 }
                 return;
             }
-            ArrayList<QRActionRegister> list;
+            ArrayList<QRActionRegister<KeyStroke>> list;
             if (mainWindowFocus) {
                 list = this.FOCUS_KEY_EVENTS.get(keyStroke);
             } else {
@@ -162,7 +162,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
             }
         }
 
-        public void add(boolean mainWindowFocus, QRActionRegister ar) {
+        public void add(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
             if (mainWindowFocus) {
                 focusEventList.add(ar);
             } else {
@@ -170,7 +170,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
             }
         }
 
-        public void remove(boolean mainWindowFocus, QRActionRegister ar) {
+        public void remove(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
             if (mainWindowFocus) {
                 focusEventList.remove(ar);
             } else {
@@ -184,28 +184,28 @@ public class QRNativeKeyListener implements NativeKeyListener {
         public void invokeAction(QRNativeKeyEvent event) {
             KeyStroke keyStroke = event.getKeyStroke();
             System.out.println(keyStroke + "," + event.paramString());
-            ArrayList<QRActionRegister> ars;
-            LinkedList<QRActionRegister> list;
+            ArrayList<QRActionRegister<KeyStroke>> ars;
+            LinkedList<QRActionRegister<QRNativeKeyEvent>> list;
             if (mainWindow != null && mainWindow.isFocused()) {
                 ars = this.FOCUS_KEY_EVENTS.get(keyStroke);
                 list = this.focusEventList;
-                QRComponentUtils.runActions(ars, event);
+                QRComponentUtils.runActions(ars, keyStroke);
                 QRComponentUtils.runActions(list, event);
             }
             ars = this.GLOBAL_KEY_EVENTS.get(keyStroke);
             list = this.globalEventList;
-            QRComponentUtils.runActions(ars, event);
+            QRComponentUtils.runActions(ars, keyStroke);
             QRComponentUtils.runActions(list, event);
         }
 
         /**
-         * 从外部运行指定键的事件，注意，操作的参数是 {@link KeyStroke}
+         * 从外部运行指定键的事件
          *
          * @param keyStroke       快捷键
          * @param mainWindowFocus 是否主窗体焦点
          */
         public void invokeAction(Window mainWindow, KeyStroke keyStroke, boolean mainWindowFocus) {
-            ArrayList<QRActionRegister> list;
+            ArrayList<QRActionRegister<KeyStroke>> list;
             if (mainWindowFocus) {
                 if (mainWindow == null || !mainWindow.isFocused()) {
                     return;
@@ -213,9 +213,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
                 list = FOCUS_KEY_EVENTS.get(keyStroke);
                 QRComponentUtils.runActions(list, keyStroke);
             }
-//            else {
             list = GLOBAL_KEY_EVENTS.get(keyStroke);
-//            }
             QRComponentUtils.runActions(list, keyStroke);
         }
     }

@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.inter.listener.add;
 
+import swing.qr.kiarelemb.event.QRTextSelectionEndEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 public interface QRTextSelectionEndListenerAdd {
@@ -14,5 +15,5 @@ public interface QRTextSelectionEndListenerAdd {
      *
      * @param ar 操作
      */
-    void addSelectionEndAction(QRActionRegister ar);
+    void addSelectionEndAction(QRActionRegister<QRTextSelectionEndEvent> ar);
 }

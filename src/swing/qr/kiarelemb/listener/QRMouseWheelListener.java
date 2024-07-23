@@ -9,7 +9,7 @@ import java.awt.event.MouseWheelListener;
  * @description:
  * @create 2022-11-25 08:55
  **/
-public class QRMouseWheelListener extends QRAction implements MouseWheelListener {
+public class QRMouseWheelListener extends QRAction<MouseWheelEvent> implements MouseWheelListener {
     @Override
     public final void mouseWheelMoved(MouseWheelEvent e) {
         action(e);

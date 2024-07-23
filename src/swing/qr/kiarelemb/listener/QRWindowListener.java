@@ -3,7 +3,6 @@ package swing.qr.kiarelemb.listener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 
-import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.LinkedList;
@@ -16,26 +15,24 @@ import java.util.LinkedList;
  **/
 public class QRWindowListener implements WindowListener {
     public enum TYPE {
-        OPEN, CLOSING, CLOSED, ICONIFIED, DEICONIFIED, ACTIVATED, DEACTIVATED, MOVE
+        OPEN, CLOSING, CLOSED, ICONIFIED, DEICONIFIED, ACTIVATED, DEACTIVATED
     }
 
-    private final LinkedList<QRActionRegister> open = new LinkedList<>();
-    private final LinkedList<QRActionRegister> closing = new LinkedList<>();
-    private final LinkedList<QRActionRegister> closed = new LinkedList<>();
-    private final LinkedList<QRActionRegister> iconified = new LinkedList<>();
-    private final LinkedList<QRActionRegister> deiconified = new LinkedList<>();
-    private final LinkedList<QRActionRegister> activated = new LinkedList<>();
-    private final LinkedList<QRActionRegister> deactivated = new LinkedList<>();
-    private final LinkedList<QRActionRegister> move = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> open = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> closing = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> closed = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> iconified = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> deiconified = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> activated = new LinkedList<>();
+    private final LinkedList<QRActionRegister<WindowEvent>> deactivated = new LinkedList<>();
 
-    public void add(TYPE type, QRActionRegister ar) {
+    public void add(TYPE type, QRActionRegister<WindowEvent> ar) {
         switch (type) {
             case CLOSING -> this.closing.add(ar);
             case CLOSED -> this.closed.add(ar);
             case ICONIFIED -> this.iconified.add(ar);
             case DEICONIFIED -> this.deiconified.add(ar);
             case ACTIVATED -> this.activated.add(ar);
-            case MOVE -> this.move.add(ar);
             case DEACTIVATED -> this.deactivated.add(ar);
             default -> this.open.add(ar);
         }
@@ -74,9 +71,5 @@ public class QRWindowListener implements WindowListener {
     @Override
     public final void windowDeactivated(WindowEvent e) {
         QRComponentUtils.runActions(this.deactivated, e);
-    }
-
-    public final void windowMoved(Point p) {
-        QRComponentUtils.runActions(this.move, p);
     }
 }

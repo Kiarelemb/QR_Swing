@@ -25,8 +25,8 @@ public class QRFileSelectButton extends QRButton {
     private File selectedFile;
 
     private String selectedFilePath;
-    private final ArrayList<QRActionRegister> successes = new ArrayList<>();
-    private final ArrayList<QRActionRegister> failures = new ArrayList<>();
+    private final ArrayList<QRActionRegister<File>> successes = new ArrayList<>();
+    private final ArrayList<QRActionRegister<File>> failures = new ArrayList<>();
 
     /**
      * 使用内置的选择图标作为默认，则推荐长宽的大小为 {@code 32}
@@ -65,7 +65,7 @@ public class QRFileSelectButton extends QRButton {
         File file = QRFileUtils.fileSelect(this.parent, this.fileType, this.extension);
         if (file == null || !QRFileUtils.fileExists(file.getAbsolutePath())) {
             failedAction();
-            QRComponentUtils.runActions(failures);
+            QRComponentUtils.runActions(failures, file);
             return;
         }
 
@@ -82,7 +82,7 @@ public class QRFileSelectButton extends QRButton {
     /**
      * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@link #selectedFile}
      */
-    public final void addSuccessAction(QRActionRegister ar) {
+    public final void addSuccessAction(QRActionRegister<File> ar) {
         successes.add(ar);
     }
 
@@ -90,7 +90,7 @@ public class QRFileSelectButton extends QRButton {
     /**
      * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 null
      */
-    public final void addFailureAction(QRActionRegister ar) {
+    public final void addFailureAction(QRActionRegister<File> ar) {
         failures.add(ar);
     }
 

@@ -2,6 +2,8 @@ package swing.qr.kiarelemb.inter.listener.add;
 
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
+import javax.swing.event.CaretEvent;
+
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
@@ -19,5 +21,5 @@ public interface QRCaretListenerAdd {
      *
      * @param ar 操作
      */
-    void addCaretListenerAction(QRActionRegister ar);
+    void addCaretListenerAction(QRActionRegister<CaretEvent> ar);
 }

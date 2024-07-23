@@ -72,7 +72,7 @@ public class QRListTabbedPane extends QRPanel {
             setSelectedTab(0);
         }
         this.list.setPreferredSize(new Dimension(maxLength + 20, height));
-        this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
+        this.tabSelectChangedListener.add(this::tabSelectChangedAction);
         this.setPreferredSize(0, height);
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
@@ -130,7 +130,7 @@ public class QRListTabbedPane extends QRPanel {
     /**
      * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
      */
-    public void addTabSelectChangedAction(QRActionRegister ar) {
+    public void addTabSelectChangedAction(QRActionRegister<QRTabSelectEvent> ar) {
         this.tabSelectChangedListener.add(ar);
     }
 

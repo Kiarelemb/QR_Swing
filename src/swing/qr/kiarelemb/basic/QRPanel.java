@@ -80,8 +80,8 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
     public final void addMouseMotionListener() {
         if (this.mouseMotionListener == null) {
             this.mouseMotionListener = new QRMouseMotionListener();
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, this::mouseDrag);
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, this::mouseMove);
             addMouseMotionListener(this.mouseMotionListener);
         }
     }
@@ -93,7 +93,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      * @param ar   操作
      */
     @Override
-    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseMotionListener != null) {
             this.mouseMotionListener.add(type, ar);
         }
@@ -106,11 +106,11 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
     public final void addMouseListener() {
         if (this.mouseListener == null) {
             this.mouseListener = new QRMouseListener();
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> mouseClick((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.PRESS, e -> mousePress((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, e -> mouseRelease((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
+            this.mouseListener.add(QRMouseListener.TYPE.CLICK, this::mouseClick);
+            this.mouseListener.add(QRMouseListener.TYPE.PRESS, this::mousePress);
+            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, this::mouseRelease);
+            this.mouseListener.add(QRMouseListener.TYPE.ENTER, this::mouseEnter);
+            this.mouseListener.add(QRMouseListener.TYPE.EXIT, this::mouseExit);
             addMouseListener(this.mouseListener);
         }
     }
@@ -122,7 +122,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      * @param ar   操作
      */
     @Override
-    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
         }
@@ -134,13 +134,13 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
     public void addMouseWheelListener() {
         if (this.mouseWheelListener == null) {
             this.mouseWheelListener = new QRMouseWheelListener();
-            this.mouseWheelListener.add(e -> mouseWheel((MouseWheelEvent) e));
+            this.mouseWheelListener.add(this::mouseWheel);
             addMouseWheelListener(this.mouseWheelListener);
         }
     }
 
     @Override
-    public void addMouseWheelAction(QRActionRegister ar) {
+    public void addMouseWheelAction(QRActionRegister<MouseWheelEvent> ar) {
         this.mouseWheelListener.add(ar);
     }
 
@@ -149,7 +149,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      *
      * @param ar 操作
      */
-    public void addMouseWheelListener(QRActionRegister ar) {
+    public void addMouseWheelListener(QRActionRegister<MouseWheelEvent> ar) {
         if (this.mouseWheelListener != null) {
             this.mouseWheelListener.add(ar);
         }
@@ -162,8 +162,8 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
     public void addFocusListener() {
         if (this.focusListener == null) {
             this.focusListener = new QRFocusListener();
-            this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> this.focusGained((FocusEvent) e));
-            this.focusListener.add(QRFocusListener.TYPE.LOST, e -> this.focusLost((FocusEvent) e));
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGained);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLost);
             addFocusListener(this.focusListener);
         }
     }
@@ -172,7 +172,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      * 添加焦点事件
      */
     @Override
-    public void addFocusAction(QRFocusListener.TYPE type, QRActionRegister ar) {
+    public void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
         if (this.focusListener != null) {
             this.focusListener.add(type, ar);
         }
@@ -308,7 +308,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      * @param panel           容器面板，从中获取组件数组进行遍历。
      * @param isQRPanelAction 可为 {@code null}，如果组件是 {@link QRPanel} 的实例，将调用此操作接口，该操作参数是 {@link QRPanel}
      */
-    public static void componentLoop(QRPanel panel, QRActionRegister isQRPanelAction) {
+    public static void componentLoop(QRPanel panel, QRActionRegister<Component> isQRPanelAction) {
         QRComponentUtils.componentLoop(panel, QRPanel.class, isQRPanelAction, null);
     }
 
@@ -320,7 +320,7 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
      * @param isQRPanelAction 可为 {@code null}，如果组件是 {@link QRPanel} 的实例，将调用此操作接口，该操作参数是 {@link QRPanel}
      * @param elseAction      可为 {@code null}，如果组件不是 {@link QRPanel} 的实例，将调用此操作接口，该操作参数是 {@link Component}
      */
-    public static void componentLoop(QRPanel panel, QRActionRegister isQRPanelAction, QRActionRegister elseAction) {
+    public static void componentLoop(QRPanel panel, QRActionRegister<Component> isQRPanelAction, QRActionRegister<Component> elseAction) {
         QRComponentUtils.componentLoop(panel, QRPanel.class, isQRPanelAction, elseAction);
     }
 

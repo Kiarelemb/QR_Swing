@@ -3,6 +3,8 @@ package swing.qr.kiarelemb.inter.listener.add;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRKeyListener;
 
+import java.awt.event.KeyEvent;
+
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
@@ -21,5 +23,5 @@ public interface QRKeyListenerAdd {
      * @param type 类型
      * @param ar   操作
      */
-    void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister ar);
+    void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar);
 }

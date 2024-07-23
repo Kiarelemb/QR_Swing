@@ -2,6 +2,8 @@ package swing.qr.kiarelemb.inter.listener.add;
 
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
+import java.awt.event.MouseWheelEvent;
+
 /**
  * @author Kiarelemb
  * @projectName QR_Swing
@@ -20,5 +22,5 @@ public interface QRMouseWheelListenerAdd {
      *
      * @param ar 鼠标滚轮事件
      */
-    void addMouseWheelAction(QRActionRegister ar);
+    void addMouseWheelAction(QRActionRegister<MouseWheelEvent> ar);
 }

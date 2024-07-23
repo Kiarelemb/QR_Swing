@@ -55,7 +55,7 @@ public final class QRSwing implements Serializable {
     /**
      * 窗体关闭后执行的动作
      */
-    public static final ArrayList<QRActionRegister> ACTION_AFTER_CLOSE = new ArrayList<>();
+    public static final ArrayList<QRActionRegister<Object>> ACTION_AFTER_CLOSE = new ArrayList<>();
     /**
      * {@link swing.qr.kiarelemb.window.basic.QRFrame} 的资源文件
      */
@@ -119,7 +119,7 @@ public final class QRSwing implements Serializable {
 
     private QRSwing(String propPath) {
         System.out.println("""
-                
+                                
                  .88888.    888888ba  .d88888b             oo
                 d8'   `8b   88    `8b 88.    "'
                 88     88  a88aaaa8P' `Y88888b. dP  dP  dP dP 88d888b. .d8888b.
@@ -146,7 +146,7 @@ public final class QRSwing implements Serializable {
         QRFileUtils.dirCreate(TMP_DIRECTORY);
         //在程序退出时自动保存配置文件
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            QRComponentUtils.runActions(ACTION_AFTER_CLOSE);
+            QRComponentUtils.runActions(ACTION_AFTER_CLOSE, null);
             globalPropSave();
         }));
     }
@@ -363,6 +363,7 @@ public final class QRSwing implements Serializable {
      *     MainWindow window = new MainWindow();
      *     QRSwing.registerGlobalEventWindow(window);
      * </code></pre>
+     *
      * @see #registerGlobalEventWindow(Window)
      */
     public static void registerGlobalKeyEvents() {
@@ -398,7 +399,7 @@ public final class QRSwing implements Serializable {
     /**
      * 当已另注册了一个全局的键盘监听器时，可以直接设置，而不用新实例化
      *
-     * @param globalKeyListener   已设置的监听器
+     * @param globalKeyListener 已设置的监听器
      */
     public static void setGlobalKeyEventsListener(QRNativeKeyListener globalKeyListener) {
         if (QRSwing.globalKeyListener == null && globalKeyListener != null) {
@@ -426,10 +427,10 @@ public final class QRSwing implements Serializable {
      *                        <p>有+号则优先以+号分割，再以空格分割
      *                        <p>支持格式 {@code Ctrl + Alt + Shift + s}、{@code a}、{@code shift a}、{@code shift b,ctrl a}、
      *                        {@code shift b, ctrl b}，但不支持 Windows 键的组合
-     * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
+     * @param ar              事件，其参数是 {@link KeyStroke}
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
-    public static void registerGlobalAction(String key, QRActionRegister ar, boolean mainWindowFocus) {
+    public static void registerGlobalAction(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         String[] keys = key.split(",");
         for (String k : keys) {
             KeyStroke keyStroke = QRStringUtils.getKeyStroke(k);
@@ -445,7 +446,7 @@ public final class QRSwing implements Serializable {
      * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
-    public static void registerGlobalAction(int keycode, QRActionRegister ar, boolean mainWindowFocus) {
+    public static void registerGlobalAction(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         KeyStroke keyStroke = QRStringUtils.getKeyStroke(keycode);
         registerGlobalAction(keyStroke, ar, mainWindowFocus);
     }
@@ -459,7 +460,7 @@ public final class QRSwing implements Serializable {
      * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
-    public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister ar, boolean mainWindowFocus) {
+    public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         KeyStroke keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
         registerGlobalAction(keyStroke, ar, mainWindowFocus);
     }
@@ -472,7 +473,7 @@ public final class QRSwing implements Serializable {
      * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
-    public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister ar, boolean mainWindowFocus) {
+    public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         if (keyStroke != null) {
             QRSwing.globalKeyListener.addEvent(QRNativeKeyListener.TYPE.PRESSED, mainWindowFocus, keyStroke, ar);
         }
@@ -496,7 +497,7 @@ public final class QRSwing implements Serializable {
      * @param ar              事件
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
      */
-    public static void registerGlobalActionRemove(KeyStroke keyStroke, QRActionRegister ar, boolean mainWindowFocus) {
+    public static void registerGlobalActionRemove(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, ar, mainWindowFocus);
     }
 
@@ -515,7 +516,7 @@ public final class QRSwing implements Serializable {
      *
      * @param ar 其参数 {@link Object} 为 {@code null}
      */
-    public static void registerSystemExitAction(QRActionRegister ar) {
+    public static void registerSystemExitAction(QRActionRegister<Object> ar) {
         ACTION_AFTER_CLOSE.add(ar);
     }
 

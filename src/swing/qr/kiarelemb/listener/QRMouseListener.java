@@ -18,13 +18,13 @@ public class QRMouseListener implements MouseListener {
         CLICK, PRESS, RELEASE, ENTER, EXIT
     }
 
-    private final LinkedList<QRActionRegister> click = new LinkedList<>();
-    private final LinkedList<QRActionRegister> press = new LinkedList<>();
-    private final LinkedList<QRActionRegister> release = new LinkedList<>();
-    private final LinkedList<QRActionRegister> enter = new LinkedList<>();
-    private final LinkedList<QRActionRegister> exit = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> click = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> press = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> release = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> enter = new LinkedList<>();
+    private final LinkedList<QRActionRegister<MouseEvent>> exit = new LinkedList<>();
 
-    public void add(TYPE type, QRActionRegister ar) {
+    public void add(TYPE type, QRActionRegister<MouseEvent> ar) {
         switch (type) {
             case CLICK -> this.click.add(ar);
             case PRESS -> this.press.add(ar);

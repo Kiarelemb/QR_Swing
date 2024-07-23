@@ -115,7 +115,7 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
                     preValue = text;
                 }
             });
-            itemChangedListener.add(e -> itemChangedAction((QRItemEvent) e));
+            itemChangedListener.add(this::itemChangedAction);
         }
     }
 
@@ -123,9 +123,8 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
      * 可直接调用
      *
      * @param ar 操作，其参数 {@link QRActionRegister#action(Object)} 为 {@link QRItemEvent} 的对象
-     *           <p> -> {@code QRItemEvent event = (QRItemEvent) e;}
      */
-    public void addItemChangeListener(QRActionRegister ar) {
+    public void addItemChangeListener(QRActionRegister<QRItemEvent> ar) {
         if (itemChangedListener != null) {
             itemChangedListener.add(ar);
         }

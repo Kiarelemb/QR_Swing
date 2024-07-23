@@ -16,9 +16,9 @@ import java.util.Map;
  * @description: {@link swing.qr.kiarelemb.basic.QRTree} 节点单击事件
  * @create 2022-11-27 14:06
  **/
-public class QRTreeNodeClickListener extends QRAction implements QRTreeNodeLis {
-    private final Map<TreePath, ArrayList<QRActionRegister>> precisionMap = new HashMap<>();
-    private final Map<TreePath, ArrayList<QRActionRegister>> vagueMap = new HashMap<>();
+public class QRTreeNodeClickListener extends QRAction<QRTreeNodeEvent> implements QRTreeNodeLis {
+    private final Map<TreePath, ArrayList<QRActionRegister<QRTreeNodeEvent>>> precisionMap = new HashMap<>();
+    private final Map<TreePath, ArrayList<QRActionRegister<QRTreeNodeEvent>>> vagueMap = new HashMap<>();
 
     @Override
     public final void nodeClicked(QRTreeNodeEvent e) {
@@ -38,25 +38,25 @@ public class QRTreeNodeClickListener extends QRAction implements QRTreeNodeLis {
      * @param ar    操作
      * @param vague 若为 {@code true}，则当不是恰好单击到节点，而是单击到其周围时，只要能获取到最近的节点，该操作就会执行。
      */
-    public void add(TreePath path, QRActionRegister ar, boolean vague) {
+    public void add(TreePath path, QRActionRegister<QRTreeNodeEvent> ar, boolean vague) {
         {
-            ArrayList<QRActionRegister> list = precisionMap.computeIfAbsent(path, k -> new ArrayList<>());
+            ArrayList<QRActionRegister<QRTreeNodeEvent>> list = precisionMap.computeIfAbsent(path, k -> new ArrayList<>());
             list.add(ar);
         }
         if (vague) {
-            ArrayList<QRActionRegister> list = vagueMap.computeIfAbsent(path, k -> new ArrayList<>());
+            ArrayList<QRActionRegister<QRTreeNodeEvent>> list = vagueMap.computeIfAbsent(path, k -> new ArrayList<>());
             list.add(ar);
         }
     }
 
     @Deprecated
     @Override
-    public final void add(QRActionRegister ar) {
+    public final void add(QRActionRegister<QRTreeNodeEvent> ar) {
         throw new UnsupportedOperationException();
     }
 
-    private void runAction(Map<TreePath, ArrayList<QRActionRegister>> map, TreePath treePath, QRTreeNodeEvent e) {
-        ArrayList<QRActionRegister> list = map.get(treePath);
+    private void runAction(Map<TreePath, ArrayList<QRActionRegister<QRTreeNodeEvent>>> map, TreePath treePath, QRTreeNodeEvent e) {
+        ArrayList<QRActionRegister<QRTreeNodeEvent>> list = map.get(treePath);
         QRComponentUtils.runActions(list, e);
     }
 }

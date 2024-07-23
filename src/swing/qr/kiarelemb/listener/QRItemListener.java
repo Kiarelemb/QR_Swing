@@ -10,7 +10,7 @@ import swing.qr.kiarelemb.inter.listener.QRItemLis;
  * @description:
  * @create 2022-12-10 21:28
  **/
-public class QRItemListener extends QRAction implements QRItemLis {
+public class QRItemListener extends QRAction<QRItemEvent> implements QRItemLis {
     private final QRTimeCountUtil qcu = new QRTimeCountUtil((short) 100);
 
     @Override

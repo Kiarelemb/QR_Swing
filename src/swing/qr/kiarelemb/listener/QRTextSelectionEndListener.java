@@ -9,7 +9,7 @@ import swing.qr.kiarelemb.inter.listener.QRTextSelectionEndLis;
  * @description:
  * @create 2022-11-24 15:22
  **/
-public class QRTextSelectionEndListener extends QRAction implements QRTextSelectionEndLis {
+public class QRTextSelectionEndListener extends QRAction<QRTextSelectionEndEvent> implements QRTextSelectionEndLis {
     @Override
     public final void selectionEnd(QRTextSelectionEndEvent e) {
         action(e);

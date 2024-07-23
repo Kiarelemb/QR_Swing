@@ -26,7 +26,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
     protected int itemNums;
     protected int itemMaxLen;
     protected int itemMaxTipLen;
-    private final QRActionRegister actionRegister;
+    private final QRActionRegister<ActionEvent> actionRegister;
     private QRFocusListener focusListener;
 
     public QRPopupMenu(Window parent) {
@@ -35,7 +35,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
         addFocusListener();
         setFreelyMotionFailed();
         setFocusable(true);
-        this.actionRegister = e -> QRPopupMenu.this.buttonSelectAction((ActionEvent) e);
+        this.actionRegister = QRPopupMenu.this::buttonSelectAction;
     }
 
     /**
@@ -45,8 +45,8 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
     public final void addFocusListener() {
         if (this.focusListener == null) {
             this.focusListener = new QRFocusListener();
-            this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> focusGain((FocusEvent) e));
-            this.focusListener.add(QRFocusListener.TYPE.LOST, e -> focusLose((FocusEvent) e));
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGain);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLose);
             addFocusListener(this.focusListener);
         }
     }
@@ -58,7 +58,7 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
      * @param ar   操作
      */
     @Override
-    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister ar) {
+    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
         if (this.focusListener != null) {
             this.focusListener.add(type, ar);
         }

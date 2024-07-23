@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.assembly;
 
 import swing.qr.kiarelemb.basic.QRTree;
+import swing.qr.kiarelemb.event.QRTreeNodeEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,7 +43,7 @@ public class QRMutableTreeNode extends DefaultMutableTreeNode {
         tree.expandPath(treePath);
     }
 
-    public void addClickAction(QRTree tree, QRActionRegister ar, boolean positionVague) {
+    public void addClickAction(QRTree tree, QRActionRegister<QRTreeNodeEvent> ar, boolean positionVague) {
         TreePath treePath = tree.getTreePath(this);
         if (treePath != null) {
             tree.addTreeNodeListener();

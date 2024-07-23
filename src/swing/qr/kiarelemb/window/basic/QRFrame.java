@@ -30,10 +30,7 @@ import java.awt.event.WindowEvent;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 
 /**
@@ -63,7 +60,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     private final QRLabel iconLabel;
     private final QRPanel windowFunctionPanel;
     private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
-    private final ArrayList<QRActionRegister> actionOnDispose = new ArrayList<>();
+    private final ArrayList<QRActionRegister<Boolean>> actionOnDispose = new ArrayList<>();
+    private final LinkedList<QRActionRegister<Point>> move = new LinkedList<>();
     private final QRPanel titlePanel;
     /**
      * 若设置了 {@link QRSwing#windowTitleMenu} 为 {@code true}，则将自动实例化
@@ -286,20 +284,20 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     public final void addWindowListener() {
         if (this.windowListener == null) {
             this.windowListener = new QRWindowListener();
-            this.windowListener.add(QRWindowListener.TYPE.OPEN, e -> windowOpened((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.CLOSED, e -> windowClosed((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.CLOSING, e -> windowClosing((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, e -> windowActivated((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, e -> windowDeactivated((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, e -> windowIconified((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, e -> windowDeiconified((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.MOVE, e -> windowMoved((Point) e));
+            this.windowListener.add(QRWindowListener.TYPE.OPEN, this::windowOpened);
+            this.windowListener.add(QRWindowListener.TYPE.CLOSED, this::windowClosed);
+            this.windowListener.add(QRWindowListener.TYPE.CLOSING, this::windowClosing);
+            this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, this::windowActivated);
+            this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, this::windowDeactivated);
+            this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, this::windowIconified);
+            this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, this::windowDeiconified);
+            move.add(this::windowMoved);
             addWindowListener(this.windowListener);
         }
     }
 
     @Override
-    public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister ar) {
+    public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister<WindowEvent> ar) {
         if (this.windowListener != null) {
             this.windowListener.add(type, ar);
         }
@@ -430,7 +428,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
     public final void dispose(boolean systemExit) {
         dispose();
-        QRComponentUtils.runActions(this.actionOnDispose);
+        QRComponentUtils.runActions(this.actionOnDispose, systemExit);
         QRSystemUtils.setWindowCloseSlowly(this, QRSwing.windowTransparency, systemExit);
     }
 
@@ -440,9 +438,9 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
      * {@link QRFrame#windowClosed(WindowEvent)} 是否起作用
      * <p>但本方法一定起作用
      *
-     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@code null}
+     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@code Boolean} 值
      */
-    public final void addActionBeforeDispose(QRActionRegister ar) {
+    public final void addActionBeforeDispose(QRActionRegister<Boolean> ar) {
         this.actionOnDispose.add(ar);
     }
 
@@ -494,7 +492,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         if (windowListener == null) {
             return;
         }
-        windowListener.windowMoved(new Point(x, y));
+        QRComponentUtils.runActions(move, new Point(x, y));
     }
 
     /**

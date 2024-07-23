@@ -27,12 +27,13 @@ public abstract class QRFileTransferHandler extends TransferHandler {
         return new StringSelection(c.getClass().toString());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean importData(JComponent c, Transferable t) {
         if (canImport(c, t.getTransferDataFlavors())) {
             try {
                 List list = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-                File[] files = (File[]) list.toArray(new File[0]);
+                @SuppressWarnings("unchecked") File[] files = (File[]) list.toArray(new File[0]);
                 fileImportAction(files);
                 return true;
             } catch (UnsupportedFlavorException | IOException e) {

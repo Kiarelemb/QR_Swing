@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.inter.listener.add;
 
+import swing.qr.kiarelemb.event.QRTreeNodeEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.tree.TreePath;
@@ -21,5 +22,5 @@ public interface QRTreeNodeListenerAdd {
      *
      * @param ar 操作
      */
-    void addTreeNodeClickAction(TreePath path, QRActionRegister ar, boolean vague);
+    void addTreeNodeClickAction(TreePath path, QRActionRegister<QRTreeNodeEvent> ar, boolean vague);
 }

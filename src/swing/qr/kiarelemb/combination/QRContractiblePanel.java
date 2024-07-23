@@ -217,7 +217,7 @@ public class QRContractiblePanel extends QRPanel {
         private final int[] xRange = new int[2];
         private static final int[] Y_RANGE = {8, 32};
         private boolean collapsable = true;
-        private final ArrayList<QRActionRegister> actionList = new ArrayList<>();
+        private final ArrayList<QRActionRegister<Boolean>> actionList = new ArrayList<>();
 
         private QRColumnPanel(String name, int index) {
             this(name, index, new QRColumnContentPanel());
@@ -283,7 +283,7 @@ public class QRContractiblePanel extends QRPanel {
          *
          * @param ar 操作，其 {@link QRActionRegister#action(Object)} 的参数为操作后的 {@link QRColumnPanel#fold}
          */
-        public final void addFoldAction(QRActionRegister ar) {
+        public final void addFoldAction(QRActionRegister<Boolean> ar) {
             actionList.add(ar);
         }
 

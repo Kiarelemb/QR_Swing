@@ -8,6 +8,7 @@ import swing.qr.kiarelemb.basic.*;
 import swing.qr.kiarelemb.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.combination.QRMenuButton;
 import swing.qr.kiarelemb.combination.QRMenuPanel;
+import swing.qr.kiarelemb.event.QRColorChangedEvent;
 import swing.qr.kiarelemb.event.QRItemEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
@@ -144,7 +145,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         //endregion
 
         //region  color value
-        QRActionRegister colorChangedAction = e -> update();
+        QRActionRegister<QRColorChangedEvent> colorChangedAction = e -> update();
         QRRGBColorPane textColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.TEXT_COLOR_FORE, showTextColorForeLabel, colorChangedAction);
         QRRGBColorPane textColorBackColorValue = new QRRGBColorPane(QRColorsAndFonts.TEXT_COLOR_BACK, showTextColorBackLabel, colorChangedAction);
         QRRGBColorPane correctColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.CORRECT_COLOR_FORE, showCorrectColorForeLabel, colorChangedAction);
@@ -425,7 +426,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         });
 
         topicCB.addItemChangeListener(e -> {
-            QRItemEvent event = (QRItemEvent) e;
+            QRItemEvent event = e;
             final String text = event.after();
             topicChangedAction(text);
             //不相等就说明选择的是内置的主题

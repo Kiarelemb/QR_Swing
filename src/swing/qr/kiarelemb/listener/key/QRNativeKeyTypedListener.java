@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.listener.key;
 
+import swing.qr.kiarelemb.event.QRNativeKeyEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRNativeKeyListener;
 
@@ -15,7 +16,7 @@ import javax.swing.*;
 public class QRNativeKeyTypedListener extends QRNativeKeyListener {
 
     @Override
-    public void addEvent(TYPE type, boolean mainWindowFocus, KeyStroke keyStroke, QRActionRegister ar) {
+    public void addEvent(TYPE type, boolean mainWindowFocus, KeyStroke keyStroke, QRActionRegister<KeyStroke> ar) {
         typeKeyEvents.addEvent(keyStroke, mainWindowFocus, ar);
     }
 
@@ -25,18 +26,18 @@ public class QRNativeKeyTypedListener extends QRNativeKeyListener {
     }
 
     @Override
-    public void removeEvent(TYPE type, KeyStroke keyStroke, QRActionRegister ar, boolean mainWindowFocus) {
+    public void removeEvent(TYPE type, KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         typeKeyEvents.removeEvent(keyStroke, ar, mainWindowFocus);
     }
 
 
     @Override
-    public void add(boolean mainWindowFocus, QRActionRegister ar) {
+    public void add(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
         typeKeyEvents.add(mainWindowFocus, ar);
     }
 
     @Override
-    public void remove(boolean mainWindowFocus, QRActionRegister ar) {
+    public void remove(boolean mainWindowFocus, QRActionRegister<QRNativeKeyEvent> ar) {
         typeKeyEvents.remove(mainWindowFocus, ar);
     }
 }

@@ -2,6 +2,8 @@ package swing.qr.kiarelemb.inter.listener.add;
 
 import swing.qr.kiarelemb.inter.QRActionRegister;
 
+import java.awt.event.ActionEvent;
+
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
@@ -19,5 +21,5 @@ public interface QRActionListenerAdd {
      *
      * @param ar 操作
      */
-    void addClickAction(QRActionRegister ar);
+    void addClickAction(QRActionRegister<ActionEvent> ar);
 }

@@ -101,7 +101,7 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     public void addRedoActionListener() {
         if (redoAfterActionListener == null) {
             redoAfterActionListener = new QRRedoUndoListener();
-            redoAfterActionListener.add(e -> afterRedoAction((QRRedoUndoEvent) e));
+            redoAfterActionListener.add(this::afterRedoAction);
         }
     }
 
@@ -111,7 +111,7 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     public void addUndoActionListener() {
         if (undoAfterActionListener == null) {
             undoAfterActionListener = new QRRedoUndoListener();
-            undoAfterActionListener.add(e -> afterUndoAction((QRRedoUndoEvent) e));
+            undoAfterActionListener.add(this::afterUndoAction);
         }
     }
 
@@ -120,7 +120,7 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
      *
      * @param ar 操作
      */
-    public final void addAfterRedoAction(QRActionRegister ar) {
+    public final void addAfterRedoAction(QRActionRegister<QRRedoUndoEvent> ar) {
         if (redoAfterActionListener != null) {
             redoAfterActionListener.add(ar);
         }
@@ -131,7 +131,7 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
      *
      * @param ar 操作
      */
-    public final void addAfterUndoAction(QRActionRegister ar) {
+    public final void addAfterUndoAction(QRActionRegister<QRRedoUndoEvent> ar) {
         if (undoAfterActionListener != null) {
             undoAfterActionListener.add(ar);
         }

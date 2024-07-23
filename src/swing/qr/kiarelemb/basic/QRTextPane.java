@@ -117,7 +117,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
             this.caretUpdateData = new QRCaretUpdateData();
             this.caretListener.add(event -> {
                 if (!this.caretBlock) {
-                    QRTextPane.this.caretUpdate((CaretEvent) event);
+                    QRTextPane.this.caretUpdate(event);
                 }
             });
             addCaretListener(this.caretListener);
@@ -130,7 +130,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar 操作
      */
     @Override
-    public final void addCaretListenerAction(QRActionRegister ar) {
+    public final void addCaretListenerAction(QRActionRegister<CaretEvent> ar) {
         if (this.caretListener != null) {
             this.caretListener.add(ar);
         }
@@ -143,9 +143,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addDocumentListener() {
         if (this.documentListener == null) {
             this.documentListener = new QRDocumentListener();
-            this.documentListener.add(QRDocumentListener.TYPE.INSERT, e -> QRTextPane.this.insertUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, e -> QRTextPane.this.removeUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, e -> QRTextPane.this.changedUpdate((DocumentEvent) e));
+            this.documentListener.add(QRDocumentListener.TYPE.INSERT, QRTextPane.this::insertUpdate);
+            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, QRTextPane.this::removeUpdate);
+            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, QRTextPane.this::changedUpdate);
             getDocument().addDocumentListener(this.documentListener);
         }
     }
@@ -157,7 +157,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addDocumentListenerAction(QRDocumentListener.TYPE type, QRActionRegister ar) {
+    public final void addDocumentListenerAction(QRDocumentListener.TYPE type, QRActionRegister<DocumentEvent> ar) {
         if (this.documentListener != null) {
             this.documentListener.add(type, ar);
         }
@@ -170,9 +170,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addKeyListener() {
         if (this.keyListener == null) {
             this.keyListener = new QRKeyListener();
-            this.keyListener.add(QRKeyListener.TYPE.TYPE, e -> keyType((KeyEvent) e));
-            this.keyListener.add(QRKeyListener.TYPE.PRESS, e -> keyPress((KeyEvent) e));
-            this.keyListener.add(QRKeyListener.TYPE.RELEASE, e -> keyRelease((KeyEvent) e));
+            this.keyListener.add(QRKeyListener.TYPE.TYPE, this::keyType);
+            this.keyListener.add(QRKeyListener.TYPE.PRESS, this::keyPress);
+            this.keyListener.add(QRKeyListener.TYPE.RELEASE, this::keyRelease);
             addKeyListener(this.keyListener);
         }
     }
@@ -184,7 +184,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister ar) {
+    public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar) {
         if (this.keyListener != null) {
             this.keyListener.add(type, ar);
         }
@@ -197,8 +197,8 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addMouseMotionListener() {
         if (this.mouseMotionListener == null) {
             this.mouseMotionListener = new QRMouseMotionListener();
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, this::mouseDrag);
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, this::mouseMove);
             addMouseMotionListener(this.mouseMotionListener);
         }
     }
@@ -210,7 +210,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseMotionListener != null) {
             this.mouseMotionListener.add(type, ar);
         }
@@ -223,11 +223,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addMouseListener() {
         if (this.mouseListener == null) {
             this.mouseListener = new QRMouseListener();
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> mouseClick((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.PRESS, e -> mousePress((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, e -> mouseRelease((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
+            this.mouseListener.add(QRMouseListener.TYPE.CLICK, this::mouseClick);
+            this.mouseListener.add(QRMouseListener.TYPE.PRESS, this::mousePress);
+            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, this::mouseRelease);
+            this.mouseListener.add(QRMouseListener.TYPE.ENTER, this::mouseEnter);
+            this.mouseListener.add(QRMouseListener.TYPE.EXIT, this::mouseExit);
             addMouseListener(this.mouseListener);
 
         }
@@ -240,7 +240,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
         }
@@ -253,7 +253,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addMouseWheelListener() {
         if (this.mouseWheelListener == null) {
             this.mouseWheelListener = new QRMouseWheelListener();
-            this.mouseWheelListener.add(e -> mouseWheel((MouseWheelEvent) e));
+            this.mouseWheelListener.add(this::mouseWheel);
             addMouseWheelListener(this.mouseWheelListener);
         }
     }
@@ -264,7 +264,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar 操作
      */
     @Override
-    public final void addMouseWheelAction(QRActionRegister ar) {
+    public final void addMouseWheelAction(QRActionRegister<MouseWheelEvent> ar) {
         if (this.mouseWheelListener != null) {
             this.mouseWheelListener.add(ar);
         }
@@ -277,8 +277,8 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addFocusListener() {
         if (this.focusListener == null) {
             this.focusListener = new QRFocusListener();
-            this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> focusGain((FocusEvent) e));
-            this.focusListener.add(QRFocusListener.TYPE.LOST, e -> focusLose((FocusEvent) e));
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGain);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLose);
             addFocusListener(this.focusListener);
 
         }
@@ -291,7 +291,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister ar) {
+    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
         if (this.focusListener != null) {
             this.focusListener.add(type, ar);
         }
@@ -303,7 +303,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addWordAutoSelectListener() {
         if (this.selectionEndListener == null) {
             this.selectionEndListener = new QRTextSelectionEndListener();
-            this.selectionEndListener.add(e -> QRTextPane.this.selectionEnd((QRTextSelectionEndEvent) e));
+            this.selectionEndListener.add(QRTextPane.this::selectionEnd);
             MouseAdapter adapter = new MouseAdapter() {
                 private int pressPosition;
                 private boolean isCutWord = false;
@@ -389,7 +389,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public final void addSelectionEndListener() {
         if (this.selectionEndListener == null) {
             this.selectionEndListener = new QRTextSelectionEndListener();
-            this.selectionEndListener.add(e -> QRTextPane.this.selectionEnd((QRTextSelectionEndEvent) e));
+            this.selectionEndListener.add(QRTextPane.this::selectionEnd);
             MouseAdapter adapter = new MouseAdapter() {
                 private int pressPosition;
                 private QRCaretNearData caretNearData;
@@ -431,7 +431,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param ar 操作
      */
     @Override
-    public final void addSelectionEndAction(QRActionRegister ar) {
+    public final void addSelectionEndAction(QRActionRegister<QRTextSelectionEndEvent> ar) {
         if (this.selectionEndListener != null) {
             this.selectionEndListener.add(ar);
         }

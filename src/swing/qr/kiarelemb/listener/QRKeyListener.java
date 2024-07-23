@@ -18,11 +18,11 @@ public class QRKeyListener implements KeyListener {
         TYPE, PRESS, RELEASE
     }
 
-    private final LinkedList<QRActionRegister> type = new LinkedList<>();
-    private final LinkedList<QRActionRegister> press = new LinkedList<>();
-    private final LinkedList<QRActionRegister> release = new LinkedList<>();
+    private final LinkedList<QRActionRegister<KeyEvent>> type = new LinkedList<>();
+    private final LinkedList<QRActionRegister<KeyEvent>> press = new LinkedList<>();
+    private final LinkedList<QRActionRegister<KeyEvent>> release = new LinkedList<>();
 
-    public void add(TYPE type, QRActionRegister ar) {
+    public void add(TYPE type, QRActionRegister<KeyEvent> ar) {
         switch (type) {
             case TYPE -> this.type.add(ar);
             case PRESS -> this.press.add(ar);

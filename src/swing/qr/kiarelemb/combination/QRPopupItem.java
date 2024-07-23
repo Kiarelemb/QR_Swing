@@ -5,6 +5,7 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionEvent;
 
 /**
  * @author Kiarelemb QR
@@ -23,7 +24,7 @@ public class QRPopupItem extends QRButton {
         setHorizontalAlignment(SwingConstants.LEFT);
     }
 
-    public QRPopupItem(int index, String text, QRActionRegister ar) {
+    public QRPopupItem(int index, String text, QRActionRegister<ActionEvent> ar) {
         this(index, text);
         addClickAction(ar);
     }

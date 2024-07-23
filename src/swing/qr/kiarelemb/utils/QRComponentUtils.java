@@ -131,24 +131,15 @@ public class QRComponentUtils {
     }
 
     /**
-     * 将 {@link QRActionRegister} 列表使用 {@code null} 参数运行，会检查其内容是否为空
-     *
-     * @param list 任务列表
-     */
-    public static void runActions(List<QRActionRegister> list) {
-        runActions(list, null);
-    }
-
-    /**
      * 将 {@link QRActionRegister} 列表使用 {@code obj} 参数运行，会检查其内容是否为空
      *
      * @param list 任务列表
      */
-    public static void runActions(List<QRActionRegister> list, Object obj) {
+    public static <T> void runActions(List<QRActionRegister<T>> list, T obj) {
         if (list == null || list.isEmpty()) {
             return;
         }
-        ArrayList<QRActionRegister> temp = new ArrayList<>(list);
+        ArrayList<QRActionRegister<T>> temp = new ArrayList<>(list);
         temp.forEach(e -> {
             //确保每个都能完成而不影响之后的事件
             try {
@@ -160,17 +151,6 @@ public class QRComponentUtils {
     }
 
     /**
-     * 在GUI的事件调度线程中异步以参数 null 执行一系列动作。
-     * 此方法用于将一系列操作推迟到GUI线程中执行，以确保这些操作不会阻塞当前线程，
-     * 并且能够正确地与GUI组件交互。
-     *
-     * @param list 操作注册表列表，包含待执行的操作。
-     */
-    public static void runActionsLater(List<QRActionRegister> list) {
-        runActionsLater(list, null);
-    }
-
-    /**
      * 在GUI的事件调度线程中异步执行一系列动作。
      * 此方法用于将一系列操作推迟到GUI线程中执行，以确保这些操作不会阻塞当前线程，
      * 并且能够正确地与GUI组件交互。
@@ -178,15 +158,14 @@ public class QRComponentUtils {
      * @param list 操作注册表列表，包含待执行的操作。
      * @param obj  传递给每个操作的对象，用于执行操作时使用。
      */
-    public static void runActionsLater(List<QRActionRegister> list, Object obj) {
+    public static <T> void runActionsLater(List<QRActionRegister<T>> list, T obj) {
         // 检查列表是否为空，以避免无意义的线程调度
         if (list == null || list.isEmpty()) {
             return;
         }
 
         // 创建列表的副本，以避免在异步操作中修改原始列表
-        ArrayList<QRActionRegister> temp = new ArrayList<>(list);
-
+        ArrayList<QRActionRegister<T>> temp = new ArrayList<>(list);
         // 使用SwingUtilities的invokeLater方法将操作推迟到GUI线程中执行
         SwingUtilities.invokeLater(() -> {
             // 遍历副本列表中的每个操作，并异步执行
@@ -237,7 +216,7 @@ public class QRComponentUtils {
      * @param e      注册的操作接口，包含待执行的具体操作。该操作的参数是 {@code null}
      * @see #runLater(long, QRActionRegister, Object)
      */
-    public static void runLater(long millis, QRActionRegister e) {
+    public static void runLater(long millis, QRActionRegister<Object> e) {
         runLater(millis, e, null);
     }
 
@@ -252,7 +231,7 @@ public class QRComponentUtils {
      * @param e      注册的操作接口，包含待执行的具体操作。
      * @param param  传递给动作的参数，用于在动作执行时提供必要的数据。
      */
-    public static void runLater(long millis, QRActionRegister e, Object param) {
+    public static <T> void runLater(long millis, QRActionRegister<T> e, T param) {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -263,14 +242,14 @@ public class QRComponentUtils {
     }
 
     public static void componentLoopToSetOpaque(JComponent com, boolean opaque){
-        QRActionRegister action = e -> {
+        QRActionRegister<Component> action = e -> {
             if (e instanceof JComponent jComponent) {
                 jComponent.setOpaque(opaque);
             }
         };
-        QRActionRegister panel = new QRActionRegister() {
+        QRActionRegister<Component> panel = new QRActionRegister<Component>() {
             @Override
-            public void action(Object e) {
+            public void action(Component e) {
                 if (e instanceof JComponent jComponent) {
                     action.action(jComponent);
                     if (jComponent.getComponentCount() > 0) {
@@ -289,7 +268,7 @@ public class QRComponentUtils {
      * @param aClass        要匹配的类，用于判断组件是否属于该类，该类是 {@link JComponent} 的子类
      * @param isClassAction 可为 {@code null}，如果组件是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
      */
-    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister isClassAction) {
+    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister<Component> isClassAction) {
         // 获取控件里的所有组件
         Component[] components = jc.getComponents();
         // 遍历所有组件
@@ -312,7 +291,7 @@ public class QRComponentUtils {
      * @param isClassAction 可为 {@code null}，如果组件是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
      * @param elseAction    可为 {@code null}，如果组件不是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
      */
-    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister isClassAction, QRActionRegister elseAction) {
+    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister<Component> isClassAction, QRActionRegister<Component> elseAction) {
         // 获取控件里的所有组件
         Component[] components = jc.getComponents();
         // 遍历所有组件

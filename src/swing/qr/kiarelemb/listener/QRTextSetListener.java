@@ -9,7 +9,7 @@ import swing.qr.kiarelemb.inter.listener.QRTextSetLis;
  * @description: 文本类控件设置文本时的事件
  * @create 2022-11-27 14:06
  **/
-public class QRTextSetListener extends QRAction implements QRTextSetLis {
+public class QRTextSetListener extends QRAction<QREventObject> implements QRTextSetLis {
     @Override
     public final void setTextAction(QREventObject e) {
         action(e);

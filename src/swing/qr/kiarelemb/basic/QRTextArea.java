@@ -70,7 +70,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar 操作
      */
     @Override
-    public final void addCaretListenerAction(QRActionRegister ar) {
+    public final void addCaretListenerAction(QRActionRegister<CaretEvent> ar) {
         if (this.caretListener != null) {
             this.caretListener.add(ar);
         }
@@ -83,9 +83,9 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     public final void addDocumentListener() {
         if (this.documentListener == null) {
             this.documentListener = new QRDocumentListener();
-            this.documentListener.add(QRDocumentListener.TYPE.INSERT, e -> QRTextArea.this.insertUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, e -> QRTextArea.this.removeUpdate((DocumentEvent) e));
-            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, e -> QRTextArea.this.changedUpdate((DocumentEvent) e));
+            this.documentListener.add(QRDocumentListener.TYPE.INSERT, QRTextArea.this::insertUpdate);
+            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, QRTextArea.this::removeUpdate);
+            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, QRTextArea.this::changedUpdate);
             getDocument().addDocumentListener(this.documentListener);
         }
     }
@@ -97,7 +97,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addDocumentListenerAction(QRDocumentListener.TYPE type, QRActionRegister ar) {
+    public final void addDocumentListenerAction(QRDocumentListener.TYPE type, QRActionRegister<DocumentEvent> ar) {
         if (this.documentListener != null) {
             this.documentListener.add(type, ar);
         }
@@ -110,9 +110,9 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     public final void addKeyListener() {
         if (this.keyListener == null) {
             this.keyListener = new QRKeyListener();
-            this.keyListener.add(QRKeyListener.TYPE.TYPE, e -> keyType((KeyEvent) e));
-            this.keyListener.add(QRKeyListener.TYPE.PRESS, e -> keyPress((KeyEvent) e));
-            this.keyListener.add(QRKeyListener.TYPE.RELEASE, e -> keyRelease((KeyEvent) e));
+            this.keyListener.add(QRKeyListener.TYPE.TYPE, this::keyType);
+            this.keyListener.add(QRKeyListener.TYPE.PRESS, this::keyPress);
+            this.keyListener.add(QRKeyListener.TYPE.RELEASE, this::keyRelease);
             addKeyListener(this.keyListener);
 
         }
@@ -125,7 +125,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister ar) {
+    public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar) {
         if (this.keyListener != null) {
             this.keyListener.add(type, ar);
         }
@@ -138,8 +138,8 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     public final void addMouseMotionListener() {
         if (this.mouseMotionListener == null) {
             this.mouseMotionListener = new QRMouseMotionListener();
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, this::mouseDrag);
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, this::mouseMove);
             addMouseMotionListener(this.mouseMotionListener);
         }
     }
@@ -151,7 +151,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseMotionListener != null) {
             this.mouseMotionListener.add(type, ar);
         }
@@ -164,11 +164,11 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     public final void addMouseListener() {
         if (this.mouseListener == null) {
             this.mouseListener = new QRMouseListener();
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> mouseClick((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.PRESS, e -> mousePress((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, e -> mouseRelease((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
+            this.mouseListener.add(QRMouseListener.TYPE.CLICK, this::mouseClick);
+            this.mouseListener.add(QRMouseListener.TYPE.PRESS, this::mousePress);
+            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, this::mouseRelease);
+            this.mouseListener.add(QRMouseListener.TYPE.ENTER, this::mouseEnter);
+            this.mouseListener.add(QRMouseListener.TYPE.EXIT, this::mouseExit);
             addMouseListener(this.mouseListener);
 
         }
@@ -181,7 +181,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
         }
@@ -194,8 +194,8 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     public final void addFocusListener() {
         if (this.focusListener == null) {
             this.focusListener = new QRFocusListener();
-            this.focusListener.add(QRFocusListener.TYPE.GAIN, e -> focusGain((FocusEvent) e));
-            this.focusListener.add(QRFocusListener.TYPE.LOST, e -> focusLose((FocusEvent) e));
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGain);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLose);
             addFocusListener(this.focusListener);
 
         }
@@ -208,7 +208,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
      * @param ar   操作
      */
     @Override
-    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister ar) {
+    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
         if (this.focusListener != null) {
             this.focusListener.add(type, ar);
         }

@@ -6,14 +6,14 @@ import swing.qr.kiarelemb.utils.QRComponentUtils;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-public class QRAction implements Serializable {
-    private final LinkedList<QRActionRegister> list = new LinkedList<>();
+public class QRAction<T> implements Serializable {
+    private final LinkedList<QRActionRegister<T>> list = new LinkedList<>();
 
-    public void add(QRActionRegister ar) {
+    public void add(QRActionRegister<T> ar) {
         list.add(ar);
     }
 
-    protected void action(Object e) {
+    protected void action(T e) {
         QRComponentUtils.runActions(list, e);
     }
 }

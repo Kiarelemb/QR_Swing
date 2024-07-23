@@ -93,19 +93,19 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
     public final void addWindowListener() {
         if (this.windowListener == null) {
             this.windowListener = new QRWindowListener();
-            this.windowListener.add(QRWindowListener.TYPE.OPEN, e -> windowOpened((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.CLOSED, e -> windowClosed((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.CLOSING, e -> windowClosing((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, e -> windowActivated((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, e -> windowDeactivated((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, e -> windowIconified((WindowEvent) e));
-            this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, e -> windowDeiconified((WindowEvent) e));
+            this.windowListener.add(QRWindowListener.TYPE.OPEN, this::windowOpened);
+            this.windowListener.add(QRWindowListener.TYPE.CLOSED, this::windowClosed);
+            this.windowListener.add(QRWindowListener.TYPE.CLOSING, this::windowClosing);
+            this.windowListener.add(QRWindowListener.TYPE.ACTIVATED, this::windowActivated);
+            this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, this::windowDeactivated);
+            this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, this::windowIconified);
+            this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, this::windowDeiconified);
             addWindowListener(this.windowListener);
         }
     }
 
     @Override
-    public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister ar) {
+    public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister<WindowEvent> ar) {
         if (this.windowListener != null) {
             this.windowListener.add(type, ar);
         }

@@ -100,14 +100,14 @@ public class QRTabbedPane extends QRPanel {
             }
         }
         add(this.tabs, tabPositionFromBorderLayout);
-        this.tabSelectChangedListener.add(e -> tabSelectChangedAction((QRTabSelectEvent) e));
+        this.tabSelectChangedListener.add(this::tabSelectChangedAction);
     }
 
 
     /**
      * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
      */
-    public void addTabSelectChangedAction(QRActionRegister ar) {
+    public void addTabSelectChangedAction(QRActionRegister<QRTabSelectEvent> ar) {
         this.tabSelectChangedListener.add(ar);
     }
 
@@ -118,7 +118,7 @@ public class QRTabbedPane extends QRPanel {
     public void addTabCloseButton() {
         this.loadCloseButton = true;
         this.closeButtonActionListener = new QRTabCloseListener();
-        this.closeButtonActionListener.add(e -> closeButtonAction((QRTabbedPaneCloseEvent) e));
+        this.closeButtonActionListener.add(this::closeButtonAction);
         this.actionListener = e -> QRTabbedPane.this.closeButtonActionListener.tabCloseButtonAction(new QRTabbedPaneCloseEvent(QRTabbedPane.this));
     }
 
@@ -202,7 +202,7 @@ public class QRTabbedPane extends QRPanel {
     }
 
     private void setContentPane(QRTabPanel tabPanel) {
-        QRComponentUtils.componentLoop(this, QRTabbedContentPanel.class, e -> this.remove((Component) e));
+        QRComponentUtils.componentLoop(this, QRTabbedContentPanel.class, this::remove);
         int foreSelectedIndex = this.selectedIndex;
         if (this.selectedIndex != -1) {
             this.arrTabs.get(this.selectedIndex).setClicked(false);

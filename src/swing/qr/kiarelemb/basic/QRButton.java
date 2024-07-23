@@ -30,7 +30,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         QRMouseListenerAdd {
     //	protected QRButtonMouseListener bml = new QRButtonMouseListener(this, QRColorsAndFonts.ENTER_COLOR,
 //			QRColorsAndFonts.PRESS_COLOR);
-    protected final QRActionRegister actionRegister = e -> this.clickInvokeLater();
+    protected final QRActionRegister<KeyStroke> actionRegister = e -> this.clickInvokeLater();
     private QRMouseMotionListener mouseMotionListener;
     private QRMouseListener mouseListener;
     private QRActionListener clickListener;
@@ -78,7 +78,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     public void addActionListener() {
         if (this.clickListener == null) {
             this.clickListener = new QRActionListener();
-            this.clickListener.add(e -> actionEvent((ActionEvent) e));
+            this.clickListener.add(this::actionEvent);
             addActionListener(this.clickListener);
         }
     }
@@ -89,7 +89,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
      * @param ar 操作
      */
     @Override
-    public final void addClickAction(QRActionRegister ar) {
+    public final void addClickAction(QRActionRegister<ActionEvent> ar) {
         if (this.clickListener != null) {
             this.clickListener.add(ar);
         }
@@ -102,8 +102,8 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     public final void addMouseMotionListener() {
         if (this.mouseMotionListener == null) {
             this.mouseMotionListener = new QRMouseMotionListener();
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, e -> mouseDrag((MouseEvent) e));
-            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, e -> mouseMove((MouseEvent) e));
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.DRAG, this::mouseDrag);
+            this.mouseMotionListener.add(QRMouseMotionListener.TYPE.MOVE, this::mouseMove);
             addMouseMotionListener(this.mouseMotionListener);
         }
     }
@@ -115,7 +115,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
      * @param ar   操作
      */
     @Override
-    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseMotionAction(QRMouseMotionListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseMotionListener != null) {
             this.mouseMotionListener.add(type, ar);
         }
@@ -128,11 +128,11 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     public final void addMouseListener() {
         if (this.mouseListener == null) {
             this.mouseListener = new QRMouseListener();
-            this.mouseListener.add(QRMouseListener.TYPE.CLICK, e -> mouseClick((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.PRESS, e -> mousePress((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, e -> mouseRelease((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.ENTER, e -> mouseEnter((MouseEvent) e));
-            this.mouseListener.add(QRMouseListener.TYPE.EXIT, e -> mouseExit((MouseEvent) e));
+            this.mouseListener.add(QRMouseListener.TYPE.CLICK, this::mouseClick);
+            this.mouseListener.add(QRMouseListener.TYPE.PRESS, this::mousePress);
+            this.mouseListener.add(QRMouseListener.TYPE.RELEASE, this::mouseRelease);
+            this.mouseListener.add(QRMouseListener.TYPE.ENTER, this::mouseEnter);
+            this.mouseListener.add(QRMouseListener.TYPE.EXIT, this::mouseExit);
             addMouseListener(this.mouseListener);
         }
     }
@@ -144,7 +144,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
      * @param ar   操作
      */
     @Override
-    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister ar) {
+    public final void addMouseAction(QRMouseListener.TYPE type, QRActionRegister<MouseEvent> ar) {
         if (this.mouseListener != null) {
             this.mouseListener.add(type, ar);
         }
@@ -261,7 +261,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         super.doClick();
     }
 
-    public QRActionRegister actionRegister() {
+    public QRActionRegister<KeyStroke> actionRegister() {
         return actionRegister;
     }
 

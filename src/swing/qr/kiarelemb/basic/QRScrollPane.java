@@ -97,7 +97,7 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
         if (this.mouseWheelListener == null) {
             this.mouseWheelListener = new QRMouseWheelListener();
             this.mouseWheelListener.add(e -> {
-                MouseWheelEvent ev = (MouseWheelEvent) e;
+                MouseWheelEvent ev = e;
                 ev.consume();
                 mouseWheelMove(ev);
             });
@@ -111,7 +111,7 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
      * @param ar 鼠标滚轮事件
      */
     @Override
-    public void addMouseWheelAction(QRActionRegister ar) {
+    public void addMouseWheelAction(QRActionRegister<MouseWheelEvent> ar) {
         if (this.mouseWheelListener != null) {
             this.mouseWheelListener.add(ar);
         }

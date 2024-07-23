@@ -13,15 +13,15 @@ import java.util.LinkedList;
  * @description:
  * @create 2022-11-27 13:14
  **/
-public class QRFocusListener extends QRAction implements FocusListener {
+public class QRFocusListener extends QRAction<FocusEvent> implements FocusListener {
     public enum TYPE {
         GAIN, LOST
     }
 
-    private final LinkedList<QRActionRegister> gain = new LinkedList<>();
-    private final LinkedList<QRActionRegister> lost = new LinkedList<>();
+    private final LinkedList<QRActionRegister<FocusEvent>> gain = new LinkedList<>();
+    private final LinkedList<QRActionRegister<FocusEvent>> lost = new LinkedList<>();
 
-    public void add(QRFocusListener.TYPE type, QRActionRegister ar) {
+    public void add(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
         if (type == QRFocusListener.TYPE.GAIN) {
             gain.add(ar);
         } else {

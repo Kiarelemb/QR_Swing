@@ -31,7 +31,7 @@ public final class QROpinionDialog extends QRDialog {
     private final static String ERROR = "错误";
     private final static String MSG = "信息";
 
-    private final QRActionRegister sureDisposeAction;
+    private final QRActionRegister<KeyStroke> sureDisposeAction;
 
     private QROpinionDialog(Window parent) {
         super(parent);
