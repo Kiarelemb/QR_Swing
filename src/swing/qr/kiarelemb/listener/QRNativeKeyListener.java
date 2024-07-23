@@ -192,10 +192,8 @@ public class QRNativeKeyListener implements NativeKeyListener {
                 QRComponentUtils.runActions(ars, event);
                 QRComponentUtils.runActions(list, event);
             }
-//            else {
             ars = this.GLOBAL_KEY_EVENTS.get(keyStroke);
             list = this.globalEventList;
-//            }
             QRComponentUtils.runActions(ars, event);
             QRComponentUtils.runActions(list, event);
         }

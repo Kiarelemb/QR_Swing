@@ -46,6 +46,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         setFocusPainted(false);
         setBorderPainted(false);
         setBorder(null);
+        setOpaque(false);
         addActionListener();
         setText(text);
         componentFresh();
