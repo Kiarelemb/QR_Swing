@@ -90,15 +90,17 @@ public class MenuTest extends QRFrame {
     }
 
     public static void main(String[] args) {
+        // 自定义配置文件名及其路径
         QRSwing.start("res/settings.properties", "res/window.properties");
+        // 设置菜单置于窗体标题栏
         QRSwing.setWindowTitleMenu(true);
+        // 取消窗体圆角
         QRSwing.setWindowRound(false);
-        QRSwing.registerGlobalKeyEvents();
         MenuTest window = new MenuTest("测试窗体");
-        window.setBackgroundBorderAlpha(0.5f);
+        // 设置窗体背景图遮罩透明度
+        window.setBackgroundBorderAlpha(0.8f);
+        // 设置窗体背景图
         window.setBackgroundImage("res/picture/background_image.png");
-        QRSwing.registerGlobalEventWindow(window);
-        QRSwing.registerGlobalAction("ctrl s", (System.out::println), false);
         //设置窗体可见
         window.setVisible(true);
     }

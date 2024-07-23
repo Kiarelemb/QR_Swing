@@ -7,6 +7,7 @@ import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.event.QRTabSelectEvent;
 import swing.qr.kiarelemb.event.QRTabbedPaneCloseEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRTabCloseListener;
 import swing.qr.kiarelemb.listener.QRTabSelectChangedListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -16,7 +17,6 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -181,12 +181,10 @@ public class QRTabbedPane extends QRPanel {
     public int addTab(String title, ImageIcon image, QRTabbedContentPanel content) {
         int index = this.arrTabs.size();
         QRTabPanel tabPane = new QRTabPanel(title, content, index, image, this.loadCloseButton);
-        tabPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                QRTabbedPane.this.setContentPane(tabPane);
-                QRComponentUtils.windowFresh(QRTabbedPane.this);
-            }
+        tabPane.addMouseListener();
+        tabPane.addMouseAction(QRMouseListener.TYPE.CLICK,e->{
+            QRTabbedPane.this.setContentPane(tabPane);
+            QRComponentUtils.windowFresh(QRTabbedPane.this);
         });
         if (this.loadCloseButton) {
             tabPane.setCloseButtonAction(this.actionListener);
@@ -250,7 +248,6 @@ public class QRTabbedPane extends QRPanel {
             this.content = content;
             this.index = index;
             setFocusable(false);
-            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
             this.title = title;
             Rectangle bounds = QRFontUtils.getStringBounds(title, QRColorsAndFonts.DEFAULT_FONT_MENU).getBounds();
             setPreferredSize(bounds.width + 10, bounds.height + 20);
@@ -305,18 +302,9 @@ public class QRTabbedPane extends QRPanel {
                             setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, QRColorsAndFonts.CARET_COLOR));
                     default -> setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, QRColorsAndFonts.CARET_COLOR));
                 }
-            } else {
-                switch (tabPositionFromBorderLayout) {
-                    case BorderLayout.SOUTH ->
-                            setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.EAST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    case BorderLayout.WEST ->
-                            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, QRColorsAndFonts.FRAME_COLOR_BACK));
-                    default ->
-                            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
-                }
+                return;
             }
+            setBorder(null);
         }
 
         public QRTabbedContentPanel getContentPane() {

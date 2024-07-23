@@ -263,9 +263,9 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
         viewport.setView(view);
         setViewport(viewport);
         getViewport().setOpaque(false);
-        if (view instanceof JComponent com) {
-            com.setOpaque(false);
-        }
+//        if (view instanceof JComponent com) {
+//            com.setOpaque(false);
+//        }
     }
 
     @Override
