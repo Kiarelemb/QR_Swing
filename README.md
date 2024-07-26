@@ -120,7 +120,7 @@ public class MenuTest extends QRFrame {
 
 ### ③ 高档的窗体背景图
 
-### 拓展丰富的常用控件
+### ④ 拓展丰富的常用控件
 
 
 #### 码量之最 —— QRTextPane
@@ -131,7 +131,7 @@ public class MenuTest extends QRFrame {
 
 #### 蜻蜓点水 —— 自研控件 QRInternalScrollPane & QRTransparentSplitPanel
 
-### 自搞一套 —— 重定义窗体
+### ⑤ 自搞一套 —— 重定义窗体
 
 #### 全局主窗体 QRFrame
 #### 便利对话框 QRDialog
