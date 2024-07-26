@@ -156,8 +156,6 @@ public class Test {
 ```
 而 `QRSwing` 则提供了一种更优雅的方式：为控件调用添加监听器方法，再添加你需要使用的具体方法：
 ```java
-package swing.qr.kiarelemb.test;
-
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.listener.QRMouseListener.TYPE;
 
