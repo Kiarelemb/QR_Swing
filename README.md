@@ -43,7 +43,7 @@ public class MyFrame extends QRFrame {
     @Override
     public void windowOpened(WindowEvent e) {
         // 实例化对话窗体，并将主窗体设置为其父窗体
-        QRDialog dialog = new QRDialog(this);
+        var dialog = new QRDialog(this);
         // 设置对话窗体标题
         dialog.setTitle("Hello World!");
         // 设置对话窗体标题居中
@@ -80,13 +80,18 @@ public class MenuTest extends QRFrame {
         // 设置主面板的布局
         this.mainPanel.setLayout(new BorderLayout());
         // 用循环添加菜单和子菜单
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
+            // 添加菜单
             QRButton button = titleMenuPanel.add("Menu " + i);
-            for (int j = 0, size = QRRandomUtils.getRandomInt(2, 9); j < size; j++) {
+            for (var j = 0, size = QRRandomUtils.getRandomInt(2, 9); j < size; j++) {
+                // 添加子菜单
                 button.add(new QRMenuItem(String.format("Menu %s of Button %s", i, j)));
             }
         }
-        this.mainPanel.add(new QRTextPane().addScrollPane());
+        // 添加文本面板
+        var textPane = new QRTextPane();
+        // 将文本面板置于滚动条中，并将滚动条面板置于主面板中
+        this.mainPanel.add(textPane.addScrollPane());
     }
 
     public static void main(String[] args) {
@@ -96,7 +101,7 @@ public class MenuTest extends QRFrame {
         QRSwing.setWindowTitleMenu(true);
         // 取消窗体圆角
         QRSwing.setWindowRound(false);
-        MenuTest window = new MenuTest("测试窗体");
+        QRFrame window = new MenuTest("测试窗体");
         // 设置窗体背景图遮罩透明度
         window.setBackgroundBorderAlpha(0.8f);
         // 设置窗体背景图
@@ -106,3 +111,28 @@ public class MenuTest extends QRFrame {
     }
 }
 ```
+
+## 深入了解 QRSwing
+
+### ① 优雅的事件监听器
+
+### ② 便捷的主题切换
+
+### ③ 高档的窗体背景图
+
+### 拓展丰富的常用控件
+
+
+#### 码量之最 —— QRTextPane
+
+#### 巅覆重写 —— QRTabbedPane
+
+#### 跨平台 —— QRMenuButton & QRPopupMenu
+
+#### 蜻蜓点水 —— 自研控件 QRInternalScrollPane & QRTransparentSplitPanel
+
+### 自搞一套 —— 重定义窗体
+
+#### 全局主窗体 QRFrame
+#### 便利对话框 QRDialog
+#### 其他工具窗 QRSmallTipShow & QROpinionDialog
