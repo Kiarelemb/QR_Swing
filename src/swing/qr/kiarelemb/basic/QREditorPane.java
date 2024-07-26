@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.basic;
 
 import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.assembly.QRCaret;
+import swing.qr.kiarelemb.assembly.QRHighlighter;
 import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -14,9 +15,7 @@ import swing.qr.kiarelemb.utils.QRComponentUtils;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.DocumentEvent;
-import javax.swing.plaf.basic.BasicTextUI;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Highlighter;
 import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -538,9 +537,9 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
 
     public void setSelectable(boolean selectable) {
         if (selectable) {
-            Highlighter highlighter = getHighlighter();
+            var highlighter = getHighlighter();
             if (highlighter == null) {
-                highlighter = new BasicTextUI.BasicHighlighter();
+                highlighter = new QRHighlighter();
                 setHighlighter(highlighter);
             }
         } else {

@@ -2,6 +2,8 @@ package swing.qr.kiarelemb.inter;
 
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
+import java.awt.*;
+
 /**
  * @author Kiarelemb QR
  * @program: QR_Swing
@@ -12,5 +14,5 @@ public interface QRParentWindowMove {
     /**
      * 当父窗体 {@link QRFrame} 移动时，子窗体调用该事件
      */
-    void ownerMoved();
+    void ownerMoved(Point parentWindowLocation);
 }

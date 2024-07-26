@@ -8,14 +8,14 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
+import swing.qr.kiarelemb.listener.QRMouseListener.TYPE;
+import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.listener.QRWindowListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 
 /**
@@ -52,33 +52,9 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
         setUndecorated(true);
         this.backgroundColor = QRColorsAndFonts.FRAME_COLOR_BACK;
         this.contentPane = new QRBorderContentPanel();
+        initContentPane();
         setContentPane(this.contentPane);
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-
-        //region listeners
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                QREmptyDialog.this.p.x = e.getX();
-                QREmptyDialog.this.p.y = e.getY();
-                setCursor(new Cursor(Cursor.MOVE_CURSOR));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-        addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (QREmptyDialog.this.windowCanMove) {
-                    motion(e);
-                }
-            }
-        });
-        //endregion
-
         if (owner != null) {
             if (owner instanceof QRFrame baseFrame) {
                 baseFrame.addChildWindow(this);
@@ -87,6 +63,22 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
         if (QRSwing.windowRound) {
             QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
         }
+    }
+
+    private void initContentPane() {
+        this.contentPane.addMouseListener();
+        this.contentPane.addMouseMotionListener();
+        this.contentPane.addMouseAction(TYPE.PRESS, e -> {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                QREmptyDialog.this.p.x = e.getX();
+                QREmptyDialog.this.p.y = e.getY();
+                setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            }
+        });
+        this.contentPane.addMouseAction(TYPE.RELEASE, e -> this.contentPane.setCursorDefault());
+        this.contentPane.addMouseMotionAction(QRMouseMotionListener.TYPE.DRAG, e -> {
+            if (QREmptyDialog.this.windowCanMove) motion(e);
+        });
     }
 
     @Override
@@ -100,6 +92,7 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
             this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, this::windowDeactivated);
             this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, this::windowIconified);
             this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, this::windowDeiconified);
+            this.windowListener.addWindowMoveAction(this::windowMoved);
             addWindowListener(this.windowListener);
         }
     }
@@ -109,6 +102,23 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
         if (this.windowListener != null) {
             this.windowListener.add(type, ar);
         }
+    }
+
+    @Override
+    public final void addWindowMoveAction(QRActionRegister<Point> ar) {
+        if (this.windowListener != null) {
+            this.windowListener.addWindowMoveAction(ar);
+        }
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+        if (windowListener == null) {
+            return;
+        }
+        Point point = new Point(x, y);
+        this.windowListener.windowMoved(point);
     }
 
     public void setCursorWait() {
@@ -126,14 +136,14 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
         setLocation(x, y);
     }
 
-    protected void setFreelyMotionFailed() {
+    public void setFreelyMotionFailed() {
         this.windowCanMove = false;
     }
 
     /**
      * 父窗体移动时将自动更新此位置
      */
-    public void updateLocation() {
+    public void updateLocation(Point parentWindowLocation) {
     }
 
     /**
@@ -178,6 +188,12 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
     public void windowDeactivated(WindowEvent e) {
     }
 
+    /**
+     * 重写前请先调用 {@link #addWindowListener()}
+     */
+    public void windowMoved(Point p) {
+    }
+
     @Override
     public QRPanel getContentPane() {
         return this.contentPane;
@@ -187,8 +203,8 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
      * 父窗体移动时，本窗体也移动
      */
     @Override
-    public void ownerMoved() {
-        updateLocation();
+    public final void ownerMoved(Point parentWindowLocation) {
+        updateLocation(parentWindowLocation);
     }
 
     @Override

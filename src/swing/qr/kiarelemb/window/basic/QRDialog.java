@@ -124,9 +124,12 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
                     setLocation(x, y);
                     if (parentWindowFollowMove && parent != null) {
                         //居中
-                        parent.setLocation(x + (getWidth() - parent.getWidth()) / 2, y + (getHeight() - parent.getHeight()) / 2);
+                        int px = x + (getWidth() - parent.getWidth()) / 2;
+                        int py = y + (getHeight() - parent.getHeight()) / 2;
+                        parent.setLocation(px, py);
                         if (parent instanceof QRFrame) {
-                            ((QRFrame) parent).childWindowLocationUpdate();
+                            Point p = new Point(px, py);
+                            ((QRFrame) parent).childWindowLocationUpdate(p);
                         }
                     }
                 }
@@ -313,6 +316,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
             this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, this::windowDeactivated);
             this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, this::windowIconified);
             this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, this::windowDeiconified);
+            this.windowListener.addWindowMoveAction(this::windowMoved);
             addWindowListener(this.windowListener);
         }
     }
@@ -325,7 +329,14 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     }
 
     @Override
-    public void ownerMoved() {
+    public final void addWindowMoveAction(QRActionRegister<Point> ar) {
+        if (this.windowListener != null) {
+            this.windowListener.addWindowMoveAction(ar);
+        }
+    }
+
+    @Override
+    public void ownerMoved(Point parentWindowLocation) {
     }
 
     @Override
@@ -367,6 +378,16 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
         windowStateUpdate();
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+        if (windowListener == null) {
+            return;
+        }
+        Point point = new Point(x, y);
+        this.windowListener.windowMoved(point);
     }
 
     @Override
@@ -434,5 +455,8 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
      * 重写前请先调用 {@link #addWindowListener()}
      */
     public void windowDeactivated(WindowEvent e) {
+    }
+
+    public void windowMoved(Point p) {
     }
 }

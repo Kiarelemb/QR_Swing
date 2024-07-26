@@ -61,7 +61,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     private final QRPanel windowFunctionPanel;
     private final ArrayList<QRParentWindowMove> childWindows = new ArrayList<>();
     private final ArrayList<QRActionRegister<Boolean>> actionOnDispose = new ArrayList<>();
-    private final LinkedList<QRActionRegister<Point>> move = new LinkedList<>();
     private final QRPanel titlePanel;
     /**
      * 若设置了 {@link QRSwing#windowTitleMenu} 为 {@code true}，则将自动实例化
@@ -291,7 +290,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             this.windowListener.add(QRWindowListener.TYPE.DEACTIVATED, this::windowDeactivated);
             this.windowListener.add(QRWindowListener.TYPE.ICONIFIED, this::windowIconified);
             this.windowListener.add(QRWindowListener.TYPE.DEICONIFIED, this::windowDeiconified);
-            move.add(this::windowMoved);
+            this.windowListener.addWindowMoveAction(this::windowMoved);
             addWindowListener(this.windowListener);
         }
     }
@@ -300,6 +299,14 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     public final void addWindowAction(QRWindowListener.TYPE type, QRActionRegister<WindowEvent> ar) {
         if (this.windowListener != null) {
             this.windowListener.add(type, ar);
+        }
+    }
+
+
+    @Override
+    public final void addWindowMoveAction(QRActionRegister<Point> ar) {
+        if (this.windowListener != null) {
+            this.windowListener.addWindowMoveAction(ar);
         }
     }
 
@@ -492,7 +499,8 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         if (windowListener == null) {
             return;
         }
-        QRComponentUtils.runActions(move, new Point(x, y));
+        Point point = new Point(x, y);
+        this.windowListener.windowMoved(point);
     }
 
     /**
@@ -560,11 +568,11 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     protected void windowSizeChangedAction() {
     }
 
-    protected void childWindowLocationUpdate() {
+    protected void childWindowLocationUpdate(Point location) {
         synchronized (this.childWindows) {
             for (QRParentWindowMove childWindow : this.childWindows) {
                 if (((Window) childWindow).isVisible()) {
-                    childWindow.ownerMoved();
+                    childWindow.ownerMoved(location);
                 }
             }
         }
@@ -662,7 +670,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         public void mouseReleased(MouseEvent e) {
             clear();
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            childWindowLocationUpdate();
+            childWindowLocationUpdate(getLocation());
         }
 
         @Override

@@ -6,6 +6,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.assembly.QRCaret;
+import swing.qr.kiarelemb.assembly.QRHighlighter;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
 import swing.qr.kiarelemb.data.QRInternalScrollBarData;
 import swing.qr.kiarelemb.data.QRMousePointIndexData;
@@ -100,6 +101,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     public QRTextPane() {
         setOpaque(!QRSwing.windowImageSet);
         setMargin(new Insets(INSECT, INSECT, INSECT, INSECT));
+        setHighlighter(new QRHighlighter());
         this.caret = new QRCaret();
         setCaret(this.caret);
         componentFresh();

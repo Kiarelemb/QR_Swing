@@ -183,7 +183,7 @@ public class QRNativeKeyListener implements NativeKeyListener {
          */
         public void invokeAction(QRNativeKeyEvent event) {
             KeyStroke keyStroke = event.getKeyStroke();
-            System.out.println(keyStroke + "," + event.paramString());
+//            System.out.println(keyStroke + "," + event.paramString());
             ArrayList<QRActionRegister<KeyStroke>> ars;
             LinkedList<QRActionRegister<QRNativeKeyEvent>> list;
             if (mainWindow != null && mainWindow.isFocused()) {

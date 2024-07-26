@@ -3,6 +3,7 @@ package swing.qr.kiarelemb.listener;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ public class QRWindowListener implements WindowListener {
     private final LinkedList<QRActionRegister<WindowEvent>> deiconified = new LinkedList<>();
     private final LinkedList<QRActionRegister<WindowEvent>> activated = new LinkedList<>();
     private final LinkedList<QRActionRegister<WindowEvent>> deactivated = new LinkedList<>();
+    private final LinkedList<QRActionRegister<Point>> move = new LinkedList<>();
 
     public void add(TYPE type, QRActionRegister<WindowEvent> ar) {
         switch (type) {
@@ -36,6 +38,10 @@ public class QRWindowListener implements WindowListener {
             case DEACTIVATED -> this.deactivated.add(ar);
             default -> this.open.add(ar);
         }
+    }
+
+    public void addWindowMoveAction(QRActionRegister<Point> ar) {
+        this.move.add(ar);
     }
 
     @Override
@@ -71,5 +77,9 @@ public class QRWindowListener implements WindowListener {
     @Override
     public final void windowDeactivated(WindowEvent e) {
         QRComponentUtils.runActions(this.deactivated, e);
+    }
+
+    public final void windowMoved(Point p) {
+        QRComponentUtils.runActions(this.move, p);
     }
 }

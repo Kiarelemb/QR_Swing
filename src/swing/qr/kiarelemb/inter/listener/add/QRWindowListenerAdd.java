@@ -3,6 +3,7 @@ package swing.qr.kiarelemb.inter.listener.add;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRWindowListener;
 
+import java.awt.*;
 import java.awt.event.WindowEvent;
 
 /**
@@ -24,4 +25,6 @@ public interface QRWindowListenerAdd {
      * @param ar   操作
      */
     void addWindowAction(QRWindowListener.TYPE type, QRActionRegister<WindowEvent> ar);
+
+    void addWindowMoveAction(QRActionRegister<Point> ar);
 }
