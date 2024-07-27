@@ -227,7 +227,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             // 窗口打开时，设置窗口背景图片
             if (QRSwing.windowImageEnable) {
                 setBackgroundImage(QRSwing.WINDOW_IMAGE_PATH);
-                setBackgroundBorderAlpha(QRSwing.windowBackgroundImageAlpha);
+                setBackgroundImageAlpha(QRSwing.windowBackgroundImageAlpha);
             }
 //            QRComponentUtils.componentLoopToSetOpaque(this.contentPane, !QRSwing.windowImageSet);
         });
@@ -375,7 +375,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         }
     }
 
-    public final void setBackgroundBorderScale(boolean scale) {
+    public final void setBackgroundImageScale(boolean scale) {
         if (this.contentPane.image() != null) {
             this.contentPane.setScale(scale);
             QRSwing.setWindowScale(scale);
@@ -383,7 +383,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         }
     }
 
-    public final void setBackgroundBorderAlpha(float alpha) {
+    public final void setBackgroundImageAlpha(float alpha) {
         if (this.contentPane.image() != null) {
             this.contentPane.setAlpha(alpha);
             QRSwing.setWindowBackgroundImageAlpha(alpha);

@@ -1311,14 +1311,14 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 
     //region 高级操作
     public void indexesUpdate() {
-        LinkedList<Integer> list = new LinkedList<>();
+        var list = new LinkedList<Integer>();
         this.indexUpdatedText = getText();
-        final int length = this.indexUpdatedText.length();
+        var length = this.indexUpdatedText.length();
         this.indexesAndRectangles = new DualHashBidiMap<>();
         int index;
-        int foreX = -1;
-        int foreY = 0;
-        int height = -1;
+        var foreX = -1;
+        var foreY = 0;
+        var height = -1;
         Rectangle zeroPosi = null;
         LinkedList<Rectangle> lr = new LinkedList<>();
         LinkedList<Rectangle[]> lrs = new LinkedList<>();
@@ -1338,8 +1338,8 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
                     lrs.add(lr.toArray(rec));
                     lr.clear();
                 }
-                if (foreX > index) {
-                    if (lr.size() > 0) {
+                if (foreX >= index) {
+                    if (!lr.isEmpty()) {
                         lrs.add(lr.toArray(rec));
                         lr.clear();
                     }
@@ -1349,7 +1349,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
                 lr.add(showPosition);
             }
         }
-        if (lr.size() > 0) {
+        if (!lr.isEmpty()) {
             lrs.add(lr.toArray(rec));
         }
         this.rectanglesOfEachLines = new Rectangle[lrs.size()][];
@@ -1371,9 +1371,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * <p>返回的这个{@code mid}值{@code +2}，就是当前光标所在的行</p>
      */
     public final int getIndexSearchMid(int index) {
-        int start = -1;
-        int end = this.lastWordIndexes.length;
-        int mid = end / 2;
+        var start = -1;
+        var end = this.lastWordIndexes.length;
+        var mid = end / 2;
         while (end != mid && start != mid) {
             if (this.lastWordIndexes[mid] > index) {
                 end = mid;
@@ -1432,7 +1432,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
      * @param p 鼠标位置
      */
     public final QRMousePointIndexData getMousePointIndexData(final Point p) {
-        if (this.indexesAndRectangles == null || this.rectanglesOfEachLines == null || this.indexesAndRectangles.size() == 0) {
+        if (this.indexesAndRectangles == null || this.rectanglesOfEachLines == null || this.indexesAndRectangles.isEmpty()) {
             return null;
         }
         final int x = p.x;
@@ -1479,7 +1479,6 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
                 this.indexesAndRectangles.getKey(lineRectangles[rowIndex]), lineIndex + 1, rowIndex + 1);
     }
     //endregion
-
 
     //region 打印的方法
 
@@ -2035,7 +2034,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
                     this.foreWord = caretForeWord(position, text);
                     this.foreWordStartIndex = text.lastIndexOf(this.foreWord, position);
                     this.foreWordEndIndex = this.foreWordStartIndex + this.foreWord.length();
-                    if (this.foreText.length() > 0) {
+                    if (!this.foreText.isEmpty()) {
                         this.foreCharStr = this.foreText.substring(this.foreText.length() - 1);
                     } else {
                         this.foreCharStr = "";
@@ -2060,7 +2059,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
                     this.nextWord = caretNextWord(position, text);
                     this.nextWordStartIndex = text.indexOf(this.nextWord, position);
                     this.nextWordEndIndex = this.nextWordStartIndex + this.nextWord.length();
-                    if (this.nextText.length() > 0) {
+                    if (!this.nextText.isEmpty()) {
                         this.nextCharStr = this.nextText.substring(0, 1);
                     } else {
                         this.nextCharStr = "";

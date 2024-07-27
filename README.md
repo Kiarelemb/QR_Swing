@@ -67,7 +67,6 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 
 public class MenuTest extends QRFrame {
 
@@ -103,7 +102,7 @@ public class MenuTest extends QRFrame {
         QRSwing.setWindowRound(false);
         QRFrame window = new MenuTest("测试窗体");
         // 设置窗体背景图遮罩透明度
-        window.setBackgroundBorderAlpha(0.8f);
+        window.setBackgroundImageAlpha(0.8f);
         // 设置窗体背景图
         window.setBackgroundImage("res/picture/background_image.png");
         //设置窗体可见
@@ -240,7 +239,7 @@ public class FrameTest {
     }
 }
 ```
-但主题并不代表只有这些，我们也可以自定义主题。为此，我们提供了专门的主题设计器。虽然该主题设计器目前还在开发中，但它仍然可以满足大部分需求，并方便使用。
+但主题并不代表只有这些，我们也可以自定义主题。为此， `QRSwing` 提供了专门的主题设计器。虽然该主题设计器目前还在开发中，但它仍然满足大部分需求，且方便使用。
 ```java
 import swing.qr.kiarelemb.theme.QRSwingThemeDesigner;
 import swing.qr.kiarelemb.window.basic.QRFrame;
@@ -257,9 +256,24 @@ public class FrameTest {
 }
 ```
 ### ③ 高档的窗体背景图
-正在更新中...
+我们已经在最开始的 `走马观花` 中使用了窗体背景图的功能。在主窗体实例化之前，我们可以手动设置窗体背景图，以在其实例化时自动加载：
+```java
+// 设置背景图路径
+QRSwing.setWindowBackgroundImagePath(String value);
+// 设置背景图透明度
+QRSwing.setWindowBackgroundImageAlpha(float value);
+```
+在主窗体实例化之后，我们也有办法来设置窗体背景图：
+```java
+QRFrame mainWindow = new QRFrame();
+// 设置背景图路径
+mainWindow.setBackgroundImage(String filePath);
+// 设置背景图透明度
+mainWindow.setBackgroundImageAlpha(float alpha);
+mainWindow.setVisible(true);
+```
 ### ④ 拓展丰富的常用控件
-
+正在更新中...
 
 #### 码量之最 —— QRTextPane
 
