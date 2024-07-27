@@ -14,7 +14,6 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.DocumentEvent;
-import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -462,17 +461,6 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
         setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setCaretColor(QRColorsAndFonts.CARET_COLOR);
-        setUI(new BasicTextUI() {
-            @Override
-            protected String getPropertyPrefix() {
-                return "";
-            }
-
-            @Override
-            protected Rectangle getVisibleEditorRect() {
-                return null;
-            }
-        });
         focusLost(null);
     }
 
