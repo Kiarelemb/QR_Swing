@@ -30,7 +30,10 @@ import java.awt.event.WindowEvent;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -534,7 +537,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                     height = displayHeight / 2;
                     x = displayWidth / 4;
                     y = displayHeight / 4;
-                } else {
+                } else if (QRSwing.windowScreenAdsorb) {
                     int adsorbent = 15;
                     if (Math.abs(x) < adsorbent) {
                         x = 0;
