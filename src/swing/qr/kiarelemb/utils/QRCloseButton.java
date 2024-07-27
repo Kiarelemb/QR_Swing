@@ -17,7 +17,7 @@ public class QRCloseButton extends QRButton {
     private final Font font = QRColorsAndFonts.PROCESS_BUTTON_FONT.deriveFont(11f).deriveFont(Font.BOLD);
 
     public QRCloseButton() {
-        setBorderPainted(true);
+        setBorderPainted(false);
         setPreferredSize(new Dimension(30, 30));
     }
 
@@ -38,8 +38,8 @@ public class QRCloseButton extends QRButton {
     }
 
     @Override
-    protected void paintBorder(Graphics g) {
-        super.paintBorder(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         QRComponentUtils.componentStringDraw(this, g, QRFrame.CLOSE_MARK, font, QRColorsAndFonts.MENU_COLOR);
     }
 }

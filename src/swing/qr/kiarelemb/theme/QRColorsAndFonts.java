@@ -121,7 +121,7 @@ public class QRColorsAndFonts {
         THEME_CLASS = themes.toArray(QRStringUtils.ARR_EMPTY);
     }
 
-    private static void loadColors(Color[] colors) {
+    public static void loadColors(Color[] colors) {
         if (colors != null) {
             int index = 0;
             TEXT_COLOR_FORE = colors[index++];

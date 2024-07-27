@@ -46,6 +46,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         setFocusPainted(false);
         setBorderPainted(false);
         setBorder(null);
+        setContentAreaFilled(false);
         setOpaque(false);
         addActionListener();
         setText(text);
@@ -280,18 +281,16 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         if ((mouseEntered || mousePressed) && isEnabled()) {
-//            if(cl)
             g.setColor(mousePressed ? pressColor : enterColor);
             RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.addRenderingHints(rh);
-            // 使滚动条透明
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowImageSet ? (mousePressed ? 1f : (mouseEntered ? 0.7f : 0.5f)) : 1f));
             g2.fillRect(0, 0, getWidth(), getHeight());
         }
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-        super.paint(g);
+        super.paintComponent(g);
     }
 }

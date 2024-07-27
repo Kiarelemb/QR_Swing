@@ -15,7 +15,6 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -119,7 +118,7 @@ public final class QRSwing implements Serializable {
 
     private QRSwing(String propPath) {
         System.out.println("""
-                                
+                
                  .88888.    888888ba  .d88888b             oo
                 d8'   `8b   88    `8b 88.    "'
                 88     88  a88aaaa8P' `Y88888b. dP  dP  dP dP 88d888b. .d8888b.
@@ -187,7 +186,7 @@ public final class QRSwing implements Serializable {
     }
 
     public static ImageIcon iconLoadLead(String key, String defaultFileName) {
-        String iconPath = GLOBAL_PROP.getProperty(key);
+        var iconPath = GLOBAL_PROP.getProperty(key);
         if (QRFileUtils.fileExists(iconPath)) {
             return new ImageIcon(iconPath);
         }
@@ -208,10 +207,10 @@ public final class QRSwing implements Serializable {
         if (!QRFileUtils.fileCreate(WINDOW_PROP_PATH)) {
             WINDOW_PROP_PATH = "window.properties";
         }
-        Properties prop = new Properties();
-        final int[] size = QRSystemUtils.getScreenSize();
-        final int width = size[0];
-        final int height = size[1];
+        var prop = new Properties();
+        final var size = QRSystemUtils.getScreenSize();
+        final var width = size[0];
+        final var height = size[1];
         prop.setProperty("Window.size.width", String.valueOf(width / 2));
         prop.setProperty("Window.size.height", String.valueOf(height / 2));
         prop.setProperty("Window.start.X", String.valueOf(width / 4));
@@ -220,7 +219,7 @@ public final class QRSwing implements Serializable {
     }
 
     public static void globalPropBackToDefault() {
-        Properties prop = getDefaultSettingsProp();
+        var prop = getDefaultSettingsProp();
         GLOBAL_PROP.putAll(prop);
         globalPropSave();
     }
@@ -241,7 +240,7 @@ public final class QRSwing implements Serializable {
      * </code></pre>
      */
     public static Properties getDefaultSettingsProp() {
-        URL url = QRSwingInfo.loadUrl("default_settings.properties");
+        var url = QRSwingInfo.loadUrl("default_settings.properties");
         return QRPropertiesUtils.loadProp(url);
     }
 
@@ -251,7 +250,7 @@ public final class QRSwing implements Serializable {
      * @param fontFamily 字体名称
      */
     public static void customFontName(String fontFamily) {
-        Font font = QRFontUtils.getFont(fontFamily, 10);
+        var font = QRFontUtils.getFont(fontFamily, 10);
         customFontName(font);
     }
 
@@ -433,7 +432,7 @@ public final class QRSwing implements Serializable {
     public static void registerGlobalAction(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
         String[] keys = key.split(",");
         for (String k : keys) {
-            KeyStroke keyStroke = QRStringUtils.getKeyStroke(k);
+            var keyStroke = QRStringUtils.getKeyStroke(k);
             registerGlobalAction(keyStroke, ar, mainWindowFocus);
         }
     }
@@ -447,7 +446,7 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
     public static void registerGlobalAction(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-        KeyStroke keyStroke = QRStringUtils.getKeyStroke(keycode);
+        var keyStroke = QRStringUtils.getKeyStroke(keycode);
         registerGlobalAction(keyStroke, ar, mainWindowFocus);
     }
 
@@ -461,7 +460,7 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
     public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-        KeyStroke keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
+        var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
         registerGlobalAction(keyStroke, ar, mainWindowFocus);
     }
 
@@ -474,7 +473,7 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
      */
     public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-        if (keyStroke != null) {
+        if (QRSwing.globalKeyListener != null) {
             QRSwing.globalKeyListener.addEvent(QRNativeKeyListener.TYPE.PRESSED, mainWindowFocus, keyStroke, ar);
         }
     }
@@ -486,8 +485,9 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
      */
     public static void registerGlobalActionRemove(KeyStroke keyStroke, boolean mainWindowFocus) {
-        // TODO 判断是否为 null
-        QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
+        if (QRSwing.globalKeyListener != null) {
+            QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
+        }
     }
 
     /**
@@ -498,7 +498,9 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
      */
     public static void registerGlobalActionRemove(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-        QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, ar, mainWindowFocus);
+        if (QRSwing.globalKeyListener != null) {
+            QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, ar, mainWindowFocus);
+        }
     }
 
     /**
@@ -508,7 +510,9 @@ public final class QRSwing implements Serializable {
      * @param mainWindowFocus 主窗体是否在焦点
      */
     public static void invokeAction(Window window, KeyStroke keyStroke, boolean mainWindowFocus) {
-        QRSwing.globalKeyListener.invokeAction(window, QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
+        if (QRSwing.globalKeyListener != null) {
+            QRSwing.globalKeyListener.invokeAction(window, QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
+        }
     }
 
     /**
@@ -555,6 +559,6 @@ public final class QRSwing implements Serializable {
             setWindowBackgroundImageAlpha(0.8f);
             return;
         }
-        windowImageSet = QRFileUtils.fileExists(windowBackgroundImagePath) && windowImageEnable;
+        windowImageSet = windowImageEnable && QRFileUtils.fileExists(windowBackgroundImagePath);
     }
 }

@@ -39,22 +39,22 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                QRRoundButton.this.isPressed = true;
+                isPressed = true;
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                QRRoundButton.this.isPressed = false;
+                isPressed = false;
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                QRRoundButton.this.isEntered = true;
+                isEntered = true;
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                QRRoundButton.this.isEntered = false;
+                isEntered = false;
             }
         };
         addMouseListener(mouseAdapter);

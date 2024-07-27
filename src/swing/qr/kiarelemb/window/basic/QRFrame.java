@@ -254,6 +254,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         this.titlePanel.setBorder(BorderFactory.createMatteBorder(0, 5, 0, 0, QRColorsAndFonts.FRAME_COLOR_BACK));
         this.topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, QRColorsAndFonts.LINE_COLOR));
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+        getRootPane().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         this.contentPane.componentFresh();
         if (!this.childWindows.isEmpty()) {
             synchronized (this.childWindows) {

@@ -268,7 +268,7 @@ public class QRComponentUtils {
      * @param aClass        要匹配的类，用于判断组件是否属于该类，该类是 {@link JComponent} 的子类
      * @param isClassAction 可为 {@code null}，如果组件是 {@code aClass} 的实例，将调用此操作接口，该操作参数是对应的实例 {@link Component}
      */
-    public static void componentLoop(JComponent jc, Class<?> aClass, QRActionRegister<Component> isClassAction) {
+    public static <T> void componentLoop(JComponent jc, Class<T> aClass, QRActionRegister<T> isClassAction) {
         // 获取控件里的所有组件
         Component[] components = jc.getComponents();
         // 遍历所有组件
@@ -277,7 +277,7 @@ public class QRComponentUtils {
             if (aClass.isInstance(com)) {
                 // 如果是指定 aClass 的实例，调用 isClassAction
                 if (isClassAction != null) {
-                    isClassAction.action(com);
+                    isClassAction.action((T) com);
                 }
             }
         }

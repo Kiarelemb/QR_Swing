@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.basic;
 
 import method.qr.kiarelemb.utils.QRStringUtils;
+import swing.qr.kiarelemb.assembly.QRCaret;
 import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -13,6 +14,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.DocumentEvent;
+import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -45,16 +47,11 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
     private QRMouseMotionListener mouseMotionListener;
 
     public QRTextField() {
-        addKeyListener();
-        addFocusListener();
-        componentFresh();
+        this(null);
     }
 
     public QRTextField(String text) {
-        setText(text);
-        addKeyListener();
-        addFocusListener();
-        componentFresh();
+        this(text, false);
     }
 
     public QRTextField(String text, boolean numbersOnly) {
@@ -62,8 +59,10 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
             numbersOnly();
         }
         setText(text);
+        setCaret(new QRCaret());
         addKeyListener();
         addFocusListener();
+        setIgnoreRepaint(true);
         componentFresh();
     }
 
@@ -463,6 +462,17 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
         setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
         setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
         setCaretColor(QRColorsAndFonts.CARET_COLOR);
+        setUI(new BasicTextUI() {
+            @Override
+            protected String getPropertyPrefix() {
+                return "";
+            }
+
+            @Override
+            protected Rectangle getVisibleEditorRect() {
+                return null;
+            }
+        });
         focusLost(null);
     }
 
