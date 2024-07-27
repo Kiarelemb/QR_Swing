@@ -11,8 +11,10 @@ import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
 import swing.qr.kiarelemb.listener.QRWindowListener;
+import swing.qr.kiarelemb.listener.QRWindowListener.TYPE;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.utils.QRCloseButton;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -282,6 +284,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
                 QRDialog.this.dispose();
             }
         };
+
+        addWindowListener();
+        addWindowAction(TYPE.OPEN, e -> QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true));
     }
 
     public void setParentWindowNotFollowMove() {
@@ -416,43 +421,43 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowOpened(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowClosing(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowClosed(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowIconified(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowDeiconified(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowActivated(WindowEvent e) {
     }
 
     /**
-     * 重写前请先调用 {@link #addWindowListener()}
+     * 已自动添加监听器，可直接重写
      */
     public void windowDeactivated(WindowEvent e) {
     }

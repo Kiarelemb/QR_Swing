@@ -235,6 +235,11 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
     }
 
     @Override
+    public void setOpaque(boolean isOpaque) {
+        super.setOpaque(false);
+    }
+
+    @Override
     public JToolTip createToolTip() {
         QRToolTip tip = new QRToolTip();
         tip.setComponent(tip);
