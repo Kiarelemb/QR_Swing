@@ -6,9 +6,11 @@ import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
-import swing.qr.kiarelemb.inter.component.QRTextBasicActionSetting;
+import swing.qr.kiarelemb.inter.QRTextBasicActionSetting;
+import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
+import swing.qr.kiarelemb.listener.QRFocusListener;
 import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -16,6 +18,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
@@ -31,9 +34,10 @@ import java.net.URL;
  * @apiNote: 标签类
  * @create 2022-11-04 16:24
  **/
-public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicActionSetting, QRMouseListenerAdd, QRMouseMotionListenerAdd {
+public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicActionSetting, QRMouseListenerAdd, QRFocusListenerAdd,  QRMouseMotionListenerAdd {
     private QRMouseMotionListener mouseMotionListener;
     private QRMouseListener mouseListener;
+    private QRFocusListener focusListener;
 
     public QRLabel() {
         componentFresh();
@@ -125,6 +129,29 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
     //endregion
 
     //region 各种添加
+
+    /**
+     * 添加焦点事件
+     */
+    @Override
+    public void addFocusListener() {
+        if (this.focusListener == null) {
+            this.focusListener = new QRFocusListener();
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGained);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLost);
+            addFocusListener(this.focusListener);
+        }
+    }
+
+    /**
+     * 添加焦点事件
+     */
+    @Override
+    public void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
+        if (this.focusListener != null) {
+            this.focusListener.add(type, ar);
+        }
+    }
 
     /**
      * 添加鼠标移动事件
@@ -226,6 +253,19 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
      * 重写前请先调用 {@link #addMouseListener()}
      */
     protected void mouseExit(MouseEvent e) {
+    }
+
+
+    /**
+     * 重写前请先调用 {@link #addFocusListener()}
+     */
+    protected void focusGained(FocusEvent e) {
+    }
+
+    /**
+     * 重写前请先调用 {@link #addFocusListener()}
+     */
+    protected void focusLost(FocusEvent e) {
     }
 
     //endregion

@@ -17,6 +17,7 @@ import swing.qr.kiarelemb.utils.QRCloseButton;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -279,6 +280,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         titlePanel.addMouseMotionListener(adapte);
         this.contentPane.addMouseListener(adapte);
         this.contentPane.addMouseMotionListener(adapte);
+        this.contentPane.setBorder(new EmptyBorder(1, 1, 5, 1));
         this.disposeAction = e -> {
             if (QRDialog.this.isFocused()) {
                 QRDialog.this.dispose();

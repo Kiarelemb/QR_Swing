@@ -1,4 +1,4 @@
-package swing.qr.kiarelemb.inter.component;
+package swing.qr.kiarelemb.inter;
 
 public interface QRTextBasicActionSetting {
     /**

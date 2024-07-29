@@ -6,7 +6,7 @@ import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
-import swing.qr.kiarelemb.inter.component.QRTextBasicActionSetting;
+import swing.qr.kiarelemb.inter.QRTextBasicActionSetting;
 import swing.qr.kiarelemb.inter.listener.add.*;
 import swing.qr.kiarelemb.listener.*;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
@@ -25,8 +25,7 @@ import java.awt.event.MouseEvent;
  * @description:
  * @create 2022-11-30 14:36
  **/
-public class QRTextField extends JTextField implements QRComponentUpdate, QRTextBasicActionSetting,
-        QRCaretListenerAdd, QRFocusListenerAdd,
+public class QRTextField extends JTextField implements QRComponentUpdate, QRTextBasicActionSetting, QRCaretListenerAdd, QRFocusListenerAdd,
         QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
     private final StringBuilder forbiddenInputChar = new StringBuilder();
     private final StringBuilder onlyAllowedInputChar = new StringBuilder();

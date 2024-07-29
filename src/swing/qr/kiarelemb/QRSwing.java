@@ -101,6 +101,9 @@ public final class QRSwing implements Serializable {
      * 主窗体设置背景图时是否让图片自适应
      */
     public static boolean windowScale = true;
+    /**
+     * 主窗体设置背景图时的路径
+     */
     public static String windowBackgroundImagePath;
     /**
      * 主窗体设置背景图时的透明度

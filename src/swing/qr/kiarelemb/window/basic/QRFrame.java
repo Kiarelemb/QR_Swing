@@ -232,9 +232,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
                 setBackgroundImage(QRSwing.WINDOW_IMAGE_PATH);
                 setBackgroundImageAlpha(QRSwing.windowBackgroundImageAlpha);
             }
-//            QRComponentUtils.componentLoopToSetOpaque(this.contentPane, !QRSwing.windowImageSet);
         });
-
     }
 
     /**
