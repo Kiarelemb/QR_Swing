@@ -229,7 +229,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             this.minimumSize = getMinimumSizes();
             // 窗口打开时，设置窗口背景图片
             if (QRSwing.windowImageEnable) {
-                setBackgroundImage(QRSwing.WINDOW_IMAGE_PATH);
+                setBackgroundImage(QRSwing.windowBackgroundImagePath);
                 setBackgroundImageAlpha(QRSwing.windowBackgroundImageAlpha);
             }
         });
@@ -372,8 +372,10 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             int width = this.backgroundImage.getWidth(null);
             this.imageRatio = (double) width / height;
             this.contentPane.setImage(this.backgroundImage);
+            QRComponentUtils.componentLoopToSetOpaque(this.contentPane, false);
             QRSwing.windowTransparency = 1f;
             QRSystemUtils.setWindowNotTrans(this);
+            QRComponentUtils.windowFresh(this.contentPane);
         }
     }
 
@@ -381,7 +383,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         if (this.contentPane.image() != null) {
             this.contentPane.setScale(scale);
             QRSwing.setWindowScale(scale);
-            QRComponentUtils.windowFresh(this.mainPanel);
+            QRComponentUtils.windowFresh(this.contentPane);
         }
     }
 

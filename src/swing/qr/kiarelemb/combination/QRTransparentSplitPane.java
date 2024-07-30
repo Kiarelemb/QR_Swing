@@ -1,5 +1,6 @@
 package swing.qr.kiarelemb.combination;
 
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
@@ -34,6 +35,7 @@ public class QRTransparentSplitPane extends QRPanel {
     }
 
     protected void paintDivider(Graphics2D g) {
+
         g.setColor(QRColorsAndFonts.LINE_COLOR);
         g.fillRect(0, 0, divider.getWidth(), 10);
     }
@@ -112,7 +114,13 @@ public class QRTransparentSplitPane extends QRPanel {
 
         @Override
         protected void paintBorder(Graphics g) {
-            paintDivider((Graphics2D) g);
+            Graphics2D g2 = (Graphics2D) g;
+            RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowBackgroundImageAlpha));
+            g2.addRenderingHints(rh);
+            paintDivider(g2);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            super.paintBorder(g);
         }
     }
 }

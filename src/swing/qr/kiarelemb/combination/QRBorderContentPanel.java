@@ -78,7 +78,7 @@ public class QRBorderContentPanel extends QRPanel {
             // 绘制背景图
             Graphics2D g2 = (Graphics2D) g;
             RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - alpha));
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
             g2.addRenderingHints(rh);
 
             int w = image.getWidth(null);
