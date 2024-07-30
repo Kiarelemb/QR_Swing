@@ -45,12 +45,12 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
      */
     public QREmptyDialog(Window owner, boolean parentUnable) {
         super(owner, null, parentUnable ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
+        setUndecorated(true);
         setSize(200, 100);
         setResizable(false);
         if (QRSwing.windowIcon != null) {
             setIconImage(QRSwing.windowIcon.getImage());
         }
-        setUndecorated(true);
         this.backgroundColor = QRColorsAndFonts.FRAME_COLOR_BACK;
         this.contentPane = new QRBorderContentPanel();
         initContentPane();
@@ -65,7 +65,18 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
             QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
         }
         addWindowListener();
-        addWindowAction(QRWindowListener.TYPE.OPEN, e -> QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true));
+        addWindowAction(QRWindowListener.TYPE.OPEN, e -> {
+            if (toSetOpaque) QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true);
+        });
+    }
+
+    private boolean toSetOpaque = true;
+
+    /**
+     * 对话框在打开时自动设置所有控件不透明。启用此设置，可以不设置窗体透明度，而使各控件照旧
+     */
+    public void setComponentsOpaqueDefault() {
+        toSetOpaque = false;
     }
 
     private void initContentPane() {

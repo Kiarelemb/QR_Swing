@@ -28,8 +28,6 @@ import java.awt.event.MouseEvent;
  **/
 public class QRButton extends JButton implements QRComponentUpdate, QRActionListenerAdd, QRMouseMotionListenerAdd,
         QRMouseListenerAdd {
-    //	protected QRButtonMouseListener bml = new QRButtonMouseListener(this, QRColorsAndFonts.ENTER_COLOR,
-//			QRColorsAndFonts.PRESS_COLOR);
     protected final QRActionRegister<KeyStroke> actionRegister = e -> this.clickInvokeLater();
     private QRMouseMotionListener mouseMotionListener;
     private QRMouseListener mouseListener;
@@ -51,18 +49,6 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
         addActionListener();
         setText(text);
         componentFresh();
-        mouseListenerInit();
-    }
-
-    private boolean mouseEntered = false;
-    private boolean mousePressed = false;
-
-    private void mouseListenerInit() {
-        addMouseListener();
-        addMouseAction(QRMouseListener.TYPE.ENTER, e -> mouseEntered = true);
-        addMouseAction(QRMouseListener.TYPE.EXIT, e -> mouseEntered = false);
-        addMouseAction(QRMouseListener.TYPE.RELEASE, e -> mousePressed = false);
-        addMouseAction(QRMouseListener.TYPE.PRESS, e -> mousePressed = true);
     }
 
     public QRButton(String text, String toolTipText) {
@@ -288,11 +274,12 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        if ((mouseEntered || mousePressed) && isEnabled()) {
-            g.setColor(mousePressed ? pressColor : enterColor);
+        var model = getModel();
+        if ((model.isRollover() || model.isPressed()) && isEnabled()) {
+            g.setColor(model.isPressed() ? pressColor : enterColor);
             RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.addRenderingHints(rh);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowImageSet ? (mousePressed ? 1f : (mouseEntered ? 0.7f : 0.5f)) : 1f));
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowImageSet ? (model.isPressed() ? 1f : (model.isRollover() ? 0.7f : 0.5f)) : 1f));
             g2.fillRect(0, 0, getWidth(), getHeight());
         }
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));

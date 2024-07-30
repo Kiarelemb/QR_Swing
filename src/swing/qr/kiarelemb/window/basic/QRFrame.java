@@ -82,6 +82,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     public QRFrame() {
         QRFileUtils.fileCreate(QRSwing.WINDOW_PROP_PATH);
         this.prop = QRPropertiesUtils.loadProp(QRSwing.WINDOW_PROP_PATH);
+        setUndecorated(true);
         addWindowListener();
 
         //region 加载资源
@@ -98,7 +99,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         if (QRSwing.windowIcon != null) {
             setIconImage(QRSwing.windowIcon.getImage());
         }
-        setUndecorated(true);
 
         this.contentPane = new QRBorderContentPanel();
         this.contentPane.setLayout(new BorderLayout());
@@ -237,13 +237,16 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 
     /**
      * 一个简单的开始：
-     * <p>{@code QRSwing.start("可找到的properties文件路径");}
-     * <p>{@code QRFrame window = new QRFrame("这是一个测试窗体")}
-     * <p>{{
-     * <p>{@code setTitleCenter();}//设置窗体标题居中
-     * <p>{@code setCloseButtonSystemExit();}//设置单击关闭按钮后窗体淡化退出并结束程序
-     * <p>}};
-     * <p>{@code window.setVisible(true);}//设置窗体可见
+     * <pre><code>
+     * QRSwing. start("可找到的properties文件路径");
+     * QRFrame window = new QRFrame("这是一个测试窗体");
+     * // 设置窗体标题居中
+     * setTitleCenter();
+     * // 设置单击关闭按钮后窗体淡化退出并结束程序
+     * setCloseButtonSystemExit();
+     * // 设置窗体可见
+     * window. setVisible(true);
+     * </code></pre>
      */
     public QRFrame(String title) {
         this();
@@ -351,15 +354,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     }
 
     public final void setBackgroundImage(String filePath) {
-        if (filePath == null) {
+        if (!QRSwing.windowImageEnable || !QRFileUtils.fileExists(filePath)) {
             imagePath = null;
             this.backgroundImage = null;
             QRSwing.windowImageSet = false;
             this.contentPane.setImage(null);
-            QRSwing.setWindowBackgroundImagePath(null);
-            return;
-        }
-        if (!QRSwing.windowImageEnable || !QRFileUtils.fileExists(filePath)) {
+            QRSwing.setWindowBackgroundImagePath(filePath);
             return;
         }
         Image imageToSet = QRSwingInfo.loadImage(filePath);
@@ -372,7 +372,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
             int width = this.backgroundImage.getWidth(null);
             this.imageRatio = (double) width / height;
             this.contentPane.setImage(this.backgroundImage);
-            QRSwing.windowTransparency = 0.999f;
+            QRSwing.windowTransparency = 1f;
             QRSystemUtils.setWindowNotTrans(this);
         }
     }
@@ -418,8 +418,6 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
         }
         if (QRSwing.windowImageSet) {
             QRSystemUtils.setWindowNotTrans(this);
-        } else {
-            QRSystemUtils.setWindowTrans(this, QRSwing.windowTransparency);
         }
     }
 
@@ -454,8 +452,7 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     }
 
     public Dimension getMinimumSizes() {
-        int titleWidth =
-                this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.windowFunctionPanel.getWidth() + 20;
+        int titleWidth = this.iconLabel.getWidth() + QRFontUtils.getTextInWidth(this.titlePanel, this.title) + this.windowFunctionPanel.getWidth() + 20;
         return new Dimension(titleWidth, titleWidth / 2);
     }
 

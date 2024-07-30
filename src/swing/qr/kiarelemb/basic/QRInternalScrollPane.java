@@ -16,7 +16,6 @@ import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -100,27 +99,22 @@ public class QRInternalScrollPane extends QRPanel {
                     editor.setSize(size.width, height);
                 }
             });
-//            QRActionRegister ar = ed -> QRComponentUtils.runLater(1000, es -> {
-//            da.addDocumentListenerAction(QRDocumentListener.TYPE.INSERT, ar);
-//            da.addDocumentListenerAction(QRDocumentListener.TYPE.REMOVE, ar);
-//            da.addDocumentListenerAction(QRDocumentListener.TYPE.CHANGED, ar);
         } else {
             highlighter = null;
         }
 
         mwa.addMouseWheelAction(es -> {
-            MouseWheelEvent e = es;
             int amount;
             if (component instanceof QRTextPane com) {
-                amount = e.getScrollAmount() * com.caret.caretHeight();
+                amount = es.getScrollAmount() * com.caret.caretHeight();
             } else {
                 amount = 50;
             }
             Point location = component.getLocation();
             QRComponentUtils.runLater(10, ed -> {
                 int y;
-                double extent = Math.max(amount / 40d, 2);
-                if (e.getWheelRotation() > 0) {
+                double extent = Math.max(amount / 50d, 2);
+                if (es.getWheelRotation() > 0) {
                     int heightMin = -barData.getScrollBarData().size.height + getHeight();
                     // 向上滚
                     for (int i = 0; i < amount; i += (int) extent) {
@@ -128,7 +122,7 @@ public class QRInternalScrollPane extends QRPanel {
                         component.setLocation(location.x, Math.max(heightMin, y));
                         QRSleepUtils.sleep(2);
                     }
-                    component.setLocation(location.x, Math.max(heightMin, location.y - amount));
+//                    component.setLocation(location.x, Math.max(heightMin, location.y - amount));
                 } else {
                     // 向下滚
                     for (int i = 0; i < amount; i += (int) extent) {
@@ -136,7 +130,7 @@ public class QRInternalScrollPane extends QRPanel {
                         component.setLocation(location.x, Math.min(0, y));
                         QRSleepUtils.sleep(2);
                     }
-                    component.setLocation(location.x, Math.min(0, location.y + amount));
+//                    component.setLocation(location.x, Math.min(0, location.y + amount));
                 }
             });
         });

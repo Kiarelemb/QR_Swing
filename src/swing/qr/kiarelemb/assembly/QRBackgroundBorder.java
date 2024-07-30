@@ -12,6 +12,7 @@ import java.awt.*;
  * @description:
  * @create 2022-11-22 18:44
  **/
+@Deprecated
 public class QRBackgroundBorder implements Border, QRComponentUpdate {
     private final Image image;
     private boolean scale = true;

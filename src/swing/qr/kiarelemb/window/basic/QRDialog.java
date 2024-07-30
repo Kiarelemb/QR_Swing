@@ -50,6 +50,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     private boolean resizable = false;
     private QRWindowListener windowListener;
     protected final QRActionRegister<KeyStroke> disposeAction;
+    private boolean toSetOpaque = true;
 
     private class MouseAdapte extends MouseAdapter {
         private int pressPointX = 0;
@@ -288,11 +289,20 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         };
 
         addWindowListener();
-        addWindowAction(TYPE.OPEN, e -> QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true));
+        addWindowAction(TYPE.OPEN, e -> {
+            if (toSetOpaque) QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true);
+        });
     }
 
     public void setParentWindowNotFollowMove() {
         this.parentWindowFollowMove = false;
+    }
+
+    /**
+     * 对话框在打开时自动设置所有控件不透明。启用此设置，可以不设置窗体透明度，而使各控件照旧
+     */
+    public void setComponentsOpaqueDefault() {
+        toSetOpaque = false;
     }
 
     private void windowStateUpdate() {

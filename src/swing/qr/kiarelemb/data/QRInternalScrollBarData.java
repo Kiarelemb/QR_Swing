@@ -22,8 +22,4 @@ public final class QRInternalScrollBarData {
     public Dimension parentSize = new Dimension(10, 10);
     public Point location = new Point(0, 0);
     public Point pressPoint = new Point(0, 0);
-
-    public QRInternalScrollBarData() {
-
-    }
 }

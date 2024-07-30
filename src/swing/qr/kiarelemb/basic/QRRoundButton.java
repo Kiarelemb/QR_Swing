@@ -15,7 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
@@ -26,8 +25,6 @@ import java.awt.event.MouseEvent;
  **/
 public class QRRoundButton extends JButton implements QRComponentUpdate, QRActionListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
     private final int ARC = 15;
-    private volatile boolean isEntered = false;
-    private volatile boolean isPressed = false;
     private QRMouseMotionListener mouseMotionListener;
     private QRMouseListener mouseListener;
     private QRActionListener clickListener;
@@ -36,28 +33,6 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
         setContentAreaFilled(false);
         setFocusPainted(false);
         componentFresh();
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                isPressed = true;
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                isPressed = false;
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                isEntered = true;
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                isEntered = false;
-            }
-        };
-        addMouseListener(mouseAdapter);
         addActionListener();
     }
 
@@ -255,9 +230,10 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.isEntered ? 0.7f : 0.5f));
-        if (isEnabled()) {
-            g2.setColor(this.isPressed ? QRColorsAndFonts.PRESS_COLOR : (this.isEntered ? QRColorsAndFonts.ENTER_COLOR : QRColorsAndFonts.LINE_COLOR));
+        var model = getModel();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, model.isRollover() ? 0.7f : 0.5f));
+        if ((model.isRollover() || model.isPressed()) && isEnabled()) {
+            g2.setColor(model.isPressed() ? QRColorsAndFonts.PRESS_COLOR : (model.isRollover() ? QRColorsAndFonts.ENTER_COLOR : QRColorsAndFonts.LINE_COLOR));
         } else {
             g2.setColor(QRColorsAndFonts.LINE_COLOR);
         }
