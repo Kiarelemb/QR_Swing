@@ -2,16 +2,19 @@ package swing.qr.kiarelemb.basic;
 
 import method.qr.kiarelemb.utils.QRSleepUtils;
 import swing.qr.kiarelemb.data.QRInternalScrollBarData;
+import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRInternalScrollbarUpdate;
 import swing.qr.kiarelemb.inter.listener.add.QRDocumentListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRMouseWheelListenerAdd;
+import swing.qr.kiarelemb.listener.QRDocumentListener.TYPE;
 import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import java.awt.*;
@@ -77,8 +80,8 @@ public class QRInternalScrollPane extends QRPanel {
             this.editor = editor;
             highlighter = editor.getHighlighter();
             da.addDocumentListener();
-            editor.getCaret().addChangeListener(e -> {
-                Document document = editor.getDocument();
+            QRActionRegister<DocumentEvent> actionRegister = e -> {
+                Document document = e.getDocument();
                 int length = document.getLength();
                 Rectangle2D r;
                 try {
@@ -98,7 +101,10 @@ public class QRInternalScrollPane extends QRPanel {
                 if (height != size.height) {
                     editor.setSize(size.width, height);
                 }
-            });
+            };
+            da.addDocumentListenerAction(TYPE.INSERT, actionRegister);
+            da.addDocumentListenerAction(TYPE.REMOVE, actionRegister);
+            da.addDocumentListenerAction(TYPE.CHANGED, actionRegister);
         } else {
             highlighter = null;
         }

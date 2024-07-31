@@ -1310,65 +1310,89 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     //endregion
 
     //region 高级操作
+    /**
+     * 更新索引和矩形映射，计算每行的高度和最后一个单词的索引。
+     * 此方法主要用于优化文本布局，通过计算每个字符的位置和行高，
+     * 以便后续快速访问和处理文本。
+     */
     public void indexesUpdate() {
+        // 初始化一个链表，用于存储特定条件下的字符索引。
         var list = new LinkedList<Integer>();
+        // 获取当前文本内容，用于后续处理。
         this.indexUpdatedText = getText();
+        // 获取文本长度，用于遍历每个字符。
         var length = this.indexUpdatedText.length();
+        // 初始化一个双向哈希映射，用于存储字符索引和其对应的位置矩形。
         this.indexesAndRectangles = new DualHashBidiMap<>();
+        // 用于临时存储字符位置相关的信息。
         int index;
         var foreX = -1;
         var foreY = 0;
         var height = -1;
         Rectangle zeroPosi = null;
+        // 初始化两个链表，分别用于存储同一行的矩形和所有行的矩形数组。
         LinkedList<Rectangle> lr = new LinkedList<>();
         LinkedList<Rectangle[]> lrs = new LinkedList<>();
         final Rectangle[] rec = new Rectangle[0];
+        // 遍历每个字符，计算其位置并更新映射。
         for (int j = 0; j < length; j++) {
             Rectangle2D r = positionRectangle(j);
             if (r != null) {
                 Rectangle showPosition = r.getBounds();
+                // 将字符索引和其位置矩形添加到映射中。
                 this.indexesAndRectangles.put(j, showPosition);
                 index = showPosition.x;
+                // 处理第一行的特殊情况，初始化行高和起始位置。
                 if (j == 0) {
                     foreY = showPosition.y;
                     zeroPosi = showPosition;
                     height = showPosition.height;
                 } else if (showPosition.y > foreY && height == -1) {
+                    // 当行高发生变化时，记录前一行的高度并清空当前行的矩形集合。
                     height = showPosition.y - foreY;
                     lrs.add(lr.toArray(rec));
                     lr.clear();
                 }
+                // 当当前字符的位置小于等于前一个字符的位置时，表示行结束。
                 if (foreX >= index) {
                     if (!lr.isEmpty()) {
                         lrs.add(lr.toArray(rec));
                         lr.clear();
                     }
+                    // 将当前行的最后一个字符索引添加到列表中。
                     list.add(j);
                 }
+                // 更新当前行的最左边字符位置。
                 foreX = index;
+                // 将当前字符的位置矩形添加到当前行的矩形集合中。
                 lr.add(showPosition);
             }
         }
+        // 处理最后一行的矩形集合。
         if (!lr.isEmpty()) {
             lrs.add(lr.toArray(rec));
         }
+        // 根据行的矩形集合列表，初始化每行的矩形数组。
         this.rectanglesOfEachLines = new Rectangle[lrs.size()][];
         for (int i = 0, lrsSize = lrs.size(); i < lrsSize; i++) {
             this.rectanglesOfEachLines[i] = lrs.get(i);
         }
+        // 将字符索引列表转换为数组，用于快速访问每行最后一个单词的索引。
         this.lastWordIndexes = QRArrayUtils.listToArr(list);
+        // 计算并设置行高，如果未自动计算行高，则使用默认字体大小。
         this.linePerHeight = height == -1 ? (zeroPosi != null ? zeroPosi.height : textFont.getSize()) : height;
     }
+
 
 
     /**
      * 对数组中的值，使用二分查找。
      *
      * @param index 光标当前位置
-     * @return 如果找到了，则说明当前光标在文本框的末尾，且这个位置是{@link  #lastWordIndexes}的{@code mid}的取值位置
-     * <P>如果没有找到，那么{@link  #lastWordIndexes}的{@code mid}的取值位置是上一行末尾的位置</P>
-     * <p>特别地，如果光标在第一行，则返回{@code -1}</p>
-     * <p>返回的这个{@code mid}值{@code +2}，就是当前光标所在的行</p>
+     * @return 如果找到了，则说明当前光标在文本框的末尾，且这个位置是{@link  #lastWordIndexes}的{@code mid}的取值位置；
+     * 如果没有找到，那么{@link  #lastWordIndexes}的{@code mid}的取值位置是上一行末尾的位置；</P>
+     * 特别地，如果光标在第一行，则返回{@code -1} ；</p>
+     * 返回的这个{@code mid}值{@code +2}，就是当前光标所在的行。</p>
      */
     public final int getIndexSearchMid(int index) {
         var start = -1;
@@ -1388,6 +1412,12 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         return mid;
     }
 
+    /**
+     * 获取传入索引所在的行和列
+     *
+     * @param index 指定索引
+     * @return 索引所在的行和列
+     */
     public int[] currentLineAndRow(int index) {
         if (this.lastWordIndexes == null || this.lastWordIndexes.length == 0) {
             return new int[]{1, index};
@@ -1409,22 +1439,6 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
         return new int[]{line, row};
     }
 
-    public final int innerIndex(int value, Rectangle[] xes, int startIndex, int endIndex) {
-        int lastX = xes[endIndex - 1].x;
-        int lastXs = xes[endIndex - 2].x;
-        if (lastX <= value && value - lastX <= lastX - lastXs) {
-            return endIndex - 1;
-        }
-        for (int i = startIndex; i < endIndex - 1; i++) {
-            final Rectangle thisRec = xes[i];
-            final Rectangle nextRec = xes[i + 1];
-            if (value >= thisRec.x && value < nextRec.x) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     /**
      * 通过鼠标在文本面板的位置，获取鼠标所对应的 Rectangle
      * <p>
@@ -1441,27 +1455,85 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
             return null;
         }
         final Rectangle[] lineRectangles = this.rectanglesOfEachLines[lineIndex];
-        final int lineRectanglesLength = lineRectangles.length;
-        int oneThird = lineRectanglesLength / 3;
-        int twoThird = lineRectanglesLength * 2 / 3;
-        int startIndex;
-        int endIndex;
-        if (x < lineRectangles[oneThird].x) {
-            startIndex = 0;
-            endIndex = oneThird + 1;
-        } else if (x > lineRectangles[twoThird].x) {
-            startIndex = twoThird;
-            endIndex = lineRectanglesLength;
-        } else {
-            startIndex = oneThird;
-            endIndex = twoThird + 1;
-        }
-        final int rowIndex = innerIndex(x, lineRectangles, startIndex, endIndex);
+        final var rowIndex = rowIndex(lineRectangles, x);
         if (rowIndex == -1) {
             return null;
         }
         return getMousePointIndexDataFinalProcess(p, lineRectangles, lineIndex, rowIndex);
     }
+
+    /**
+     * 根据给定的x坐标，在一行的矩形数组中确定目标矩形所在的行索引。
+     * 通过将行矩形分为三段，快速定位目标矩形所在的段，进而减少搜索范围。
+     *
+     * @param lineRectangles 一行的矩形数组
+     * @param x              查询的x坐标
+     * @return 目标矩形在行数组中的索引
+     */
+    public final int rowIndex(Rectangle[] lineRectangles, int x) {
+        // 计算行矩形的数量
+        final int lineRectanglesLength = lineRectangles.length;
+        // 计算行矩形数量的三分之一和三分之二位置
+        int oneThird = lineRectanglesLength / 3;
+        int twoThird = lineRectanglesLength * 2 / 3;
+        // 初始化搜索的起始和结束索引
+        int startIndex;
+        int endIndex;
+        // 如果x坐标位于第一段的左侧，则搜索范围为0到oneThird+1
+        if (x < lineRectangles[oneThird].x) {
+            startIndex = 0;
+            endIndex = oneThird + 1;
+            // 如果x坐标位于第三段的右侧，则搜索范围为twoThird到lineRectanglesLength
+        } else if (x > lineRectangles[twoThird].x) {
+            startIndex = twoThird;
+            endIndex = lineRectanglesLength;
+            // 否则，x坐标位于中间段，则搜索范围为oneThird到twoThird+1
+        } else {
+            startIndex = oneThird;
+            endIndex = twoThird + 1;
+        }
+        // 调用内部方法，使用缩小的搜索范围查找目标矩形的索引
+        return innerIndex(x, lineRectangles, startIndex, endIndex);
+    }
+
+
+    /**
+     * 根据给定值和矩形数组，查找并返回矩形边界的索引。
+     * 该方法用于确定一个值落在哪个矩形边界上，或者在矩形序列中插入新矩形的位置。
+     *
+     * @param value      要比较的值，通常是x坐标。
+     * @param xes        矩形数组，按x坐标递增顺序排列。
+     * @param startIndex 搜索的起始索引。
+     * @param endIndex   搜索的结束索引，不包括在内。
+     * @return 返回矩形边界的索引，如果找不到合适的位置，则返回-1。
+     */
+    public final int innerIndex(int value, Rectangle[] xes, int startIndex, int endIndex) {
+        // 获取序列中倒数第二个和最后一个矩形的x坐标
+        int lastX = xes[endIndex - 1].x;
+        int lastXs = xes[endIndex - 2].x;
+
+        // 如果给定值位于最后一个矩形的范围内，并且值与最后一个矩形的x坐标的差小于等于最后一个矩形与倒数第二个矩形的x坐标差
+        if (lastX <= value && value - lastX <= lastX - lastXs) {
+            // 直接返回最后一个矩形的索引
+            return endIndex - 1;
+        }
+
+        // 遍历矩形数组，寻找给定值应该插入的位置
+        for (int i = startIndex; i < endIndex - 1; i++) {
+            final Rectangle thisRec = xes[i];
+            final Rectangle nextRec = xes[i + 1];
+
+            // 如果给定值位于当前矩形和下一个矩形的边界之间
+            if (value >= thisRec.x && value < nextRec.x) {
+                // 返回当前矩形的索引
+                return i;
+            }
+        }
+
+        // 如果遍历完成后没有找到合适的位置，返回-1
+        return -1;
+    }
+
 
     /**
      * 重写本方法可以更新鼠标位置所在的数据
