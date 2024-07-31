@@ -207,6 +207,22 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 
     //endregion
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRActionListener clickListener() {
+        return clickListener;
+    }
+
+    //endregion
+
     public void add(QRMenuItem qmi) {
         if (!(this instanceof QRMenuButton) && !(this instanceof QRMenuButtonOriginal)) {
             throw new IllegalStateException("该方法只为菜单按钮而设立！");

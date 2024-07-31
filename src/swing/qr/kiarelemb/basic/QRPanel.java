@@ -242,6 +242,26 @@ public class QRPanel extends JPanel implements QRComponentUpdate, QRMouseMotionL
         data.horizontalScrollbarVisible = (int) pw != (int) data.sw;
     }
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    public QRMouseWheelListener mouseWheelListener() {
+        return mouseWheelListener;
+    }
+
+    //endregion
+
     /**
      * 重写前请先调用 {@link #addMouseMotionListener()}
      */

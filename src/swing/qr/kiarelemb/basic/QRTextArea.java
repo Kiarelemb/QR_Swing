@@ -403,6 +403,33 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
 
     //endregion
 
+    //region 取得监听器
+
+    public QRCaretListener caretListener() {
+        return caretListener;
+    }
+
+    public QRDocumentListener documentListener() {
+        return documentListener;
+    }
+
+    public QRKeyListener keyListener() {
+        return keyListener;
+    }
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    //endregion
 
     public final void setCaretBlock() {
         this.caretBlock = true;

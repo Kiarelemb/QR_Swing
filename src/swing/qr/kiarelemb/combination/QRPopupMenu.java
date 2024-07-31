@@ -6,14 +6,10 @@ import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRMenuItem;
 import swing.qr.kiarelemb.inter.QRActionRegister;
-import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
-import swing.qr.kiarelemb.listener.QRFocusListener;
-import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
 
 /**
  * @author Kiarelemb QR
@@ -21,13 +17,12 @@ import java.awt.event.FocusEvent;
  * @description:
  * @create 2022-11-04 17:25
  **/
-public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
+public class QRPopupMenu extends QREmptyDialog  {
     protected final int vgap = 4;
     protected int itemNums;
     protected int itemMaxLen;
     protected int itemMaxTipLen;
     private final QRActionRegister<ActionEvent> actionRegister;
-    private QRFocusListener focusListener;
 
     public QRPopupMenu(Window parent) {
         super(parent, false);
@@ -36,48 +31,6 @@ public class QRPopupMenu extends QREmptyDialog implements QRFocusListenerAdd {
         setFreelyMotionFailed();
         setFocusable(true);
         this.actionRegister = QRPopupMenu.this::buttonSelectAction;
-    }
-
-    /**
-     * 添加焦点事件
-     */
-    @Override
-    public final void addFocusListener() {
-        if (this.focusListener == null) {
-            this.focusListener = new QRFocusListener();
-            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGain);
-            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLose);
-            addFocusListener(this.focusListener);
-        }
-    }
-
-    /**
-     * 添加焦点事件
-     *
-     * @param type 类型
-     * @param ar   操作
-     */
-    @Override
-    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
-        if (this.focusListener != null) {
-            this.focusListener.add(type, ar);
-        }
-    }
-
-    /**
-     * 重写前请先调用 {@link #addFocusListener()}
-     */
-    protected void focusGain(FocusEvent e) {
-
-    }
-
-    /**
-     * 重写前请先调用 {@link #addFocusListener()}
-     */
-    protected void focusLose(FocusEvent e) {
-        if (isVisible()) {
-            QRComponentUtils.runLater(50, es -> dispose());
-        }
     }
 
     /**

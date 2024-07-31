@@ -139,6 +139,13 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
 
     }
 
+    //region 取得监听器
+    public QRItemListener getItemChangedListener() {
+        return itemChangedListener;
+    }
+    //endregion
+
+
     @Override
     public void setSelectedIndex(int anIndex) {
         itemChangeLock = true;

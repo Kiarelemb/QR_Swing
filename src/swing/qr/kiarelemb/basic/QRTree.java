@@ -257,6 +257,22 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 
     //endregion
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRTreeNodeClickListener treeNodeClickListener() {
+        return treeNodeClickListener;
+    }
+
+    //endregion
+
     @Override
     protected void setExpandedState(TreePath path, boolean state) {
         TreeModel model = getModel();

@@ -476,4 +476,10 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     public void windowMoved(Point p) {
     }
+
+    //region 取得监听器
+    public QRWindowListener getWindowListener() {
+        return this.windowListener;
+    }
+    //endregion
 }

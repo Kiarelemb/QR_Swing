@@ -635,6 +635,12 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
     public void windowMoved(Point p) {
     }
 
+    //region 取得监听器
+    public QRWindowListener windowListener() {
+        return this.windowListener;
+    }
+    //endregion
+
     //region class-MouseAdapte
     private class MouseAdapte extends MouseAdapter {
 

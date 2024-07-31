@@ -30,6 +30,14 @@ public class QRKeyListener implements KeyListener {
         }
     }
 
+    public boolean remove(TYPE type, QRActionRegister<KeyEvent> ar) {
+        return switch (type) {
+            case TYPE -> this.type.remove(ar);
+            case PRESS -> this.press.remove(ar);
+            case RELEASE -> this.release.remove(ar);
+        };
+    }
+
     @Override
     public final void keyTyped(KeyEvent e) {
         QRComponentUtils.runActions(type, e);

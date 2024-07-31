@@ -270,6 +270,22 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 
     //endregion
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    //endregion
+
     @Override
     public JToolTip createToolTip() {
         QRToolTip tip = new QRToolTip();

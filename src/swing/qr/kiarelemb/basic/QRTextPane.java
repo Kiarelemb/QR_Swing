@@ -1845,6 +1845,42 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
     }
     //endregion
 
+    //region 取得监听器
+
+    public QRCaretListener caretListener() {
+        return caretListener;
+    }
+
+    public QRDocumentListener documentListener() {
+        return documentListener;
+    }
+
+    public QRKeyListener keyListener() {
+        return keyListener;
+    }
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRMouseWheelListener mouseWheelListener() {
+        return mouseWheelListener;
+    }
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    public QRTextSelectionEndListener selectionEndListener() {
+        return selectionEndListener;
+    }
+
+    //endregion
+
     //region 上级方法
 
     @Override

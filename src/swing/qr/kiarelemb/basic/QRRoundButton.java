@@ -174,6 +174,22 @@ public class QRRoundButton extends JButton implements QRComponentUpdate, QRActio
     }
     //endregion
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRActionListener clickListener() {
+        return clickListener;
+    }
+
+    //endregion
+
     /**
      * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
      * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发

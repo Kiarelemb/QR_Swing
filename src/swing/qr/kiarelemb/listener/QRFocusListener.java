@@ -29,6 +29,10 @@ public class QRFocusListener extends QRAction<FocusEvent> implements FocusListen
         }
     }
 
+    public boolean remove(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
+        return type == TYPE.GAIN ? gain.remove(ar) : lost.remove(ar);
+    }
+
     @Override
     public final void focusGained(FocusEvent e) {
         QRComponentUtils.runActions(gain, e);

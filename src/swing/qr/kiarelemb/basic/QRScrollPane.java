@@ -117,6 +117,14 @@ public class QRScrollPane extends JScrollPane implements QRComponentUpdate, QRMo
         }
     }
 
+    //region 取得监听器
+
+    public QRMouseWheelListener mouseWheelListener() {
+        return mouseWheelListener;
+    }
+
+    //endregion
+
     /**
      * 添加同步滚动的滚动面板
      *

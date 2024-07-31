@@ -115,6 +115,18 @@ public class QRTabbedPane extends QRPanel {
 
     }
 
+    //region 取得监听器
+
+    public QRTabSelectChangedListener tabSelectChangedListener() {
+        return tabSelectChangedListener;
+    }
+
+    public QRTabCloseListener closeButtonActionListener() {
+        return closeButtonActionListener;
+    }
+
+    //endregion
+
     public void addTabCloseButton() {
         this.loadCloseButton = true;
         this.closeButtonActionListener = new QRTabCloseListener();

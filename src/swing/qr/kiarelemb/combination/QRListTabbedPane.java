@@ -177,6 +177,14 @@ public class QRListTabbedPane extends QRPanel {
 
     }
 
+    //region 取得监听器
+
+    public QRTabSelectChangedListener tabSelectChangedListener() {
+        return tabSelectChangedListener;
+    }
+
+    //endregion
+
     public QRList getList() {
         return list;
     }

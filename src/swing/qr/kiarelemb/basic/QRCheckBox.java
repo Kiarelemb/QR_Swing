@@ -57,6 +57,12 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
         setEnabled(enabled);
     }
 
+    //region 取得监听器
+    public QRActionListener getClickListener() {
+        return this.clickListener;
+    }
+    //endregion
+
 
     /**
      * 给按钮添加单击事件，在实例化时已自动添加

@@ -284,6 +284,18 @@ public class QRList extends JList<String> implements QRComponentUpdate {
     protected void mouseExit(MouseEvent e) {
     }
 
+    //region 取得监听器
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    //endregion
+
     @Override
     public JToolTip createToolTip() {
         QRToolTip tip = new QRToolTip();

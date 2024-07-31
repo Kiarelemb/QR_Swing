@@ -67,6 +67,12 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
         super.setBounds(x, y, w, height);
     }
 
+    //region 取得监听器
+    public QRActionListener clickListener() {
+        return this.clickListener;
+    }
+    //endregion
+
     @Override
     public JToolTip createToolTip() {
         QRToolTip tip = new QRToolTip();

@@ -447,6 +447,34 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
     //endregion
 
+    //region 取得监听器
+
+    public QRDocumentListener documentListener() {
+        return documentListener;
+    }
+
+    public QRCaretListener caretListener() {
+        return caretListener;
+    }
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    public QRKeyListener keyListener() {
+        return keyListener;
+    }
+
+    public QRMouseListener mouseListener() {
+        return mouseListener;
+    }
+
+    public QRMouseMotionListener mouseMotionListener() {
+        return mouseMotionListener;
+    }
+
+    //endregion
+
     @Override
     public JToolTip createToolTip() {
         QRToolTip tip = new QRToolTip();

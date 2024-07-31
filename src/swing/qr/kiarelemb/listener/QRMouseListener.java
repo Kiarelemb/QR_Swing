@@ -34,6 +34,16 @@ public class QRMouseListener implements MouseListener {
         }
     }
 
+    public boolean remove(TYPE type, QRActionRegister<MouseEvent> ar) {
+        return switch (type) {
+            case CLICK -> this.click.remove(ar);
+            case PRESS -> this.press.remove(ar);
+            case RELEASE -> this.release.remove(ar);
+            case ENTER -> this.enter.remove(ar);
+            case EXIT -> this.exit.remove(ar);
+        };
+    }
+
     @Override
     public final void mouseClicked(MouseEvent e) {
         QRComponentUtils.runActions(click, e);

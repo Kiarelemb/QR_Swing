@@ -7,7 +7,9 @@ import swing.qr.kiarelemb.combination.QRBorderContentPanel;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
+import swing.qr.kiarelemb.inter.listener.add.QRFocusListenerAdd;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
+import swing.qr.kiarelemb.listener.QRFocusListener;
 import swing.qr.kiarelemb.listener.QRMouseListener.TYPE;
 import swing.qr.kiarelemb.listener.QRMouseMotionListener;
 import swing.qr.kiarelemb.listener.QRWindowListener;
@@ -16,6 +18,7 @@ import swing.qr.kiarelemb.utils.QRComponentUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
@@ -25,12 +28,13 @@ import java.awt.event.WindowEvent;
  * @description: 一个空白对话框窗体，没有任何东西，仅可鼠标移动
  * @create 2022-11-04 17:21
  **/
-public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComponentUpdate, QRWindowListenerAdd {
+public class QREmptyDialog extends JDialog implements QRFocusListenerAdd, QRParentWindowMove, QRComponentUpdate, QRWindowListenerAdd {
     protected final QRBorderContentPanel contentPane;
     protected final Color backgroundColor;
-    private QRWindowListener windowListener;
     private final Point p = new Point();
     private boolean windowCanMove = true;
+    private QRFocusListener focusListener;
+    private QRWindowListener windowListener;
 
     /**
      * @param owner 父窗体
@@ -77,6 +81,49 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
      */
     public void setComponentsOpaqueDefault() {
         toSetOpaque = false;
+    }
+
+
+    /**
+     * 添加焦点事件
+     */
+    @Override
+    public final void addFocusListener() {
+        if (this.focusListener == null) {
+            this.focusListener = new QRFocusListener();
+            this.focusListener.add(QRFocusListener.TYPE.GAIN, this::focusGain);
+            this.focusListener.add(QRFocusListener.TYPE.LOST, this::focusLose);
+            addFocusListener(this.focusListener);
+        }
+    }
+
+    /**
+     * 添加焦点事件
+     *
+     * @param type 类型
+     * @param ar   操作
+     */
+    @Override
+    public final void addFocusAction(QRFocusListener.TYPE type, QRActionRegister<FocusEvent> ar) {
+        if (this.focusListener != null) {
+            this.focusListener.add(type, ar);
+        }
+    }
+
+    /**
+     * 重写前请先调用 {@link #addFocusListener()}
+     */
+    protected void focusGain(FocusEvent e) {
+
+    }
+
+    /**
+     * 重写前请先调用 {@link #addFocusListener()}
+     */
+    protected void focusLose(FocusEvent e) {
+        if (isVisible()) {
+            QRComponentUtils.runLater(50, es -> dispose());
+        }
     }
 
     private void initContentPane() {
@@ -134,6 +181,18 @@ public class QREmptyDialog extends JDialog implements QRParentWindowMove, QRComp
         Point point = new Point(x, y);
         this.windowListener.windowMoved(point);
     }
+
+    //region 取得监听器
+
+    public QRFocusListener focusListener() {
+        return focusListener;
+    }
+
+    public QRWindowListener windowListener() {
+        return windowListener;
+    }
+
+    //endregion
 
     public void setCursorWait() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

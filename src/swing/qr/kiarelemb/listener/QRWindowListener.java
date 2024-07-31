@@ -40,8 +40,24 @@ public class QRWindowListener implements WindowListener {
         }
     }
 
+    public boolean remove(TYPE type, QRActionRegister<WindowEvent> ar) {
+        return switch (type) {
+            case CLOSING -> this.closing.remove(ar);
+            case CLOSED -> this.closed.remove(ar);
+            case ICONIFIED -> this.iconified.remove(ar);
+            case DEICONIFIED -> this.deiconified.remove(ar);
+            case ACTIVATED -> this.activated.remove(ar);
+            case DEACTIVATED -> this.deactivated.remove(ar);
+            default -> this.open.remove(ar);
+        };
+    }
+
     public void addWindowMoveAction(QRActionRegister<Point> ar) {
         this.move.add(ar);
+    }
+
+    public boolean removeWindowMoveAction(QRActionRegister<Point> ar) {
+        return this.move.remove(ar);
     }
 
     @Override

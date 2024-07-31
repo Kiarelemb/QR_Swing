@@ -30,6 +30,14 @@ public class QRDocumentListener implements DocumentListener {
         }
     }
 
+    public boolean remove(TYPE type, QRActionRegister<DocumentEvent> ar) {
+        return switch (type) {
+            case INSERT -> this.insert.remove(ar);
+            case REMOVE -> this.remove.remove(ar);
+            case CHANGED -> this.changed.remove(ar);
+        };
+    }
+
     @Override
     public final void insertUpdate(DocumentEvent e) {
         QRComponentUtils.runActions(insert, e);

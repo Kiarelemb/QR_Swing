@@ -29,6 +29,10 @@ public class QRMouseMotionListener implements MouseMotionListener {
         }
     }
 
+    public boolean remove(TYPE type, QRActionRegister<MouseEvent> ar) {
+        return type == TYPE.DRAG ? drag.remove(ar) : move.remove(ar);
+    }
+
     @Override
     public final void mouseDragged(MouseEvent e) {
         QRComponentUtils.runActions(drag, e);

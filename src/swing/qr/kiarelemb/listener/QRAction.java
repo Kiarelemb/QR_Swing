@@ -13,6 +13,10 @@ public class QRAction<T> implements Serializable {
         list.add(ar);
     }
 
+    public boolean remove(QRActionRegister<T> ar) {
+        return list.remove(ar);
+    }
+
     protected void action(T e) {
         QRComponentUtils.runActions(list, e);
     }
