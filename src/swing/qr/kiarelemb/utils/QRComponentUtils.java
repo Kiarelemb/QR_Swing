@@ -5,6 +5,7 @@ import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.task.QRTaskRunner;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author Kiarelemb QR
@@ -362,4 +365,69 @@ public class QRComponentUtils {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (alpha * 255));
 	}
 
+	public static void runOnEdt(Runnable runnable) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			runnable.run();
+		} else {
+			SwingUtilities.invokeLater(runnable);
+		}
+	}
+
+	/**
+	 * 启动后台任务并显示进度对话框。
+	 *
+	 * <pre>{@code
+	 * QRComponentUtils.run(
+	 *     owner, "正在生成文件...",
+	 *     progress -> {
+	 *         for (int i = 0; i < 100; i++) {
+	 *             Thread.sleep(10);
+	 *             progress.accept(i + 1, 100);
+	 *         }
+	 *         return new File("result.xlsx");
+	 *     },
+	 *     file -> System.out.println("导出成功: " + file),
+	 *     err -> System.err.println("导出失败: " + err)
+	 * );
+	 * }</pre>
+	 *
+	 * @param <T>         任务结果类型
+	 * @param owner       父窗口，用于对话框定位
+	 * @param description 进度描述文字
+	 * @param task        后台任务，通过 {@link ProgressTask#run(BiConsumer)} 接收进度回调
+	 * @param onSuccess   任务成功回调（EDT 执行）
+	 * @param onError     任务失败回调（EDT 执行，参数为异常消息）
+	 */
+	@Deprecated
+	public static <T> void run(Window owner,
+	                           String description,
+	                           ProgressTask<T> task,
+	                           Consumer<T> onSuccess,
+	                           Consumer<String> onError) {
+		QRTaskRunner.runWithProgress(owner, description,
+				context -> task.run(context::progress),
+				onSuccess,
+				throwable -> {
+					if (onError != null) {
+						onError.accept(throwable == null ? null : throwable.getMessage());
+					}
+				});
+	}
+
+	/**
+	 * 带进度回调的后台任务接口。
+	 *
+	 * @param <T> 任务结果类型
+	 */
+	@FunctionalInterface
+	public interface ProgressTask<T> {
+		/**
+		 * 执行后台任务。
+		 *
+		 * @param progress 进度回调，参数为 (current, total)
+		 * @return 任务结果
+		 * @throws Exception 任何执行异常
+		 */
+		T run(BiConsumer<Integer, Integer> progress) throws Exception;
+	}
 }

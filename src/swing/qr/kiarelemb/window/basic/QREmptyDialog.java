@@ -69,7 +69,7 @@ public class QREmptyDialog extends JDialog implements QRFocusListenerAdd, QRPare
         }
         addWindowListener();
         addWindowAction(QRWindowListener.TYPE.OPEN, e -> {
-            if (toSetOpaque) QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true);
+            if (toSetOpaque) QRComponentUtils.componentLoopToSetOpaque(this.contentPane, false);
         });
     }
 

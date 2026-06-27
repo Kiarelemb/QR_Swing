@@ -1,16 +1,20 @@
 package swing.qr.kiarelemb.window.utils;
 
 import swing.qr.kiarelemb.basic.QRLabel;
-import swing.qr.kiarelemb.basic.QRPanel;
+import swing.qr.kiarelemb.basic.QRProgressBar;
 import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
-import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.task.QRTaskListener;
+import swing.qr.kiarelemb.task.QRTaskProgress;
+import swing.qr.kiarelemb.task.QRTaskResult;
+import swing.qr.kiarelemb.task.QRTaskWorker;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * 用于显示任务进度的小型对话框。
@@ -30,12 +34,16 @@ import java.awt.event.ActionEvent;
  */
 public class QRProgressDialog extends QREmptyDialog {
 	private static final int DEFAULT_WIDTH = 340;
-	private static final int DEFAULT_HEIGHT = 150;
+	private static final int DEFAULT_HEIGHT = 100;
+	private final Rectangle determinateProgressBarBounds = new Rectangle(15, 45, 230, 10);
+	private Rectangle indeterminateProgressBarBounds = null;
+	private final Rectangle determinateCancelButtonBounds = new Rectangle(265, 33, 60, 30);
+	private Rectangle indeterminateCancelButtonBounds = new Rectangle(265, 60, 60, 30);
 	private final QRLabel descriptionLabel = new QRLabel("准备中...");
 	private final QRLabel progressLabel = new QRLabel("0%");
-	private final JProgressBar progressBar = new JProgressBar(0, 100);
+	private final QRProgressBar progressBar = new QRProgressBar();
 	private final QRRoundButton cancelButton = new QRRoundButton("取消");
-	private boolean progressLabelVisible = true;
+	private QRTaskWorker<?> worker;
 
 	public QRProgressDialog(Window owner) {
 		this(owner, true);
@@ -49,35 +57,27 @@ public class QRProgressDialog extends QREmptyDialog {
 	}
 
 	private void initView() {
-		contentPane.setLayout(new BorderLayout(0, 12));
-		contentPane.setBorder(new EmptyBorder(18, 20, 16, 20));
+		contentPane.setLayout(null);
 
 		descriptionLabel.setTextLeft();
-
-		progressLabel.setTextRight();
-		progressLabel.setPreferredSize(new Dimension(54, 24));
-
+		progressLabel.setTextLeft();
 		progressBar.setValue(0);
-		progressBar.setStringPainted(false);
-		progressBar.setPreferredSize(new Dimension(240, 16));
 
-		QRPanel progressPanel = new QRPanel(new BorderLayout(10, 0));
-		progressPanel.add(progressBar, BorderLayout.CENTER);
-		progressPanel.add(progressLabel, BorderLayout.EAST);
-
-		QRPanel buttonPanel = new QRPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		cancelButton.setPreferredSize(new Dimension(78, 30));
 		cancelButton.addClickAction(this::cancelAction);
-		buttonPanel.add(cancelButton);
 
-		contentPane.add(descriptionLabel, BorderLayout.NORTH);
-		contentPane.add(progressPanel, BorderLayout.CENTER);
-		contentPane.add(buttonPanel, BorderLayout.SOUTH);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, progressLabel,15,10,200,30);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, progressBar,
+				determinateProgressBarBounds.x, determinateProgressBarBounds.y,
+				determinateProgressBarBounds.width, determinateProgressBarBounds.height);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, cancelButton,
+				determinateCancelButtonBounds.x, determinateCancelButtonBounds.y,
+				determinateCancelButtonBounds.width, determinateCancelButtonBounds.height);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, descriptionLabel,15,60,240,30);
 		componentFresh();
 	}
 
 	public void setProgress(int progress) {
-		runOnEdt(() -> {
+		QRComponentUtils.runOnEdt(() -> {
 			int value = limitProgress(progress);
 			progressBar.setValue(value);
 			progressLabel.setText(value + "%");
@@ -85,11 +85,79 @@ public class QRProgressDialog extends QREmptyDialog {
 	}
 
 	public int progress() {
-		return progressBar.getValue();
+		return progressBar.value();
+	}
+
+	public void setIndeterminate(boolean indeterminate) {
+		QRComponentUtils.runOnEdt(() -> {
+			applyProgressLayout(indeterminate);
+			progressBar.setIndeterminate(indeterminate);
+			if (indeterminate) {
+				progressLabel.setText("");
+			} else {
+				progressLabel.setText(progressBar.value() + "%");
+			}
+		});
+	}
+
+	public boolean indeterminate() {
+		return progressBar.indeterminate();
+	}
+
+	/**
+	 * 返回对话框内部使用的进度条实例。
+	 *
+	 * <p>需要调整不确定进度动画参数时，可以通过该实例调用
+	 * {@link QRProgressBar#setIndeterminateBallCount(int)}、
+	 * {@link QRProgressBar#setIndeterminateBallDiameter(int)}、
+	 * {@link QRProgressBar#setIndeterminateTimerDelay(int)}、
+	 * {@link QRProgressBar#setIndeterminateBallDelaySeconds(double)}、
+	 * {@link QRProgressBar#setIndeterminateCycleRestSeconds(double)}、
+	 * {@link QRProgressBar#setIndeterminateEdgeToMiddleSpeedRatio(double)} 或
+	 * {@link QRProgressBar#setIndeterminateTravelSeconds(double, double, double, double)}。
+	 *
+	 * @return 当前对话框使用的进度条
+	 */
+	public QRProgressBar progressBar() {
+		return progressBar;
+	}
+
+	public void setDeterminateProgressBarBounds(Rectangle bounds) {
+		if (bounds == null) {
+			return;
+		}
+		QRComponentUtils.runOnEdt(() -> {
+			determinateProgressBarBounds.setBounds(bounds);
+			applyProgressLayout(progressBar.indeterminate());
+		});
+	}
+
+	public void setIndeterminateProgressBarBounds(Rectangle bounds) {
+		QRComponentUtils.runOnEdt(() -> {
+			indeterminateProgressBarBounds = bounds == null ? null : new Rectangle(bounds);
+			applyProgressLayout(progressBar.indeterminate());
+		});
+	}
+
+	public void setDeterminateCancelButtonBounds(Rectangle bounds) {
+		if (bounds == null) {
+			return;
+		}
+		QRComponentUtils.runOnEdt(() -> {
+			determinateCancelButtonBounds.setBounds(bounds);
+			applyProgressLayout(progressBar.indeterminate());
+		});
+	}
+
+	public void setIndeterminateCancelButtonBounds(Rectangle bounds) {
+		QRComponentUtils.runOnEdt(() -> {
+			indeterminateCancelButtonBounds = bounds == null ? null : new Rectangle(bounds);
+			applyProgressLayout(progressBar.indeterminate());
+		});
 	}
 
 	public void setProgressDescription(String description) {
-		runOnEdt(() -> descriptionLabel.setText(description == null ? "" : description));
+		QRComponentUtils.runOnEdt(() -> descriptionLabel.setText(description == null ? "" : description));
 	}
 
 	public String progressDescription() {
@@ -97,8 +165,7 @@ public class QRProgressDialog extends QREmptyDialog {
 	}
 
 	public void setProgressLabelVisible(boolean visible) {
-		runOnEdt(() -> {
-			this.progressLabelVisible = visible;
+		QRComponentUtils.runOnEdt(() -> {
 			progressLabel.setVisible(visible);
 			contentPane.revalidate();
 			contentPane.repaint();
@@ -106,14 +173,66 @@ public class QRProgressDialog extends QREmptyDialog {
 	}
 
 	public boolean progressLabelVisible() {
-		return progressLabelVisible;
+		return progressLabel.isVisible();
+	}
+
+	public void setCancelEnabled(boolean enabled) {
+		QRComponentUtils.runOnEdt(() -> cancelButton.setEnabled(enabled));
 	}
 
 	public void addCancelAction(QRActionRegister<ActionEvent> action) {
 		cancelButton.addClickAction(action);
 	}
 
+	public void bind(QRTaskWorker<?> worker) {
+		bind(worker, true);
+	}
+
+	public void bind(QRTaskWorker<?> worker, boolean autoClose) {
+		this.worker = worker;
+		if (worker == null) {
+			return;
+		}
+		bindWorker(worker, autoClose);
+	}
+
+	private <T> void bindWorker(QRTaskWorker<T> worker, boolean autoClose) {
+		worker.addListener(new QRTaskListener<>() {
+			@Override
+			public void progress(QRTaskProgress progress) {
+				if (progress.message() != null) {
+					setProgressDescription(progress.message());
+				}
+				if (progress.percent() != null) {
+					setIndeterminate(false);
+					setProgress(progress.percent());
+				}
+			}
+
+			@Override
+			public void cancelled() {
+				setProgressDescription("已取消");
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				setProgressDescription("处理失败");
+			}
+
+			@Override
+			public void finished(QRTaskResult<T> result) {
+				if (autoClose) {
+					dispose();
+				}
+			}
+		});
+	}
+
 	protected void cancelAction(ActionEvent e) {
+		if (worker != null && !worker.isDone()) {
+			worker.cancel(true);
+			return;
+		}
 		dispose();
 	}
 
@@ -123,19 +242,35 @@ public class QRProgressDialog extends QREmptyDialog {
 		descriptionLabel.componentFresh();
 		progressLabel.componentFresh();
 		cancelButton.componentFresh();
-		progressBar.setForeground(QRColorsAndFonts.PRESS_COLOR);
-		progressBar.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+		progressBar.repaint();
 	}
 
 	private int limitProgress(int progress) {
 		return Math.max(0, Math.min(100, progress));
 	}
 
-	private void runOnEdt(Runnable runnable) {
-		if (SwingUtilities.isEventDispatchThread()) {
-			runnable.run();
-		} else {
-			SwingUtilities.invokeLater(runnable);
+	private void applyProgressLayout(boolean indeterminate) {
+		Rectangle progressBounds = indeterminate ? indeterminateProgressBounds() : determinateProgressBarBounds;
+		Rectangle buttonBounds = indeterminate && indeterminateCancelButtonBounds != null
+				? indeterminateCancelButtonBounds
+				: determinateCancelButtonBounds;
+		progressBar.setBounds(progressBounds);
+		cancelButton.setBounds(buttonBounds);
+		contentPane.revalidate();
+		contentPane.repaint();
+	}
+
+	private Rectangle indeterminateProgressBounds() {
+		if (indeterminateProgressBarBounds != null) {
+			return indeterminateProgressBarBounds;
 		}
+		int width = contentPane.getWidth();
+		if (width <= 0) {
+			width = getWidth();
+		}
+		if (width <= 0) {
+			width = DEFAULT_WIDTH;
+		}
+		return new Rectangle(0, determinateProgressBarBounds.y-10, width, determinateProgressBarBounds.height);
 	}
 }

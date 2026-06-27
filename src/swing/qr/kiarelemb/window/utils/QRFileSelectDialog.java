@@ -13,6 +13,8 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRDocumentListener;
 import swing.qr.kiarelemb.listener.QRKeyListener;
 import swing.qr.kiarelemb.listener.QRMouseListener;
+import swing.qr.kiarelemb.task.QRTaskListener;
+import swing.qr.kiarelemb.task.QRTaskWorker;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
@@ -97,6 +99,7 @@ public class QRFileSelectDialog extends QRDialog {
 	private final Set<String> extensions = new LinkedHashSet<>();
 	private File currentDirectory;
 	private File selectedFile;
+	private QRTaskWorker<FileListSnapshot> fileListWorker;
 	private boolean approved = false;
 	private boolean treeSelectionChanging = false;
 
@@ -361,25 +364,69 @@ public class QRFileSelectDialog extends QRDialog {
 	}
 
 	private void fillFileList(File directory) {
+		if (fileListWorker != null && !fileListWorker.isDone()) {
+			fileListWorker.cancel(true);
+		}
 		fileListModel.clear();
-		if (directory.getParentFile() != null) {
-			fileListModel.addElement(FileItem.parent(directory.getParentFile()));
-		}
+		statusLabel.setText("加载中...  " + fileTypeText());
+		SelectMode mode = selectMode;
+		SortType sort = sortType;
+		boolean ascending = sortAscending;
+		Set<String> extensionSnapshot = new LinkedHashSet<>(extensions);
+		String fileTypeSnapshot = fileTypeText();
+		QRTaskWorker<FileListSnapshot> worker = new QRTaskWorker<>(context -> {
+			ArrayList<FileItem> items = new ArrayList<>();
+			File parentFile = directory.getParentFile();
+			if (parentFile != null) {
+				items.add(FileItem.parent(parentFile));
+			}
+			File[] files = safeListFiles(directory);
+			Arrays.sort(files, fileComparator(sort, ascending));
+			for (File file : files) {
+				context.checkCancelled();
+				if ((mode == SelectMode.DIRECTORY_ONLY) && file.isFile()) {
+					continue;
+				}
+				if (file.isDirectory() || acceptExtension(file, extensionSnapshot)) {
+					items.add(new FileItem(file, false));
+				}
+			}
+			return new FileListSnapshot(directory, items, fileTypeSnapshot);
+		});
+		fileListWorker = worker;
+		worker.addListener(new QRTaskListener<>() {
+			@Override
+			public void succeeded(FileListSnapshot result) {
+				if (fileListWorker != worker || !sameFile(currentDirectory, result.directory())) {
+					return;
+				}
+				fileListModel.clear();
+				result.items().forEach(fileListModel::addElement);
+				statusLabel.setText(fileListModel.getSize() + " 项  " + result.fileTypeText());
+			}
 
-		File[] files = safeListFiles(directory);
-		Arrays.sort(files, fileComparator());
-		for (File file : files) {
-			if ((selectMode == SelectMode.DIRECTORY_ONLY) && file.isFile()) {
-				continue;
+			@Override
+			public void cancelled() {
+				if (fileListWorker == worker && sameFile(currentDirectory, directory)) {
+					statusLabel.setText(fileTypeText());
+				}
 			}
-			if (file.isDirectory() || acceptExtension(file)) {
-				fileListModel.addElement(new FileItem(file, false));
+
+			@Override
+			public void failed(Throwable throwable) {
+				if (fileListWorker == worker && sameFile(currentDirectory, directory)) {
+					statusLabel.setText("读取失败  " + fileTypeText());
+				}
 			}
-		}
-		statusLabel.setText(fileListModel.getSize() + " 项  " + fileTypeText());
+		});
+		worker.execute();
 	}
 
 	private Comparator<File> fileComparator() {
+		return fileComparator(sortType, sortAscending);
+	}
+
+	private Comparator<File> fileComparator(SortType sortType, boolean sortAscending) {
 		Comparator<File> comparator = Comparator.comparing(File::isFile);
 		Comparator<File> valueComparator = switch (sortType) {
 			case NAME -> Comparator.comparing(file -> displayName(file).toLowerCase(Locale.ROOT));
@@ -639,6 +686,10 @@ public class QRFileSelectDialog extends QRDialog {
 	}
 
 	private boolean acceptExtension(File file) {
+		return acceptExtension(file, extensions);
+	}
+
+	private boolean acceptExtension(File file, Set<String> extensions) {
 		if (file == null || file.isDirectory() || extensions.isEmpty()) {
 			return true;
 		}
@@ -663,25 +714,42 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 		node.loaded = true;
 		node.removeAllChildren();
-
-		File[] files = safeListFiles(node.file);
-		ArrayList<File> directories = new ArrayList<>();
-		for (File file : files) {
-			if (file.isDirectory()) {
-				directories.add(file);
+		File directory = node.file;
+		QRTaskWorker<ArrayList<File>> worker = new QRTaskWorker<>(context -> {
+			File[] files = safeListFiles(directory);
+			ArrayList<File> directories = new ArrayList<>();
+			for (File file : files) {
+				context.checkCancelled();
+				if (file.isDirectory()) {
+					directories.add(file);
+				}
 			}
-		}
-		directories.sort(Comparator.comparing(file -> displayName(file).toLowerCase(Locale.ROOT)));
-		for (File directory : directories) {
-			FileTreeNode child = new FileTreeNode(directory);
-			addPlaceHolderIfNeeded(child);
-			node.add(child);
-		}
-		treeModel.nodeStructureChanged(node);
+			directories.sort(Comparator.comparing(file -> displayName(file).toLowerCase(Locale.ROOT)));
+			return directories;
+		});
+		worker.addListener(new QRTaskListener<>() {
+			@Override
+			public void succeeded(ArrayList<File> directories) {
+				node.removeAllChildren();
+				for (File directory : directories) {
+					FileTreeNode child = new FileTreeNode(directory);
+					addPlaceHolderIfNeeded(child);
+					node.add(child);
+				}
+				treeModel.nodeStructureChanged(node);
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				node.removeAllChildren();
+				treeModel.nodeStructureChanged(node);
+			}
+		});
+		worker.execute();
 	}
 
 	private void addPlaceHolderIfNeeded(FileTreeNode node) {
-		if (node.file != null && hasChildDirectory(node.file)) {
+		if (node.file != null && node.file.isDirectory()) {
 			node.add(FileTreeNode.placeHolder());
 		}
 	}
@@ -956,5 +1024,8 @@ public class QRFileSelectDialog extends QRDialog {
 		private static FileItem parent(File file) {
 			return new FileItem(file, true);
 		}
+	}
+
+	private record FileListSnapshot(File directory, ArrayList<FileItem> items, String fileTypeText) {
 	}
 }
