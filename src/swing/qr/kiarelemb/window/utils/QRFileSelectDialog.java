@@ -91,6 +91,7 @@ public class QRFileSelectDialog extends QRDialog {
 	private final QRButton sortNameButton = new QRButton();
 	private final QRButton sortTimeButton = new QRButton();
 	private final QRButton sortSizeButton = new QRButton();
+	private final Icon parentDirectoryIcon = UIManager.getIcon("FileChooser.upFolderIcon");
 
 	private SelectMode selectMode;
 	private SortType sortType = SortType.NAME;
@@ -378,7 +379,7 @@ public class QRFileSelectDialog extends QRDialog {
 			ArrayList<FileItem> items = new ArrayList<>();
 			File parentFile = directory.getParentFile();
 			if (parentFile != null) {
-				items.add(FileItem.parent(parentFile));
+				items.add(FileItem.parent(parentFile, parentDirectoryIcon));
 			}
 			File[] files = safeListFiles(directory);
 			Arrays.sort(files, fileComparator(sort, ascending));
@@ -388,7 +389,7 @@ public class QRFileSelectDialog extends QRDialog {
 					continue;
 				}
 				if (file.isDirectory() || acceptExtension(file, extensionSnapshot)) {
-					items.add(new FileItem(file, false));
+					items.add(createFileItem(file));
 				}
 			}
 			return new FileListSnapshot(directory, items, fileTypeSnapshot);
@@ -665,7 +666,10 @@ public class QRFileSelectDialog extends QRDialog {
 	private void refreshTreeNode(File directory) {
 		FileTreeNode node = findTreeNode(directory);
 		if (node != null) {
+			cancelTreeLoad(node);
 			node.loaded = false;
+			node.loading = false;
+			node.loadWorker = null;
 			node.removeAllChildren();
 			addPlaceHolderIfNeeded(node);
 			loadDirectoryNode(node);
@@ -709,43 +713,81 @@ public class QRFileSelectDialog extends QRDialog {
 	}
 
 	private void loadDirectoryNode(FileTreeNode node) {
-		if (node.loaded || node.file == null) {
+		if (node.loaded || node.loading || node.file == null) {
 			return;
 		}
-		node.loaded = true;
+		node.loading = true;
 		node.removeAllChildren();
 		File directory = node.file;
-		QRTaskWorker<ArrayList<File>> worker = new QRTaskWorker<>(context -> {
+		QRTaskWorker<ArrayList<FileTreeNodeData>> worker = new QRTaskWorker<>(context -> {
 			File[] files = safeListFiles(directory);
-			ArrayList<File> directories = new ArrayList<>();
+			ArrayList<FileTreeNodeData> directories = new ArrayList<>();
 			for (File file : files) {
 				context.checkCancelled();
 				if (file.isDirectory()) {
-					directories.add(file);
+					directories.add(createTreeNodeData(file));
 				}
 			}
-			directories.sort(Comparator.comparing(file -> displayName(file).toLowerCase(Locale.ROOT)));
+			directories.sort(Comparator.comparing(data -> data.displayName().toLowerCase(Locale.ROOT)));
 			return directories;
 		});
+		node.loadWorker = worker;
 		worker.addListener(new QRTaskListener<>() {
 			@Override
-			public void succeeded(ArrayList<File> directories) {
+			public void succeeded(ArrayList<FileTreeNodeData> directories) {
+				if (node.loadWorker != worker) {
+					return;
+				}
 				node.removeAllChildren();
-				for (File directory : directories) {
+				for (FileTreeNodeData directory : directories) {
 					FileTreeNode child = new FileTreeNode(directory);
 					addPlaceHolderIfNeeded(child);
 					node.add(child);
 				}
+				node.loaded = true;
+				node.loading = false;
+				node.loadWorker = null;
 				treeModel.nodeStructureChanged(node);
 			}
 
 			@Override
+			public void cancelled() {
+				if (node.loadWorker != worker) {
+					return;
+				}
+				resetUnloadedTreeNode(node);
+			}
+
+			@Override
 			public void failed(Throwable throwable) {
-				node.removeAllChildren();
-				treeModel.nodeStructureChanged(node);
+				if (node.loadWorker != worker) {
+					return;
+				}
+				resetUnloadedTreeNode(node);
 			}
 		});
 		worker.execute();
+	}
+
+	private void cancelTreeLoad(FileTreeNode node) {
+		if (node.loadWorker != null && !node.loadWorker.isDone()) {
+			node.loadWorker.cancel(true);
+		}
+		for (int i = 0; i < node.getChildCount(); i++) {
+			Object child = node.getChildAt(i);
+			if (child instanceof FileTreeNode childNode) {
+				cancelTreeLoad(childNode);
+			}
+		}
+	}
+
+	private void resetUnloadedTreeNode(FileTreeNode node) {
+		node.loaded = false;
+		node.loading = false;
+		node.loadWorker = null;
+		node.removeAllChildren();
+		addPlaceHolderIfNeeded(node);
+		treeModel.nodeStructureChanged(node);
 	}
 
 	private void addPlaceHolderIfNeeded(FileTreeNode node) {
@@ -868,6 +910,14 @@ public class QRFileSelectDialog extends QRDialog {
 		return displayName == null || displayName.isBlank() ? file.getName() : displayName;
 	}
 
+	private FileItem createFileItem(File file) {
+		return new FileItem(file, false, displayName(file), fileSystemView.getSystemIcon(file));
+	}
+
+	private FileTreeNodeData createTreeNodeData(File file) {
+		return new FileTreeNodeData(file, displayName(file), fileSystemView.getSystemIcon(file));
+	}
+
 	public boolean showDialog() {
 		setVisible(true);
 		return selectedSucceeded();
@@ -879,6 +929,20 @@ public class QRFileSelectDialog extends QRDialog {
 			approved = false;
 		}
 		super.setVisible(b);
+	}
+
+	@Override
+	public void dispose() {
+		if (fileListWorker != null && !fileListWorker.isDone()) {
+			fileListWorker.cancel(true);
+		}
+		for (int i = 0; i < treeRoot.getChildCount(); i++) {
+			Object child = treeRoot.getChildAt(i);
+			if (child instanceof FileTreeNode childNode) {
+				cancelTreeLoad(childNode);
+			}
+		}
+		super.dispose();
 	}
 
 	public boolean selectedSucceeded() {
@@ -973,8 +1037,8 @@ public class QRFileSelectDialog extends QRDialog {
 		                                              boolean leaf, int row, boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 			if (value instanceof FileTreeNode node && node.file != null) {
-				setIcon(fileSystemView.getSystemIcon(node.file));
-				setText(displayName(node.file));
+				setIcon(node.icon);
+				setText(node.displayName);
 			}
 			return this;
 		}
@@ -991,8 +1055,8 @@ public class QRFileSelectDialog extends QRDialog {
 			setForeground(QRColorsAndFonts.TEXT_COLOR_FORE);
 			setBackground(isSelected ? QRColorsAndFonts.PRESS_COLOR : QRColorsAndFonts.FRAME_COLOR_BACK);
 			if (value instanceof FileItem item) {
-				setText(item.parent ? ".." : displayName(item.file));
-				setIcon(item.parent ? UIManager.getIcon("FileChooser.upFolderIcon") : fileSystemView.getSystemIcon(item.file));
+				setText(item.displayName);
+				setIcon(item.icon);
 //                setToolTipText(item.file.getAbsolutePath());
 			}
 			return this;
@@ -1002,16 +1066,33 @@ public class QRFileSelectDialog extends QRDialog {
 	private static class FileTreeNode extends DefaultMutableTreeNode {
 		private final File file;
 		private final boolean placeHolder;
+		private final String displayName;
+		private final Icon icon;
 		private boolean loaded = false;
+		private boolean loading = false;
+		private QRTaskWorker<?> loadWorker;
 
 		private FileTreeNode(File file) {
 			this.file = file;
 			this.placeHolder = false;
+			FileSystemView fileSystemView = FileSystemView.getFileSystemView();
+			String displayName = fileSystemView.getSystemDisplayName(file);
+			this.displayName = displayName == null || displayName.isBlank() ? file.getName() : displayName;
+			this.icon = fileSystemView.getSystemIcon(file);
+		}
+
+		private FileTreeNode(FileTreeNodeData data) {
+			this.file = data.file();
+			this.placeHolder = false;
+			this.displayName = data.displayName();
+			this.icon = data.icon();
 		}
 
 		private FileTreeNode() {
 			this.file = null;
 			this.placeHolder = true;
+			this.displayName = "";
+			this.icon = null;
 		}
 
 		private static FileTreeNode placeHolder() {
@@ -1019,13 +1100,16 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
-	private record FileItem(File file, boolean parent) {
+	private record FileItem(File file, boolean parent, String displayName, Icon icon) {
 
-		private static FileItem parent(File file) {
-			return new FileItem(file, true);
+		private static FileItem parent(File file, Icon icon) {
+			return new FileItem(file, true, "..", icon);
 		}
 	}
 
 	private record FileListSnapshot(File directory, ArrayList<FileItem> items, String fileTypeText) {
+	}
+
+	private record FileTreeNodeData(File file, String displayName, Icon icon) {
 	}
 }

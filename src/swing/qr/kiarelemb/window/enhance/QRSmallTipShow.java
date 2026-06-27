@@ -1,12 +1,11 @@
 package swing.qr.kiarelemb.window.enhance;
 
-import method.qr.kiarelemb.utils.QRSleepUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
-import method.qr.kiarelemb.utils.QRThreadBuilder;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
 import javax.swing.*;
@@ -14,8 +13,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Kiarelemb QR
@@ -24,9 +22,6 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @create 2022-11-21 19:20
  **/
 public final class QRSmallTipShow extends QREmptyDialog {
-    private static final ThreadPoolExecutor TIP_SHOW = QRThreadBuilder.singleThread("tipShow");
-    private static final ThreadPoolExecutor TIP_AUTO_CLOSE = QRThreadBuilder.singleThread("TIP_AUTO_CLOSE");
-    private static final ThreadPoolExecutor TIP_AUTO_CLOSE2 = QRThreadBuilder.singleThread("TIP_AUTO_CLOSE2");
     private long closeWaitTime = 500;
     private boolean isExisting = false;
     private boolean autoClose = true;
@@ -54,23 +49,12 @@ public final class QRSmallTipShow extends QREmptyDialog {
             @Override
             public void windowOpened(WindowEvent e) {
                 if (QRSmallTipShow.this.autoClose) {
-                    final Future<?> submit = TIP_AUTO_CLOSE.submit(() -> {
-                        QRSleepUtils.sleep(QRSmallTipShow.this.closeWaitTime);
+                    Timer timer = new Timer(closeDelay(), event -> {
                         QRSmallTipShow.this.isExisting = true;
                         QRSmallTipShow.this.dispose();
                     });
-                    TIP_AUTO_CLOSE2.execute(() -> {
-                        long times = QRSmallTipShow.this.closeWaitTime / 10 + 10;
-                        for (int i = 0; i < times; i++) {
-                            QRSleepUtils.sleep(10);
-                            if (submit.isDone() || QRSmallTipShow.this.isExisting) {
-                                break;
-                            }
-                        }
-                        if (!submit.isDone() && !QRSmallTipShow.this.isExisting) {
-                            submit.cancel(true);
-                        }
-                    });
+                    timer.setRepeats(false);
+                    timer.start();
                 }
             }
         });
@@ -87,11 +71,45 @@ public final class QRSmallTipShow extends QREmptyDialog {
     }
 
     public static QRSmallTipShow getInstance(Window owner, String message) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            return createTip(owner, message, 10000000, false);
+        }
+        final QRSmallTipShow[] result = new QRSmallTipShow[1];
+        try {
+            SwingUtilities.invokeAndWait(() -> result[0] = createTip(owner, message, 10000000, false));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e.getCause());
+        }
+        return result[0];
+    }
+
+    public static void display(Window owner, String message) {
+        display(owner, message, 500);
+    }
+
+    public static void display(Window owner, String message, long closeWaitTime) {
+        QRComponentUtils.runOnEdt(() -> createTip(owner, message, closeWaitTime, true).setVisible(true));
+    }
+
+    public static void display(String message, long closeWaitTime) {
+        QRComponentUtils.runOnEdt(() -> createTip(null, message, closeWaitTime, true).setVisible(true));
+    }
+
+    private static QRSmallTipShow createTip(Window owner, String message, long closeWaitTime, boolean autoClose) {
         QRSmallTipShow gns = new QRSmallTipShow(owner, message);
-        gns.setCloseWaitTime(10000000);
+        gns.setCloseWaitTime(closeWaitTime);
+        if (!autoClose) {
+            gns.setAutoCloseFalse();
+        }
         gns.pack();
-        gns.setLocation(owner.getX() + owner.getWidth() / 2 - gns.getWidth() / 2,
-                owner.getY() + owner.getHeight() / 2 - gns.getHeight() / 2);
+        if (owner == null) {
+            gns.setLocationRelativeTo(null);
+        } else {
+            gns.setLocation(owner.getX() + owner.getWidth() / 2 - gns.getWidth() / 2,
+                    owner.getY() + owner.getHeight() / 2 - gns.getHeight() / 2);
+        }
         if (QRSwing.windowRound) {
             QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
         } else {
@@ -100,38 +118,7 @@ public final class QRSmallTipShow extends QREmptyDialog {
         return gns;
     }
 
-    public static void display(Window owner, String message) {
-        display(owner, message, 500);
-    }
-
-    public static void display(Window owner, String message, long closeWaitTime) {
-        TIP_SHOW.execute(() -> {
-            QRSmallTipShow gns = new QRSmallTipShow(owner, message);
-            gns.setCloseWaitTime(closeWaitTime);
-            gns.pack();
-            gns.setLocation(owner.getX() + owner.getWidth() / 2 - gns.getWidth() / 2,
-                    owner.getY() + owner.getHeight() / 2 - gns.getHeight() / 2);
-            if (QRSwing.windowRound) {
-                QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
-            } else {
-                QRSystemUtils.setWindowTrans(gns, QRSwing.windowTransparency);
-            }
-            gns.setVisible(true);
-        });
-    }
-
-    public static void display(String message, long closeWaitTime) {
-        TIP_SHOW.execute(() -> {
-            QRSmallTipShow gns = new QRSmallTipShow(null, message);
-            gns.setCloseWaitTime(closeWaitTime);
-            gns.setLocationRelativeTo(null);
-            gns.pack();
-            if (QRSwing.windowRound) {
-                QRSystemUtils.setWindowRound(gns, QRSwing.windowTransparency);
-            } else {
-                QRSystemUtils.setWindowTrans(gns, QRSwing.windowTransparency);
-            }
-            gns.setVisible(true);
-        });
+    private int closeDelay() {
+        return (int) Math.max(0, Math.min(Integer.MAX_VALUE, closeWaitTime));
     }
 }

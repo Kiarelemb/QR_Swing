@@ -180,6 +180,18 @@ public class QRProgressDialog extends QREmptyDialog {
 		QRComponentUtils.runOnEdt(() -> cancelButton.setEnabled(enabled));
 	}
 
+	public void setCancelButtonVisible(boolean visible) {
+		QRComponentUtils.runOnEdt(() -> {
+			cancelButton.setVisible(visible);
+			contentPane.revalidate();
+			contentPane.repaint();
+		});
+	}
+
+	public boolean cancelButtonVisible() {
+		return cancelButton.isVisible();
+	}
+
 	public void addCancelAction(QRActionRegister<ActionEvent> action) {
 		cancelButton.addClickAction(action);
 	}
