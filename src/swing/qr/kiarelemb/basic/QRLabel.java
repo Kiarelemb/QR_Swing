@@ -446,6 +446,7 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 		return new ImageIcon() {
 			@Override
 			public synchronized void paintIcon(Component cmp, Graphics g, int x, int y) {
+				// TODO: 该圆角图片路径目前很少使用，暂不接入 QRTaskWorker；后续真有调用方需要时再缓存处理结果并放到后台生成。
 				final String processedImageFilePath = makeRoundedCorner(filename, cmp.getWidth(), cmp.getHeight());
 				final ImageIcon icon = new ImageIcon(processedImageFilePath == null ? filename : processedImageFilePath);
 				//默认绘制起点
@@ -478,6 +479,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 		};
 	}
 
+	/**
+	 * TODO: 后续若该方法重新成为常用路径，再考虑抽出纯图片处理逻辑并由调用方通过 QRTaskWorker 后台执行。
+	 */
 	public static String makeRoundedCorner(String filePath, int newWidth, int newHeight) {
 		final File inputFile = new File(filePath);
 
@@ -509,6 +513,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 		}
 	}
 
+	/**
+	 * TODO: 头像裁剪逻辑先保持同步实现；未来有真实 UI 卡顿场景时，再补后台任务和失败回调。
+	 */
 	public static String cutHeadImages(String filePath, int width, int height) {
 		BufferedImage avatarImage = null;
 		try {
@@ -552,6 +559,8 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 
 	/**
 	 * 缩小Image，此方法返回源图像按给定宽度、高度限制下缩放后的图像
+	 *
+	 * <p>TODO: 仅在未来恢复大图批处理或频繁预览时，再把调用方迁移到后台任务。
 	 *
 	 * @param newHeight 压缩后高度
 	 * @param newWidth  压缩后宽度

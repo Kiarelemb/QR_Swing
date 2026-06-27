@@ -1,10 +1,14 @@
 package swing.qr.kiarelemb.utils;
 
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.basic.QRScrollPane;
+import swing.qr.kiarelemb.inter.QRActionRegister;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
@@ -23,6 +27,10 @@ public class PicturePanel extends QRPanel {
 	private int panX;
 	private int panY;
 	private Point dragStart;
+	private boolean shortcutsRegistered;
+	private final QRActionRegister<KeyStroke> zoomInAction = e -> setZoom(zoom + mouseWheelZoomStep);
+	private final QRActionRegister<KeyStroke> zoomOutAction = e -> setZoom(zoom - mouseWheelZoomStep);
+	private final QRActionRegister<KeyStroke> zoomResetAction = e -> setZoom(1.0);
 
 	public PicturePanel() {
 		this(null, null);
@@ -37,6 +45,53 @@ public class PicturePanel extends QRPanel {
 		addMouseListener();
 		addMouseMotionListener();
 		addMouseWheelListener();
+	}
+
+	/**
+	 * 注册全局快捷键：Ctrl++ 放大、Ctrl+- 缩小、Ctrl+0 重置缩放。
+	 */
+	private void registerShortcuts() {
+		if (shortcutsRegistered) {
+			return;
+		}
+		// ── 放大 Ctrl+= / Ctrl+Shift+= / 小键盘 Ctrl+Add ──
+		QRSwing.registerGlobalAction(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK, zoomInAction, false);
+		QRSwing.registerGlobalAction(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK, zoomInAction, false);
+		QRSwing.registerGlobalAction(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK, zoomInAction, false);
+		// ── 缩小 Ctrl+- / 小键盘 Ctrl+Subtract ──
+		QRSwing.registerGlobalAction(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK, zoomOutAction, false);
+		QRSwing.registerGlobalAction(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK, zoomOutAction, false);
+		// ── 重置缩放 Ctrl+0 ──
+		QRSwing.registerGlobalAction(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK, zoomResetAction, false);
+		shortcutsRegistered = true;
+	}
+
+	/**
+	 * 移除全局快捷键。
+	 */
+	private void unregisterShortcuts() {
+		if (!shortcutsRegistered) {
+			return;
+		}
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK), zoomInAction, false);
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), zoomInAction, false);
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK), zoomInAction, false);
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK), zoomOutAction, false);
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK), zoomOutAction, false);
+		QRSwing.registerGlobalActionRemove(KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK), zoomResetAction, false);
+		shortcutsRegistered = false;
+	}
+
+	@Override
+	public void addNotify() {
+		super.addNotify();
+		registerShortcuts();
+	}
+
+	@Override
+	public void removeNotify() {
+		unregisterShortcuts();
+		super.removeNotify();
 	}
 
 	public void setImage(BufferedImage image, Dimension pictureSize) {

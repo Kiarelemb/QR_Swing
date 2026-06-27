@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kiarelemb QR
@@ -71,7 +72,13 @@ public class QRFileSelectDialog extends QRDialog {
 		NAME, TIME, SIZE
 	}
 
+	private enum DirectoryReadStatus {
+		SUCCESS, NOT_EXISTS, NOT_DIRECTORY, ACCESS_DENIED, FAILED
+	}
+
 	private final FileSystemView fileSystemView = FileSystemView.getFileSystemView();
+	private final Map<String, String> displayNameCache = new ConcurrentHashMap<>();
+	private final Map<String, Icon> systemIconCache = new ConcurrentHashMap<>();
 	private final DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode("本地磁盘");
 	private final DefaultTreeModel treeModel = new DefaultTreeModel(treeRoot);
 	private final DefaultListModel<FileItem> fileListModel = new DefaultListModel<>();
@@ -100,9 +107,11 @@ public class QRFileSelectDialog extends QRDialog {
 	private final Set<String> extensions = new LinkedHashSet<>();
 	private File currentDirectory;
 	private File selectedFile;
+	private QRTaskWorker<ArrayList<FileTreeNodeData>> rootLoadWorker;
 	private QRTaskWorker<FileListSnapshot> fileListWorker;
 	private boolean approved = false;
 	private boolean treeSelectionChanging = false;
+	private int treePathSelectionVersion = 0;
 
 	public QRFileSelectDialog(Window parent) {
 		this(parent, SelectMode.FILE_ONLY);
@@ -237,16 +246,59 @@ public class QRFileSelectDialog extends QRDialog {
 			}
 		});
 
-		treeRoot.removeAllChildren();
-		for (File root : File.listRoots()) {
-			if (root == null) {
-				continue;
-			}
-			FileTreeNode node = new FileTreeNode(root);
-			addPlaceHolderIfNeeded(node);
-			treeRoot.add(node);
-		}
+		loadRootNodes();
 		treeModel.reload();
+	}
+
+	private void loadRootNodes() {
+		treeRoot.removeAllChildren();
+		treeRoot.add(FileTreeNode.placeHolder());
+		if (rootLoadWorker != null && !rootLoadWorker.isDone()) {
+			rootLoadWorker.cancel(true);
+		}
+		QRTaskWorker<ArrayList<FileTreeNodeData>> worker = new QRTaskWorker<>(context -> {
+			ArrayList<FileTreeNodeData> rootData = new ArrayList<>();
+			File[] roots = File.listRoots();
+			if (roots != null) {
+				for (File root : roots) {
+					context.checkCancelled();
+					if (root != null) {
+						rootData.add(createTreeNodeData(root));
+					}
+				}
+			}
+			return rootData;
+		});
+		rootLoadWorker = worker;
+		worker.addListener(new QRTaskListener<>() {
+			@Override
+			public void succeeded(ArrayList<FileTreeNodeData> roots) {
+				if (rootLoadWorker != worker) {
+					return;
+				}
+				treeRoot.removeAllChildren();
+				for (FileTreeNodeData data : roots) {
+					FileTreeNode node = new FileTreeNode(data);
+					addPlaceHolderIfNeeded(node);
+					treeRoot.add(node);
+				}
+				treeModel.reload();
+				if (currentDirectory != null) {
+					selectCurrentDirectoryInTree();
+				}
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				if (rootLoadWorker != worker) {
+					return;
+				}
+				treeRoot.removeAllChildren();
+				treeModel.reload();
+				statusLabel.setText("读取磁盘根目录失败  " + fileTypeText());
+			}
+		});
+		worker.execute();
 	}
 
 	private void initList() {
@@ -381,18 +433,21 @@ public class QRFileSelectDialog extends QRDialog {
 			if (parentFile != null) {
 				items.add(FileItem.parent(parentFile, parentDirectoryIcon));
 			}
-			File[] files = safeListFiles(directory);
-			Arrays.sort(files, fileComparator(sort, ascending));
-			for (File file : files) {
-				context.checkCancelled();
-				if ((mode == SelectMode.DIRECTORY_ONLY) && file.isFile()) {
-					continue;
-				}
-				if (file.isDirectory() || acceptExtension(file, extensionSnapshot)) {
-					items.add(createFileItem(file));
+			DirectoryReadResult readResult = listVisibleFiles(directory);
+			if (readResult.success()) {
+				File[] files = readResult.files();
+				Arrays.sort(files, fileComparator(sort, ascending));
+				for (File file : files) {
+					context.checkCancelled();
+					if ((mode == SelectMode.DIRECTORY_ONLY) && file.isFile()) {
+						continue;
+					}
+					if (file.isDirectory() || acceptExtension(file, extensionSnapshot)) {
+						items.add(createFileItem(file));
+					}
 				}
 			}
-			return new FileListSnapshot(directory, items, fileTypeSnapshot);
+			return new FileListSnapshot(directory, items, fileTypeSnapshot, readResult.status(), readResult.error());
 		});
 		fileListWorker = worker;
 		worker.addListener(new QRTaskListener<>() {
@@ -403,7 +458,11 @@ public class QRFileSelectDialog extends QRDialog {
 				}
 				fileListModel.clear();
 				result.items().forEach(fileListModel::addElement);
-				statusLabel.setText(fileListModel.getSize() + " 项  " + result.fileTypeText());
+				if (result.status() == DirectoryReadStatus.SUCCESS) {
+					statusLabel.setText(fileListModel.getSize() + " 项  " + result.fileTypeText());
+				} else {
+					statusLabel.setText(readStatusText(result.status(), result.error()) + "  " + result.fileTypeText());
+				}
 			}
 
 			@Override
@@ -461,12 +520,40 @@ public class QRFileSelectDialog extends QRDialog {
 	}
 
 	private File[] safeListFiles(File directory) {
+		return listVisibleFiles(directory).files();
+	}
+
+	private DirectoryReadResult listVisibleFiles(File directory) {
+		if (directory == null || !directory.exists()) {
+			return new DirectoryReadResult(new File[0], DirectoryReadStatus.NOT_EXISTS, null);
+		}
+		if (!directory.isDirectory()) {
+			return new DirectoryReadResult(new File[0], DirectoryReadStatus.NOT_DIRECTORY, null);
+		}
+		if (!directory.canRead()) {
+			return new DirectoryReadResult(new File[0], DirectoryReadStatus.ACCESS_DENIED, null);
+		}
 		try {
 			File[] files = directory.listFiles(file -> file != null && !file.isHidden());
-			return files == null ? new File[0] : files;
+			if (files == null) {
+				return new DirectoryReadResult(new File[0], DirectoryReadStatus.FAILED, null);
+			}
+			return new DirectoryReadResult(files, DirectoryReadStatus.SUCCESS, null);
 		} catch (Exception e) {
-			return new File[0];
+			return new DirectoryReadResult(new File[0], DirectoryReadStatus.FAILED, e);
 		}
+	}
+
+	private String readStatusText(DirectoryReadStatus status, Throwable error) {
+		return switch (status) {
+			case SUCCESS -> "读取完成";
+			case NOT_EXISTS -> "目录不存在";
+			case NOT_DIRECTORY -> "不是文件夹";
+			case ACCESS_DENIED -> "无权限";
+			case FAILED -> error == null || error.getMessage() == null || error.getMessage().isBlank()
+					? "读取失败"
+					: "读取失败：" + error.getMessage();
+		};
 	}
 
 	private void openOrApproveSelectedListItem() {
@@ -712,15 +799,22 @@ public class QRFileSelectDialog extends QRDialog {
 		return fileType + " (" + String.join(", ", extensions.stream().map(s -> "." + s).toList()) + ")";
 	}
 
-	private void loadDirectoryNode(FileTreeNode node) {
+	private QRTaskWorker<ArrayList<FileTreeNodeData>> loadDirectoryNode(FileTreeNode node) {
 		if (node.loaded || node.loading || node.file == null) {
-			return;
+			return node.loadWorker;
 		}
 		node.loading = true;
+		node.loadErrorMessage = null;
 		node.removeAllChildren();
+		addPlaceHolderIfNeeded(node);
+		treeModel.nodeStructureChanged(node);
 		File directory = node.file;
 		QRTaskWorker<ArrayList<FileTreeNodeData>> worker = new QRTaskWorker<>(context -> {
-			File[] files = safeListFiles(directory);
+			DirectoryReadResult readResult = listVisibleFiles(directory);
+			if (!readResult.success()) {
+				throw new DirectoryReadException(readResult.status(), readResult.error());
+			}
+			File[] files = readResult.files();
 			ArrayList<FileTreeNodeData> directories = new ArrayList<>();
 			for (File file : files) {
 				context.checkCancelled();
@@ -738,6 +832,7 @@ public class QRFileSelectDialog extends QRDialog {
 				if (node.loadWorker != worker) {
 					return;
 				}
+				node.loadErrorMessage = null;
 				node.removeAllChildren();
 				for (FileTreeNodeData directory : directories) {
 					FileTreeNode child = new FileTreeNode(directory);
@@ -755,6 +850,7 @@ public class QRFileSelectDialog extends QRDialog {
 				if (node.loadWorker != worker) {
 					return;
 				}
+				node.loadErrorMessage = "已取消";
 				resetUnloadedTreeNode(node);
 			}
 
@@ -763,10 +859,12 @@ public class QRFileSelectDialog extends QRDialog {
 				if (node.loadWorker != worker) {
 					return;
 				}
+				node.loadErrorMessage = directoryReadFailureText(throwable);
 				resetUnloadedTreeNode(node);
 			}
 		});
 		worker.execute();
+		return worker;
 	}
 
 	private void cancelTreeLoad(FileTreeNode node) {
@@ -809,11 +907,13 @@ public class QRFileSelectDialog extends QRDialog {
 	private void selectCurrentDirectoryInTree() {
 		FileTreeNode node = findTreeNode(currentDirectory);
 		if (node == null) {
-			node = buildPathToCurrentDirectory();
-		}
-		if (node == null) {
+			selectCurrentDirectoryInTreeAsync();
 			return;
 		}
+		selectTreeNode(node);
+	}
+
+	private void selectTreeNode(FileTreeNode node) {
 		TreePath treePath = new TreePath(node.getPath());
 		treeSelectionChanging = true;
 		directoryTree.setSelectionPath(treePath);
@@ -821,29 +921,87 @@ public class QRFileSelectDialog extends QRDialog {
 		treeSelectionChanging = false;
 	}
 
-	private FileTreeNode buildPathToCurrentDirectory() {
-		File rootFile = rootOf(currentDirectory);
+	private void selectCurrentDirectoryInTreeAsync() {
+		File target = currentDirectory;
+		if (target == null) {
+			return;
+		}
+		int version = ++treePathSelectionVersion;
+		File rootFile = rootOf(target);
 		FileTreeNode node = findTreeNode(rootFile);
 		if (node == null) {
-			return null;
+			return;
 		}
 
 		ArrayList<File> directories = new ArrayList<>();
-		File file = currentDirectory;
+		File file = target;
 		while (file != null && !sameFile(file, rootFile)) {
 			directories.add(0, file);
 			file = file.getParentFile();
 		}
 
-		for (File directory : directories) {
-			loadDirectoryNode(node);
-			FileTreeNode child = findDirectChild(node, directory);
-			if (child == null) {
-				return node;
-			}
-			node = child;
+		expandPathStep(version, target, node, directories, 0);
+	}
+
+	private void expandPathStep(int version, File target, FileTreeNode node, ArrayList<File> directories, int index) {
+		if (!isCurrentTreePathRequest(version, target)) {
+			return;
 		}
-		return node;
+		if (index >= directories.size()) {
+			selectTreeNode(node);
+			return;
+		}
+		File nextDirectory = directories.get(index);
+		QRTaskWorker<ArrayList<FileTreeNodeData>> worker = loadDirectoryNode(node);
+		if (node.loaded) {
+			expandLoadedPathNode(version, target, node, directories, index);
+			return;
+		}
+		if (worker == null) {
+			selectTreeNode(node);
+			return;
+		}
+		worker.addListener(new QRTaskListener<>() {
+			@Override
+			public void succeeded(ArrayList<FileTreeNodeData> result) {
+				if (!isCurrentTreePathRequest(version, target)) {
+					return;
+				}
+				expandLoadedPathNode(version, target, node, directories, index);
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				if (isCurrentTreePathRequest(version, target)) {
+					selectTreeNode(node);
+				}
+			}
+
+			@Override
+			public void cancelled() {
+				if (isCurrentTreePathRequest(version, target)) {
+					selectTreeNode(node);
+				}
+			}
+		});
+	}
+
+	private void expandLoadedPathNode(int version, File target, FileTreeNode node, ArrayList<File> directories, int index) {
+		if (!isCurrentTreePathRequest(version, target)) {
+			return;
+		}
+		TreePath path = new TreePath(node.getPath());
+		directoryTree.expandPath(path);
+		FileTreeNode child = findDirectChild(node, directories.get(index));
+		if (child == null) {
+			selectTreeNode(node);
+			return;
+		}
+		expandPathStep(version, target, child, directories, index + 1);
+	}
+
+	private boolean isCurrentTreePathRequest(int version, File target) {
+		return version == treePathSelectionVersion && sameFile(currentDirectory, target);
 	}
 
 	private File rootOf(File file) {
@@ -906,16 +1064,56 @@ public class QRFileSelectDialog extends QRDialog {
 	}
 
 	private String displayName(File file) {
-		String displayName = fileSystemView.getSystemDisplayName(file);
-		return displayName == null || displayName.isBlank() ? file.getName() : displayName;
+		if (file == null) {
+			return "";
+		}
+		return displayNameCache.computeIfAbsent(fileCacheKey(file), key -> {
+			try {
+				String displayName = fileSystemView.getSystemDisplayName(file);
+				return displayName == null || displayName.isBlank() ? fallbackFileName(file) : displayName;
+			} catch (Exception e) {
+				return fallbackFileName(file);
+			}
+		});
+	}
+
+	private Icon systemIcon(File file) {
+		if (file == null) {
+			return null;
+		}
+		return systemIconCache.computeIfAbsent(fileCacheKey(file), key -> {
+			try {
+				return fileSystemView.getSystemIcon(file);
+			} catch (Exception e) {
+				return file.isDirectory() ? UIManager.getIcon("FileView.directoryIcon") : UIManager.getIcon("FileView.fileIcon");
+			}
+		});
+	}
+
+	private String fallbackFileName(File file) {
+		String name = file.getName();
+		return name == null || name.isBlank() ? file.getAbsolutePath() : name;
+	}
+
+	private String directoryReadFailureText(Throwable throwable) {
+		if (throwable instanceof DirectoryReadException e) {
+			return readStatusText(e.status, e.error);
+		}
+		return throwable == null || throwable.getMessage() == null || throwable.getMessage().isBlank()
+				? "读取失败"
+				: "读取失败：" + throwable.getMessage();
+	}
+
+	private String fileCacheKey(File file) {
+		return file.getAbsolutePath();
 	}
 
 	private FileItem createFileItem(File file) {
-		return new FileItem(file, false, displayName(file), fileSystemView.getSystemIcon(file));
+		return new FileItem(file, false, displayName(file), systemIcon(file));
 	}
 
 	private FileTreeNodeData createTreeNodeData(File file) {
-		return new FileTreeNodeData(file, displayName(file), fileSystemView.getSystemIcon(file));
+		return new FileTreeNodeData(file, displayName(file), systemIcon(file));
 	}
 
 	public boolean showDialog() {
@@ -935,6 +1133,9 @@ public class QRFileSelectDialog extends QRDialog {
 	public void dispose() {
 		if (fileListWorker != null && !fileListWorker.isDone()) {
 			fileListWorker.cancel(true);
+		}
+		if (rootLoadWorker != null && !rootLoadWorker.isDone()) {
+			rootLoadWorker.cancel(true);
 		}
 		for (int i = 0; i < treeRoot.getChildCount(); i++) {
 			Object child = treeRoot.getChildAt(i);
@@ -1036,7 +1237,7 @@ public class QRFileSelectDialog extends QRDialog {
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
 		                                              boolean leaf, int row, boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-			if (value instanceof FileTreeNode node && node.file != null) {
+			if (value instanceof FileTreeNode node) {
 				setIcon(node.icon);
 				setText(node.displayName);
 			}
@@ -1070,16 +1271,8 @@ public class QRFileSelectDialog extends QRDialog {
 		private final Icon icon;
 		private boolean loaded = false;
 		private boolean loading = false;
-		private QRTaskWorker<?> loadWorker;
-
-		private FileTreeNode(File file) {
-			this.file = file;
-			this.placeHolder = false;
-			FileSystemView fileSystemView = FileSystemView.getFileSystemView();
-			String displayName = fileSystemView.getSystemDisplayName(file);
-			this.displayName = displayName == null || displayName.isBlank() ? file.getName() : displayName;
-			this.icon = fileSystemView.getSystemIcon(file);
-		}
+		private String loadErrorMessage;
+		private QRTaskWorker<ArrayList<FileTreeNodeData>> loadWorker;
 
 		private FileTreeNode(FileTreeNodeData data) {
 			this.file = data.file();
@@ -1091,7 +1284,7 @@ public class QRFileSelectDialog extends QRDialog {
 		private FileTreeNode() {
 			this.file = null;
 			this.placeHolder = true;
-			this.displayName = "";
+			this.displayName = "加载中...";
 			this.icon = null;
 		}
 
@@ -1107,9 +1300,27 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
-	private record FileListSnapshot(File directory, ArrayList<FileItem> items, String fileTypeText) {
+	private record FileListSnapshot(File directory, ArrayList<FileItem> items, String fileTypeText,
+	                                DirectoryReadStatus status, Throwable error) {
 	}
 
 	private record FileTreeNodeData(File file, String displayName, Icon icon) {
+	}
+
+	private record DirectoryReadResult(File[] files, DirectoryReadStatus status, Throwable error) {
+		private boolean success() {
+			return status == DirectoryReadStatus.SUCCESS;
+		}
+	}
+
+	private static class DirectoryReadException extends RuntimeException {
+		private final DirectoryReadStatus status;
+		private final Throwable error;
+
+		private DirectoryReadException(DirectoryReadStatus status, Throwable error) {
+			super(error);
+			this.status = status;
+			this.error = error;
+		}
 	}
 }
