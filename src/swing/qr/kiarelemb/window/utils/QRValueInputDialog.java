@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
  * <pre><code>
  *     Input input = new Input(owner, textFieldTooltip, inputLabelText);
  *     input.setVisible(true);
+ *     if (!input.isApproved()) return;
  *     String answer = input.getAnswer();
  * </code></pre>
  */
@@ -110,10 +111,11 @@ public class QRValueInputDialog extends QREmptyDialog {
     }
 
     /**
-     * 取得输入的内容
+     * 取得输入的内容。
+     * <p>经过 <pre><code>if (!input.isApproved()) return;</code></pre> 筛选之后的 <code>anaswer</code> 必定不为 <code>null</code>
      */
     public String getAnswer() {
-        return answer == null ? "" : answer;
+        return answer;
     }
 
     protected boolean setAnswer(String answer) {

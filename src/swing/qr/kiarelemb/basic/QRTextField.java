@@ -28,6 +28,29 @@ import java.awt.event.MouseEvent;
  **/
 public class QRTextField extends JTextField implements QRComponentUpdate, QRTextBasicActionSetting, QRCaretListenerAdd, QRFocusListenerAdd,
 		QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
+	public enum TYPE {
+		/**
+		 * 默认
+		 */
+		DEFAULT,
+		/**
+		 * 文件路径
+		 */
+		FILE_PATH,
+		/**
+		 * 文件名
+		 */
+		FILE_NAME,
+		/**
+		 * 数字
+		 */
+		NUMBERS,
+		/**
+		 * 数字和小数
+		 */
+		NUMBERS_AND_DECIMAL
+	}
+
 	private final StringBuilder forbiddenInputChar = new StringBuilder();
 	private final StringBuilder onlyAllowedInputChar = new StringBuilder();
 	protected Color enterColor = QRColorsAndFonts.BLUE_LIGHT;
@@ -47,22 +70,24 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	private boolean initialized;
 
 	public QRTextField() {
-		this(null);
+		this(null, TYPE.DEFAULT);
+	}
+
+	public QRTextField(TYPE type) {
+		this(null, type);
 	}
 
 	public QRTextField(String text) {
-		this(text, false);
+		this(text, TYPE.DEFAULT);
 	}
 
-	public QRTextField(String text, boolean numbersOnly) {
-		if (numbersOnly) {
-			numbersOnly();
-		}
+	public QRTextField(String text, TYPE type) {
 		setText(text);
 		setCaret(new QRCaret());
 		addKeyListener();
 		addFocusListener();
 		setIgnoreRepaint(false);
+		setType(type);
 		this.initialized = true;
 		componentFresh();
 	}
@@ -312,6 +337,15 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 	//region 输入限制
 
+	public void setType(TYPE type) {
+		switch (type) {
+			case NUMBERS -> numbersOnly();
+			case NUMBERS_AND_DECIMAL -> numberAndDecimal();
+			case FILE_PATH -> filePathField();
+			case FILE_NAME -> fileNameField();
+		}
+	}
+
 	/**
 	 * 可检查文件路径的非法字符
 	 */
@@ -333,6 +367,14 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 */
 	public void numbersOnly() {
 		String numbers = "1234567890";
+		this.onlyAllowedInputChar.append(numbers);
+	}
+
+	/**
+	 * 允许输入数字和小数点
+	 */
+	public void numberAndDecimal() {
+		String numbers = "1234567890.";
 		this.onlyAllowedInputChar.append(numbers);
 	}
 
