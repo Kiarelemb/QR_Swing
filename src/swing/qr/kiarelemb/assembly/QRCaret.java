@@ -115,10 +115,11 @@ public class QRCaret extends DefaultCaret implements QRComponentUpdate {
     protected final synchronized void damage(Rectangle r) {
         //让黑影仅为光标大小
         if (r != null) {
+            repaint();
             this.x = r.x;
             this.y = r.y + this.fontSize / 10;
             this.width = 2;
-            this.height = this.fontHeight;
+            this.height = this.fontHeight == -1 ? r.height : this.fontHeight;
             repaint();
         }
     }

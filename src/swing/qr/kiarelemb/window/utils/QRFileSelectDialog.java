@@ -351,15 +351,14 @@ public class QRFileSelectDialog extends QRDialog {
 				applyPathField();
 			}
 		});
-		QRActionRegister<DocumentEvent> action = e -> {
+
+		selectedPathField.addDocumentListenerActionAll(e -> {
 			if (selectMode == SelectMode.SAVE_FILE) {
 				sureButton.setEnabled(canSelectSaveTarget(resolveSaveTarget(selectedPathField.getText())));
 			} else {
 				sureButton.setEnabled(canSelect(new File(selectedPathField.getText())));
 			}
-		};
-		selectedPathField.addDocumentListenerAction(QRDocumentListener.TYPE.INSERT, action);
-		selectedPathField.addDocumentListenerAction(QRDocumentListener.TYPE.REMOVE, action);
+		});
 
 		sureButton.addClickAction(e -> approveSelection());
 		cancelButton.addClickAction(e -> dispose());

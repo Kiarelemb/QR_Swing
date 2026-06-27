@@ -12,6 +12,7 @@ import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
 import swing.qr.kiarelemb.listener.QRActionListener;
 import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRMouseMotionListener;
+import swing.qr.kiarelemb.task.QRTaskRunner;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;

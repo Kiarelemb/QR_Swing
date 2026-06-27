@@ -18,4 +18,6 @@ public interface QRDocumentListenerAdd {
      * @param ar   操作
      */
     void addDocumentListenerAction(QRDocumentListener.TYPE type, QRActionRegister<DocumentEvent> ar);
+
+    void addDocumentListenerActionAll(QRActionRegister<DocumentEvent> ar);
 }

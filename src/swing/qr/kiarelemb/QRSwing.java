@@ -462,7 +462,7 @@ public final class QRSwing implements Serializable {
 	 * @param key             按键组合，不同按键组合间以英文逗号{@code ,}分割
 	 *                        <p>有+号则优先以+号分割，再以空格分割
 	 *                        <p>支持格式 {@code Ctrl + Alt + Shift + s}、{@code a}、{@code shift a}、{@code shift b,ctrl a}、
-	 *                        {@code shift b, ctrl b}，但不支持 Windows 键的组合
+	 *                        <p>{@code shift b, ctrl b}，但不支持 Windows 键的组合
 	 * @param ar              事件，其参数是 {@link KeyStroke}
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
 	 */
@@ -538,6 +538,83 @@ public final class QRSwing implements Serializable {
 		if (QRSwing.globalKeyListener != null) {
 			QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, ar, mainWindowFocus);
 		}
+	}
+
+	/**
+	 * 清空某一快捷键所对应的全部事件
+	 *
+	 * @param key             按键组合，格式同 {@link #registerGlobalAction(String, QRActionRegister, boolean)}
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(String key, boolean mainWindowFocus) {
+		String[] keys = key.split(",");
+		for (String k : keys) {
+			var keyStroke = QRStringUtils.getKeyStroke(k);
+			registerGlobalActionRemove(keyStroke, mainWindowFocus);
+		}
+	}
+
+	/**
+	 * 移除指定的全局事件
+	 *
+	 * @param key             按键组合，格式同 {@link #registerGlobalAction(String, QRActionRegister, boolean)}
+	 * @param ar              事件
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
+		String[] keys = key.split(",");
+		for (String k : keys) {
+			var keyStroke = QRStringUtils.getKeyStroke(k);
+			registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
+		}
+	}
+
+	/**
+	 * 清空某一快捷键所对应的全部事件
+	 *
+	 * @param keycode         键值
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(int keycode, boolean mainWindowFocus) {
+		var keyStroke = QRStringUtils.getKeyStroke(keycode);
+		registerGlobalActionRemove(keyStroke, mainWindowFocus);
+	}
+
+	/**
+	 * 移除指定的全局事件
+	 *
+	 * @param keycode         键值
+	 * @param ar              事件
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
+		var keyStroke = QRStringUtils.getKeyStroke(keycode);
+		registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
+	}
+
+	/**
+	 * 清空某一快捷键所对应的全部事件
+	 *
+	 * @param keycode         键值
+	 * @param modifiers       特殊键
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(int keycode, int modifiers, boolean mainWindowFocus) {
+		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
+		registerGlobalActionRemove(keyStroke, mainWindowFocus);
+	}
+
+	/**
+	 * 移除指定的全局事件
+	 *
+	 * @param keycode         键值
+	 * @param modifiers       特殊键
+	 * @param ar              事件
+	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
+	 */
+	public static void registerGlobalActionRemove(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
+		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
+		registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
 	}
 
 	/**

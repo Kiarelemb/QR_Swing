@@ -112,6 +112,24 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     }
 
     /**
+     * 给INSERT、REMOVE、CHANGED 一键添加文本事件
+     * 已自动添加 {@link #addDocumentListener()}
+     *
+     * @param ar 操作
+     */
+    @Override
+    public final void addDocumentListenerActionAll(QRActionRegister<DocumentEvent> ar) {
+        if (this.documentListener == null) {
+            addDocumentListener();
+        }
+        if (this.documentListener != null) {
+            this.documentListener.add(QRDocumentListener.TYPE.INSERT, ar);
+            this.documentListener.add(QRDocumentListener.TYPE.REMOVE, ar);
+            this.documentListener.add(QRDocumentListener.TYPE.CHANGED, ar);
+        }
+    }
+
+    /**
      * 添加按键的事件
      */
     @Override

@@ -1,15 +1,15 @@
 package swing.qr.kiarelemb.window.utils;
 
-import method.qr.kiarelemb.utils.QRTools;
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.basic.QRTextField;
-import swing.qr.kiarelemb.listener.QRKeyListener;
 import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 
 
 /**
@@ -23,8 +23,11 @@ import java.awt.event.KeyEvent;
  * </code></pre>
  */
 public class QRValueInputDialog extends QREmptyDialog {
-    protected String answer;
     protected QRTextField textField;
+    protected QRRoundButton cancelButton;
+    protected QRRoundButton sureButton;
+    protected String answer;
+    protected boolean approved = false;
 
     /**
      * @param owner            父窗体
@@ -40,45 +43,50 @@ public class QRValueInputDialog extends QREmptyDialog {
 
         textField = new QRTextField();
         textField.setToolTipText(textFieldTooltip);
-        textField.addKeyListener();
 
-        var label = new QRLabel(inputLabelText);
+        QRLabel label = new QRLabel(inputLabelText);
 
-        var buttonSure = new QRRoundButton("确定");
-        buttonSure.setToolTipText("Enter");
+	    sureButton = new QRRoundButton("确定");
+		sureButton.setToolTipText("Enter");
 
-        var buttonCancel = new QRRoundButton("取消");
-        buttonCancel.setToolTipText("ESC");
+	    cancelButton = new QRRoundButton("取消");
+		cancelButton.setToolTipText("ESC");
+
+        textField.addDocumentListenerActionAll(e -> {
+            boolean isBlank = textField.getText().isBlank();
+            sureButton.setEnabled(!isBlank);
+        });
 
         QRComponentUtils.setBoundsAndAddToComponent(contentPane, label, 22, 26, 280, 18);
         QRComponentUtils.setBoundsAndAddToComponent(contentPane, textField, 22, 64, 280, 37);
-        QRComponentUtils.setBoundsAndAddToComponent(contentPane, buttonSure, 236, 118, 66, 29);
-        QRComponentUtils.setBoundsAndAddToComponent(contentPane, buttonCancel, 158, 118, 66, 29);
+        QRComponentUtils.setBoundsAndAddToComponent(contentPane, sureButton, 236, 118, 66, 29);
+        QRComponentUtils.setBoundsAndAddToComponent(contentPane, cancelButton, 158, 118, 66, 29);
 
-        buttonCancel.addClickAction(e -> dispose());
-        buttonSure.addClickAction(e -> {
+        cancelButton.addClickAction(e -> dispose());
+        sureButton.addClickAction(e -> {
             if (meetCondition()) {
                 if (setAnswer(textField.getText())) {
+                    approved = true;
                     dispose();
                 }
-            }
-        });
-        textField.addKeyListenerAction(QRKeyListener.TYPE.PRESS, e -> {
-            switch (e.getKeyChar()) {
-                case KeyEvent.VK_ENTER:
-                    buttonSure.click();
-                    break;
-                case KeyEvent.VK_ESCAPE:
-                    buttonCancel.click();
-                    break;
-                default:
-                    QRTools.doNothing();
             }
         });
 
         setSize(width, height);
         setLocationRelativeTo(owner);
         setResizable(false);
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        QRSwing.registerGlobalAction(KeyEvent.VK_ENTER, e1 -> sureButton.clickInvokeLater(), true);
+        QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, e1 -> cancelButton.clickInvokeLater(), true);
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        QRSwing.registerGlobalActionRemove(KeyEvent.VK_ENTER, true);
+        QRSwing.registerGlobalActionRemove(KeyEvent.VK_ESCAPE, true);
     }
 
     public void setDefaultValue(String value){
@@ -95,14 +103,33 @@ public class QRValueInputDialog extends QREmptyDialog {
     }
 
     /**
+     * 获取用户是否点击了确定按钮
+     */
+    public boolean isApproved() {
+        return approved;
+    }
+
+    /**
      * 取得输入的内容
      */
     public String getAnswer() {
         return answer == null ? "" : answer;
     }
 
-    boolean setAnswer(String answer) {
+    protected boolean setAnswer(String answer) {
         this.answer = answer;
         return true;
+    }
+
+    public QRTextField textField() {
+        return textField;
+    }
+
+    public QRRoundButton cancelButton() {
+        return cancelButton;
+    }
+
+    public QRRoundButton sureButton() {
+        return sureButton;
     }
 }
