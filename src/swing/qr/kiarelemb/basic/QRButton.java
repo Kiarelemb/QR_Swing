@@ -288,15 +288,23 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
+		paintButtonBackground(g2);
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		paintButtonContent(g);
+	}
+
+	protected void paintButtonBackground(Graphics2D g2) {
 		var model = getModel();
 		if ((model.isRollover() || model.isPressed()) && isEnabled()) {
-			g.setColor(model.isPressed() ? QRColorsAndFonts.PRESS_COLOR : QRColorsAndFonts.ENTER_COLOR);
+			g2.setColor(model.isPressed() ? QRColorsAndFonts.PRESS_COLOR : QRColorsAndFonts.ENTER_COLOR);
 			RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.addRenderingHints(rh);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, QRSwing.windowImageSet ? (model.isPressed() ? 1f : (model.isRollover() ? 0.7f : 0.5f)) : 1f));
 			g2.fillRect(0, 0, getWidth(), getHeight());
 		}
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+	}
+
+	protected void paintButtonContent(Graphics g) {
 		super.paintComponent(g);
 	}
 }

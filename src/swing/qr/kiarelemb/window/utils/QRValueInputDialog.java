@@ -10,6 +10,7 @@ import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.util.Objects;
 
 
 /**
@@ -29,6 +30,7 @@ public class QRValueInputDialog extends QREmptyDialog {
     protected QRRoundButton sureButton;
     protected String answer;
     protected boolean approved = false;
+    private String defaultValue;
 
     /**
      * @param owner            父窗体
@@ -90,8 +92,23 @@ public class QRValueInputDialog extends QREmptyDialog {
         QRSwing.registerGlobalActionRemove(KeyEvent.VK_ESCAPE, true);
     }
 
-    public void setDefaultValue(String value){
-        textField.setText(value);
+    /**
+     * 设置默认值，即输入框打开时文本框的初始值
+     * @param defaultValue 默认值
+     */
+    public void setDefaultValue(String defaultValue){
+        this.defaultValue = defaultValue;
+        textField.setText(defaultValue);
+    }
+
+    public void requireDefaultValueChange(){
+        if(defaultValue != null){
+            textField.addDocumentListenerActionAll(e -> {
+                if (Objects.equals(textField.getText(), this.defaultValue)) {
+                    sureButton.setEnabled(false);
+                }
+            });
+        }
     }
 
     /**
