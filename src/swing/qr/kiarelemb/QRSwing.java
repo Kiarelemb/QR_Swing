@@ -137,16 +137,19 @@ public final class QRSwing implements Serializable {
 	 * // 设置窗口图标
 	 * QRSwing.windowIcon = Info.loadImage(Info.ICON_PNG_PATH);
 	 * // 设置启动窗口
-	 * FlashLoadingWindow flw = new FlashLoadingWindow();
-	 * flw.setVisible(true);
-	 * // 加载主窗体的配置
+	 * QRProgressDialog loadDialog = new QRProgressDialog(null, false);
+	 * loadDialog.setIndeterminate(true);
+	 * loadDialog.setCancelButtonVisible(false);
+	 * loadDialog.setProgressDescription("");
+	 * QRTaskRunner.run(context -> {
+	 * 	loadDialog.setVisible(true);
+	 * 	return "完成";
+	 * });
 	 * variousLoad();
-	 * // 关闭启动窗口
-	 * flw.setVisible(false);
-	 * // 渐显主窗体
 	 * logger.info("-------------------------------------- 配置加载完毕 --------------------------------------");
+	 * loadDialog.setVisible(false);
+	 * // 渐显主窗体
 	 * QRSystemUtils.setWindowShowSlowly(MainWindow.INSTANCE, QRSwing.windowTransparency);
-	 *
 	 * logger.info("当前系统：" + QRSystemUtils.getSystemName());
 	 * </Code></pre>
 	 * @param propPath 系统资源文件

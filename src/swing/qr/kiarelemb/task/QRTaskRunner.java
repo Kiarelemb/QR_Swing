@@ -105,10 +105,10 @@ public final class QRTaskRunner {
 	 * @return 已启动的任务 worker
 	 */
 	public static <T> QRTaskWorker<T> runWithProgress(Window owner,
-	                                                   String title,
-	                                                   QRTask<T> task,
-	                                                   Consumer<T> onSuccess,
-	                                                   Consumer<Throwable> onError) {
+	                                                  String title,
+	                                                  QRTask<T> task,
+	                                                  Consumer<T> onSuccess,
+	                                                  Consumer<Throwable> onError) {
 		return runWithProgress(owner, title, title, task, onSuccess, onError);
 	}
 
@@ -135,11 +135,11 @@ public final class QRTaskRunner {
 	 * @return 已启动的任务 worker
 	 */
 	public static <T> QRTaskWorker<T> runWithProgress(Window owner,
-	                                                   String title,
-	                                                   String description,
-	                                                   QRTask<T> task,
-	                                                   Consumer<T> onSuccess,
-	                                                   Consumer<Throwable> onError) {
+	                                                  String title,
+	                                                  String description,
+	                                                  QRTask<T> task,
+	                                                  Consumer<T> onSuccess,
+	                                                  Consumer<Throwable> onError) {
 		QRTaskOptions options = new QRTaskOptions()
 				.owner(owner)
 				.title(title)
@@ -217,11 +217,11 @@ public final class QRTaskRunner {
 	private static QRProgressDialog buildProgressDialog(QRTaskOptions options, QRTaskWorker<?> worker) {
 		QRProgressDialog dialog = new QRProgressDialog(options.owner(), options.parentUnable());
 		dialog.setTitle(options.title());
-		dialog.setProgressDescription(options.description());
-		dialog.setProgress(0);
-		dialog.setIndeterminate(options.indeterminate());
-		dialog.setCancelEnabled(options.cancellable());
-		dialog.bind(worker, options.autoCloseDialog());
+		dialog.setProgressDescription(options.description())
+				.setProgress(0)
+				.setIndeterminate(options.indeterminate())
+				.setCancelEnabled(options.cancellable())
+				.bind(worker, options.autoCloseDialog());
 		return dialog;
 	}
 

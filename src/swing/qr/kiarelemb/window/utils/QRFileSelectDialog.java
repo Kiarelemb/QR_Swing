@@ -105,6 +105,7 @@ public class QRFileSelectDialog extends QRDialog {
 	private boolean sortAscending = true;
 	private String fileType;
 	private final Set<String> extensions = new LinkedHashSet<>();
+	private final Set<String> directoryVisibleFileExtensions = new LinkedHashSet<>();
 	private File currentDirectory;
 	private File selectedFile;
 	private QRTaskWorker<ArrayList<FileTreeNodeData>> rootLoadWorker;
@@ -425,6 +426,7 @@ public class QRFileSelectDialog extends QRDialog {
 		SortType sort = sortType;
 		boolean ascending = sortAscending;
 		Set<String> extensionSnapshot = new LinkedHashSet<>(extensions);
+		Set<String> directoryVisibleFileExtensionSnapshot = new LinkedHashSet<>(directoryVisibleFileExtensions);
 		String fileTypeSnapshot = fileTypeText();
 		QRTaskWorker<FileListSnapshot> worker = new QRTaskWorker<>(context -> {
 			ArrayList<FileItem> items = new ArrayList<>();
@@ -438,7 +440,12 @@ public class QRFileSelectDialog extends QRDialog {
 				Arrays.sort(files, fileComparator(sort, ascending));
 				for (File file : files) {
 					context.checkCancelled();
-					if ((mode == SelectMode.DIRECTORY_ONLY) && file.isFile()) {
+					if (mode == SelectMode.DIRECTORY_ONLY) {
+						if (file.isDirectory() ||
+						    (!directoryVisibleFileExtensionSnapshot.isEmpty() &&
+						     acceptExtension(file, directoryVisibleFileExtensionSnapshot))) {
+							items.add(createFileItem(file));
+						}
 						continue;
 					}
 					if (file.isDirectory() || acceptExtension(file, extensionSnapshot)) {
@@ -581,6 +588,11 @@ public class QRFileSelectDialog extends QRDialog {
 			if (approve && !item.parent && item.file.isFile()) {
 				approveSelection();
 			}
+			return;
+		}
+		if (selectMode == SelectMode.DIRECTORY_ONLY && !item.parent && item.file.isFile()) {
+			SwingUtilities.invokeLater(fileList::clearSelection);
+			updateSelectedFile(currentDirectory);
 			return;
 		}
 		if (item.parent) {
@@ -789,6 +801,14 @@ public class QRFileSelectDialog extends QRDialog {
 			return false;
 		}
 		return extensions.contains(name.substring(index + 1).toLowerCase(Locale.ROOT));
+	}
+
+	private String normalizeExtension(String extension) {
+		if (extension == null || extension.isBlank()) {
+			return null;
+		}
+		String value = extension.startsWith(".") ? extension.substring(1) : extension;
+		return value.isBlank() ? null : value.toLowerCase(Locale.ROOT);
 	}
 
 	private String fileTypeText() {
@@ -1200,16 +1220,36 @@ public class QRFileSelectDialog extends QRDialog {
 			return;
 		}
 		for (String ext : extension) {
-			if (ext == null || ext.isBlank()) {
-				continue;
+			String value = normalizeExtension(ext);
+			if (value != null) {
+				extensions.add(value);
 			}
-			String value = ext.startsWith(".") ? ext.substring(1) : ext;
-			extensions.add(value.toLowerCase(Locale.ROOT));
 		}
 		if (currentDirectory != null) {
 			fillFileList(currentDirectory);
 		} else {
 			statusLabel.setText(fileTypeText());
+		}
+	}
+
+	/**
+	 * 在 {@link SelectMode#DIRECTORY_ONLY} 选择文件夹模式下，额外显示指定扩展名的文件。
+	 * <p>这些文件仅用于提示当前文件夹下存在对应类型文件，不会成为可选结果；确认选择时仍只能返回文件夹。
+	 *
+	 * @param extension 要显示的文件扩展名，可带或不带英文句点，如 {@code "txt"} 或 {@code ".txt"}
+	 */
+	public void addDirectoryVisibleFileExtensions(String... extension) {
+		if (extension == null) {
+			return;
+		}
+		for (String ext : extension) {
+			String value = normalizeExtension(ext);
+			if (value != null) {
+				directoryVisibleFileExtensions.add(value);
+			}
+		}
+		if (currentDirectory != null) {
+			fillFileList(currentDirectory);
 		}
 	}
 
