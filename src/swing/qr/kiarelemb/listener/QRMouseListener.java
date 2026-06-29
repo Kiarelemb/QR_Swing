@@ -8,12 +8,27 @@ import java.awt.event.MouseListener;
 import java.util.LinkedList;
 
 /**
+ * 鼠标事件分发器。
+ *
+ * <p>该类实现 Swing 原生 {@link MouseListener}，并按事件类型维护多组
+ * {@link QRActionRegister}。QR Swing 组件通常通过自身的 {@code addMouseAction(...)}
+ * 方法间接使用它；只有需要手动绑定原生 Swing 组件时，才需要直接实例化。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRMouseListener listener = new QRMouseListener();
+ * listener.add(QRMouseListener.TYPE.CLICK, event -> System.out.println(event.getClickCount()));
+ * component.addMouseListener(listener);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-24 15:15
  **/
 public class QRMouseListener implements MouseListener {
+    /**
+     * 鼠标事件类型，对应 {@link MouseListener} 的五个回调。
+     */
     public enum TYPE {
         CLICK, PRESS, RELEASE, ENTER, EXIT
     }
@@ -24,6 +39,12 @@ public class QRMouseListener implements MouseListener {
     private final LinkedList<QRActionRegister<MouseEvent>> enter = new LinkedList<>();
     private final LinkedList<QRActionRegister<MouseEvent>> exit = new LinkedList<>();
 
+    /**
+     * 为指定鼠标事件类型添加动作。
+     *
+     * @param type 事件类型
+     * @param ar   动作，参数为 {@link MouseEvent}
+     */
     public void add(TYPE type, QRActionRegister<MouseEvent> ar) {
         switch (type) {
             case CLICK -> this.click.add(ar);
@@ -34,6 +55,13 @@ public class QRMouseListener implements MouseListener {
         }
     }
 
+    /**
+     * 移除指定鼠标事件类型下的动作。
+     *
+     * @param type 事件类型
+     * @param ar   要移除的动作
+     * @return 是否移除成功
+     */
     public boolean remove(TYPE type, QRActionRegister<MouseEvent> ar) {
         return switch (type) {
             case CLICK -> this.click.remove(ar);

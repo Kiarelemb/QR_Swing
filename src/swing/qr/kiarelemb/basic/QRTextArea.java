@@ -18,9 +18,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 /**
+ * QR Swing 的多行纯文本输入组件。
+ *
+ * <p>该类基于 {@link JTextArea}，统一了主题字体和颜色、自定义光标、撤销重做、
+ * 光标/文档/键盘/鼠标/焦点事件封装，以及 {@link QRScrollPane} 接入能力。
+ * 如果需要富文本样式、行列定位、选区结束事件或文件拖入，请使用 {@link QRTextPane}；
+ * 如果只需要普通多行输入，优先使用本类。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRTextArea area = new QRTextArea(true);
+ * area.addUndoManager();
+ * area.addDocumentListenerActionAll(event -> updatePreview(area.getText()));
+ * panel.add(area.addScrollPane());
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-01-11 15:11
  **/
 public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretListenerAdd, QRFocusListenerAdd, QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
@@ -272,7 +286,9 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     /**
      * 添加滚动条
      *
-     * @return 滚动条本身，实例是 {@link QRScrollPane}
+     * <p>重复调用会返回同一个 {@link QRScrollPane} 实例，并默认开启每次滚动 3 行的平滑滚动。</p>
+     *
+     * @return 承载当前文本域的滚动面板
      */
     public QRScrollPane addScrollPane() {
         if (this.scrollPane == null) {
@@ -284,7 +300,9 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     }
 
     /**
-     * 使文本框能够撤销重做
+     * 使文本框能够撤销重做。
+     *
+     * <p>调用后会创建 {@link #undoManager}，并自动为当前文档绑定 Ctrl+Z/Ctrl+Y。</p>
      */
     public void addUndoManager() {
         this.undoManager = new QRUndoManager(this);
@@ -397,7 +415,7 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
     }
 
     /**
-     * 清除内容
+     * 清除全部文本内容。
      */
     public void clear() {
         setText("");
@@ -486,10 +504,19 @@ public class QRTextArea extends JTextArea implements QRComponentUpdate, QRCaretL
 
     //endregion
 
+    /**
+     * 暂时阻止子类光标更新逻辑。
+     *
+     * <p>批量修改文本或程序化移动光标时可设置该标记，避免自定义 {@link #caretUpdate(CaretEvent)}
+     * 中的逻辑反复执行。修改结束后应调用 {@link #setCaretUnblock()}。</p>
+     */
     public final void setCaretBlock() {
         this.caretBlock = true;
     }
 
+    /**
+     * 恢复光标更新逻辑。
+     */
     public final void setCaretUnblock() {
         this.caretBlock = false;
     }

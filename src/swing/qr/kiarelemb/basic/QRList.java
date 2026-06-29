@@ -16,16 +16,35 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * QR Swing 的主题列表控件。
+ *
+ * <p>该类基于 {@link JList}，维护一份可直接操作的 {@link #contents()} 列表，
+ * 并提供添加、删除、清空、去重控制、鼠标事件封装和滚动面板创建能力。
+ * 默认使用单选模式。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRList&lt;String&gt; list = new QRList&lt;&gt;(List.of("项目 A", "项目 B"));
+ * list.setRepeatable(false);
+ * list.addItem("项目 C");
+ * list.addMouseListener(QRMouseListener.TYPE.CLICK, event -> {
+ *     if (event.getClickCount() == 2) {
+ *         open(list.getSelectedValue());
+ *     }
+ * });
+ * panel.add(list.addScrollPane());
+ * </code></pre>
+ *
+ * @param <T> 列表元素类型
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-21 21:59
  **/
 public class QRList<T> extends JList<T> implements QRComponentUpdate {
     protected QRScrollPane scrollPane;
     protected final LinkedList<T> contents = new LinkedList<>();
     /**
-     * 默认不可重
+     * true 表示不允许重复元素。
      */
     protected boolean noRepeat;
     private QRMouseMotionListener mouseMotionListener;
@@ -79,11 +98,18 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
     }
 
     /**
-     * 可直接重写
+     * 列表选择变化回调。
+     *
+     * <p>子类可重写该方法；外部调用方也可以直接使用原生 {@link #addListSelectionListener(javax.swing.event.ListSelectionListener)}。</p>
      */
     protected void listSelectedAction(ListSelectionEvent listSelectionEvent) {
     }
 
+    /**
+     * 取得当前选中项的字符串表示。
+     *
+     * @return 当前选中项字符串；未选中时返回字符串 {@code "null"}
+     */
     public String getSelected() {
         return String.valueOf(getSelectedValue());
     }
@@ -104,25 +130,56 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
         return this.contents;
     }
 
+    /**
+     * 移除指定索引的元素并刷新模型。
+     *
+     * @param index 元素索引
+     */
     public void removeItem(int index) {
         this.contents.remove(index);
         contentUpdate();
     }
 
+    /**
+     * 移除指定元素并刷新模型。
+     *
+     * @param item 要移除的元素
+     */
     public void removeItem(T item) {
         this.contents.remove(item);
         contentUpdate();
     }
 
+    /**
+     * 在末尾添加元素。
+     *
+     * @param item 要添加的元素
+     * @return 添加成功时返回插入索引；因去重规则被拒绝时返回 -1
+     */
     public int addItem(T item) {
         int size = this.contents.size();
         return addItem(size, item) ? size : -1;
     }
 
+    /**
+     * 在列表开头添加元素。
+     *
+     * @param item 要添加的元素
+     * @return 是否添加成功
+     */
     public boolean addFirst(T item) {
         return addItem(0, item);
     }
 
+    /**
+     * 在指定位置添加元素。
+     *
+     * <p>如果已开启不允许重复元素，且列表中已有该元素，则不会添加并返回 false。</p>
+     *
+     * @param index 插入位置
+     * @param item  要添加的元素
+     * @return 是否添加成功
+     */
     public boolean addItem(int index, T item) {
         if (this.noRepeat && this.contents.contains(item)) {
             return false;
@@ -132,10 +189,22 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
         return true;
     }
 
+    /**
+     * 使用数组替换列表内容。
+     *
+     * @param contents 新内容
+     */
     public void setContents(T[] contents) {
         setContents(Arrays.asList(contents));
     }
 
+    /**
+     * 使用列表替换当前内容。
+     *
+     * <p>如果开启了不允许重复元素，会保留输入列表中每个元素首次出现的位置。</p>
+     *
+     * @param contents 新内容
+     */
     public void setContents(List<T> contents) {
         this.contents.clear();
         if (this.noRepeat) {
@@ -150,11 +219,19 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
         contentUpdate();
     }
 
+    /**
+     * 清空列表内容并刷新模型。
+     */
     public void clear() {
         this.contents.clear();
         contentUpdate();
     }
 
+    /**
+     * 用当前 {@link #contents} 重建列表模型。
+     *
+     * <p>直接修改 {@link #contents()} 返回的列表后，需要调用该方法让界面刷新。</p>
+     */
     public final void contentUpdate() {
         setModel(new AbstractListModel<>() {
             @Override
@@ -238,7 +315,7 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
     /**
      * 添加滚动条
      *
-     * @return 滚动条本身
+     * @return 承载当前列表的滚动面板；重复调用返回同一实例
      */
     public JScrollPane addScrollPane() {
         if (this.scrollPane == null) {

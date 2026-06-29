@@ -585,7 +585,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 使文本框能够撤销重做
+	 * 使文本面板能够撤销重做。
+	 *
+	 * <p>调用后会创建 {@link #undoManager}，并自动为当前文档绑定 Ctrl+Z/Ctrl+Y。</p>
 	 */
 	public void addUndoManager() {
 		this.undoManager = new QRUndoManager(this);
@@ -595,8 +597,13 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	//region 光标位置信息获取
 
 	/**
-	 * 更新光标所在的行与列，及所有行
-	 * <p>重写前请先调用 {@link #addCaretListener()}
+	 * 更新光标所在行、列、当前行文本、总行数和文本长度缓存。
+	 *
+	 * <p>启用 {@link #addCaretListener()} 后，默认 {@link #caretUpdate(CaretEvent)} 会自动调用该方法。
+	 * 如果直接设置光标位置或在未安装 caret listener 时读取 {@link #caretLine()}、{@link #caretRow()} 等缓存值，
+	 * 调用方应先手动调用本方法。</p>
+	 *
+	 * @param position 光标位置，基于全文 0 起始索引
 	 */
 	public void freshCaretLineRow(final int position) {
 		final String text = getText();
@@ -1243,7 +1250,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 从文本面板中搜索内容，并设置样式
+	 * 从文本面板中搜索第一次出现的内容，并设置样式。
+	 *
+	 * <p>如果文本不存在，内部 offset 为 -1，会被最终样式设置方法忽略。</p>
 	 *
 	 * @param text  搜索的内容
 	 * @param attrs 新样式
@@ -1255,11 +1264,11 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 从文本面板中搜索内容，并设置样式
+	 * 从指定位置开始搜索第一次出现的内容，并设置样式。
 	 *
 	 * @param fromIndex 搜索的开始位置
-	 * @param text  搜索的内容
-	 * @param attrs 新样式
+	 * @param text      搜索的内容
+	 * @param attrs     新样式
 	 */
 	public void changeTextStyle(int fromIndex, String text, AttributeSet attrs) {
 		int offset = getText().indexOf(text, fromIndex);
@@ -1268,7 +1277,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 改变字符的样式
+	 * 改变指定范围字符的样式。
 	 *
 	 * @param offset 开始位置
 	 * @param length 从开始位置的长度
@@ -1279,11 +1288,14 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 改变字符的样式
+	 * 改变指定范围字符的样式。
+	 *
+	 * <p>{@code replace} 为 false 时会把新样式合并到原样式上；为 true 时用新样式替换原样式。</p>
 	 *
 	 * @param offset 开始位置
 	 * @param length 从开始位置的长度
 	 * @param attrs  新样式
+	 * @param replace 是否替换原有样式
 	 */
 	public void changeTextStyle(int offset, int length, AttributeSet attrs, boolean replace) {
 		if (offset < 0 || length <= 0 || attrs == null) {
@@ -1293,7 +1305,9 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 从指定位置插入内容
+	 * 从指定位置插入内容。
+	 *
+	 * <p>该方法直接操作底层文档，插入失败时会打印异常堆栈。</p>
 	 *
 	 * @param offset 插入的位置
 	 * @param str    内容
@@ -1307,6 +1321,14 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		}
 	}
 
+	/**
+	 * 删除指定范围文本。
+	 *
+	 * <p>{@code length <= 0} 时不会执行删除。</p>
+	 *
+	 * @param offset 删除开始位置
+	 * @param length 删除长度
+	 */
 	public void removeText(int offset, int length) {
 		try {
 			if (length <= 0) {
@@ -1319,7 +1341,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 从指定设置开始，根据新文本长度，替换旧文本样式
+	 * 从指定位置开始，按新文本长度替换旧文本。
 	 *
 	 * @param offset 开始位置
 	 * @param text   要更新的文本
@@ -1330,7 +1352,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 从指定设置开始，指定替换的长度，用新内容替换旧文本样式
+	 * 从指定位置开始，用新内容替换指定长度的旧文本。
 	 *
 	 * @param offset 开始位置
 	 * @param length 旧文本长度
@@ -1725,7 +1747,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	//region 打印的方法
 
 	/**
-	 * 在光标的当前位置插入该文字
+	 * 在文本末尾插入该文字。
 	 *
 	 * @param str 要插入的文字
 	 */
@@ -1733,6 +1755,12 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		print(str, QRColorsAndFonts.TEXT_COLOR_FORE, QRColorsAndFonts.TEXT_COLOR_BACK, textLength());
 	}
 
+	/**
+	 * 在文本末尾插入指定前景色文字。
+	 *
+	 * @param str       要插入的文字
+	 * @param colorFore 前景色
+	 */
 	public final void print(String str, Color colorFore) {
 		print(str, textFont, colorFore, QRColorsAndFonts.TEXT_COLOR_BACK, textLength());
 	}
@@ -1772,10 +1800,25 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 		print(str, attributeSet, index);
 	}
 
+	/**
+	 * 在文本末尾插入带完整样式的文字。
+	 *
+	 * @param str 要插入的文字
+	 * @param sas 样式属性
+	 */
 	public final void print(String str, SimpleAttributeSet sas) {
 		print(str, sas, textLength());
 	}
 
+	/**
+	 * 在指定位置插入带完整样式的文字。
+	 *
+	 * <p>插入期间会临时阻止光标更新逻辑，避免批量写入时频繁触发 caret 派生计算。</p>
+	 *
+	 * @param str   要插入的文字
+	 * @param sas   样式属性
+	 * @param index 插入位置
+	 */
 	public void print(String str, SimpleAttributeSet sas, int index) {
 		try {
 			setCaretBlock();
@@ -1835,7 +1878,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	}
 
 	/**
-	 * 清除内容
+	 * 清除全部文本内容。
 	 */
 	public void clear() {
 		setText(null);
@@ -1989,7 +2032,10 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	//region 文本操作
 
 	/**
-	 * 由于原方法 {@link #getText()} 方法已经被重写了，如果要调用未重写的方法，则使用这个
+	 * 返回 {@link JTextPane#getText()} 的原始结果。
+	 *
+	 * <p>{@link #getText()} 会把系统换行统一为 {@code \n}；如果调用方需要 Swing 原始文本，
+	 * 使用该方法。</p>
 	 */
 	public String superText() {
 		return super.getText();

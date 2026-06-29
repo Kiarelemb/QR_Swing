@@ -282,24 +282,38 @@ public class QRPicturePreviewDialog extends QRDialog {
 
 	/**
 	 * 设置切换图片时是否保持当前的视图状态（缩放与平移位置），默认为 {@code true}。
+	 *
+	 * <p>多张图片预览时，如果用户已经放大并拖拽到某个区域，切换下一张图片默认会沿用当前缩放和平移；
+	 * 如果希望每次切换都回到 100% 缩放和初始位置，传入 {@code false}。</p>
+	 *
+	 * @param keepViewOnPageChange 是否保持当前视图状态
 	 */
 	public void setKeepViewOnPageChange(boolean keepViewOnPageChange) {
 		this.keepViewOnPageChange = keepViewOnPageChange;
 	}
 
+	/**
+	 * 返回用户是否点击了确定按钮。
+	 *
+	 * @return true 表示用户确认；取消或关闭窗口时为 false
+	 */
 	public boolean isConfirmed() {
 		return confirmed;
 	}
 
 	/**
-	 * 确定按钮点击事件，可通过重写履盖
+	 * 确定按钮点击事件，可通过重写覆盖。
+	 *
+	 * <p>默认关闭对话框。重写时如需保持原关闭行为，可调用 {@code super.sureAction(e)}。</p>
 	 */
 	protected void sureAction(ActionEvent e) {
 		dispose();
 	}
 
 	/**
-	 * 取消按钮点击事件，可通过重写履盖
+	 * 取消按钮点击事件，可通过重写覆盖。
+	 *
+	 * <p>默认关闭对话框。</p>
 	 */
 	protected void cancelAction(ActionEvent e) {
 		dispose();

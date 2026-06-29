@@ -9,12 +9,28 @@ import java.awt.event.WindowListener;
 import java.util.LinkedList;
 
 /**
+ * 窗口事件分发器。
+ *
+ * <p>该类实现 Swing 原生 {@link WindowListener}，并额外提供窗口移动事件分发。
+ * {@link swing.qr.kiarelemb.window.basic.QRFrame} 和
+ * {@link swing.qr.kiarelemb.window.basic.QRDialog} 会在初始化时安装该监听器，
+ * 调用方通常通过窗口的 {@code addWindowAction(...)}、{@code addWindowMoveAction(...)}
+ * 注册动作。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * window.addWindowAction(QRWindowListener.TYPE.CLOSING, event -> saveBeforeClose());
+ * window.addWindowMoveAction(point -> syncChildWindow(point));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-24 15:10
  **/
 public class QRWindowListener implements WindowListener {
+    /**
+     * 窗口生命周期事件类型。
+     */
     public enum TYPE {
         OPEN, CLOSING, CLOSED, ICONIFIED, DEICONIFIED, ACTIVATED, DEACTIVATED
     }
@@ -28,6 +44,12 @@ public class QRWindowListener implements WindowListener {
     private final LinkedList<QRActionRegister<WindowEvent>> deactivated = new LinkedList<>();
     private final LinkedList<QRActionRegister<Point>> move = new LinkedList<>();
 
+    /**
+     * 添加窗口生命周期事件动作。
+     *
+     * @param type 事件类型
+     * @param ar   动作，参数为 {@link WindowEvent}
+     */
     public void add(TYPE type, QRActionRegister<WindowEvent> ar) {
         switch (type) {
             case CLOSING -> this.closing.add(ar);
@@ -40,6 +62,13 @@ public class QRWindowListener implements WindowListener {
         }
     }
 
+    /**
+     * 移除窗口生命周期事件动作。
+     *
+     * @param type 事件类型
+     * @param ar   要移除的动作
+     * @return 是否移除成功
+     */
     public boolean remove(TYPE type, QRActionRegister<WindowEvent> ar) {
         return switch (type) {
             case CLOSING -> this.closing.remove(ar);
@@ -52,10 +81,23 @@ public class QRWindowListener implements WindowListener {
         };
     }
 
+    /**
+     * 添加窗口移动事件动作。
+     *
+     * <p>该事件不是 Swing 原生 {@link WindowListener} 回调，而是由 QR Swing 的窗口拖拽逻辑主动调用。</p>
+     *
+     * @param ar 动作，参数为窗口新位置
+     */
     public void addWindowMoveAction(QRActionRegister<Point> ar) {
         this.move.add(ar);
     }
 
+    /**
+     * 移除窗口移动事件动作。
+     *
+     * @param ar 要移除的动作
+     * @return 是否移除成功
+     */
     public boolean removeWindowMoveAction(QRActionRegister<Point> ar) {
         return this.move.remove(ar);
     }

@@ -31,6 +31,24 @@ import java.io.OutputStream;
 import java.net.URL;
 
 /**
+ * QR Swing 的基础标签。
+ *
+ * <p>该类基于 {@link JLabel}，统一了主题字体和颜色，提供文本对齐、清空文本、
+ * 鼠标/焦点事件封装，以及标签文字根据组件尺寸自动缩放的能力。对于窗口标题、
+ * 设置项说明、状态栏文本和图标展示，通常都使用该类。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRLabel title = new QRLabel("设置");
+ * title.setTextCenter();
+ *
+ * QRLabel count = new QRLabel();
+ * count.setText(12);
+ *
+ * QRLabel icon = new QRLabel(QRLabel.createAutoAdjustIcon("logo.png", true));
+ * icon.setPreferredSize(new Dimension(48, 48));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @apiNote: 标签类
@@ -58,14 +76,29 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 	}
 
 	//region 文本设置
+	/**
+	 * 设置整数文本。
+	 *
+	 * @param intValue 整数值
+	 */
 	public void setText(int intValue) {
 		setText(String.valueOf(intValue));
 	}
 
+	/**
+	 * 设置 double 文本。
+	 *
+	 * @param doubleValue double 值
+	 */
 	public void setText(double doubleValue) {
 		setText(String.valueOf(doubleValue));
 	}
 
+	/**
+	 * 设置 float 文本。
+	 *
+	 * @param floatValue float 值
+	 */
 	public void setText(float floatValue) {
 		setText(String.valueOf(floatValue));
 	}
@@ -98,6 +131,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 
 	/**
 	 * 启用/关闭文字大小自动适应组件尺寸的功能。
+	 *
+	 * <p>开启后，标签会在尺寸变化和文本变化时自动计算可放入组件的最大字号。
+	 * 该功能适合固定尺寸数字牌、状态块和短标题，不适合长段落文本。</p>
 	 *
 	 * @param sizeAuto true 开启，false 关闭
 	 */
@@ -137,6 +173,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 
 	/**
 	 * 根据当前组件的尺寸计算最佳字体大小并应用。
+	 *
+	 * <p>通常由 {@link #setFontSizeAutoAdjust(boolean)} 自动触发；手动调用前应确保组件已布局，
+	 * 即宽高大于 0。</p>
 	 */
 	public void adjustFontSize() {
 		String text = getText();
@@ -388,6 +427,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 	/**
 	 * 创建一个可以自适应组件大小的ImageIcon对象
 	 *
+	 * <p>返回的图标会在绘制时读取承载组件的大小，按组件尺寸缩放图片。
+	 * {@code constrained} 为 true 时按比例缩放，否则拉伸填满组件。</p>
+	 *
 	 * @param image       从<code> Image </code>对象来创建ImageIcon
 	 * @param constrained 是否等比例缩放 。当为<code> true </code>时，可通过
 	 *                    {@link javax.swing.JComponent#setAlignmentX(float)}和
@@ -433,6 +475,9 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 	/**
 	 * 创建一个可以自适应组件大小的Icon对象
 	 *
+	 * <p>该方法直接按文件路径创建图片，文件不存在时仍会返回一个空图片图标；
+	 * 如需先校验文件存在，可使用 {@link QRFileUtils#fileExists(String)}。</p>
+	 *
 	 * @param filename    指定文件名或者路径的字符串
 	 * @param constrained 是否等比例缩放。当为<code> true </code>时，可通过
 	 *                    {@link javax.swing.JComponent#setAlignmentX(float)}和
@@ -442,6 +487,16 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 		return createAutoAdjustIcon(new ImageIcon(filename).getImage(), constrained);
 	}
 
+	/**
+	 * 创建一个可随组件缩放并裁剪为圆角的图标。
+	 *
+	 * <p>该方法在绘制时同步处理图片并写入临时文件，频繁重绘或大图场景可能产生性能开销；
+	 * 普通图片缩放优先使用 {@link #createAutoAdjustIcon(String, boolean)}。</p>
+	 *
+	 * @param filename    图片文件路径
+	 * @param constrained 是否等比例缩放
+	 * @return 自适应圆角图标
+	 */
 	public static ImageIcon createAutoAdjustIconAndRound(String filename, boolean constrained) {
 		return new ImageIcon() {
 			@Override
@@ -588,6 +643,15 @@ public class QRLabel extends JLabel implements QRComponentUpdate, QRTextBasicAct
 		return null;
 	}
 
+	/**
+	 * 创建一个显示 {@link QRSwing#windowIcon} 的标签。
+	 *
+	 * <p>该标签会在 {@link #componentFresh()} 时重新读取全局窗口图标，通常用于
+	 * {@link swing.qr.kiarelemb.window.basic.QRFrame} 和
+	 * {@link swing.qr.kiarelemb.window.basic.QRDialog} 的标题栏。</p>
+	 *
+	 * @return 窗口图标标签
+	 */
 	public static QRLabel getIconLabel() {
 		return new QRLabel() {
 			@Override

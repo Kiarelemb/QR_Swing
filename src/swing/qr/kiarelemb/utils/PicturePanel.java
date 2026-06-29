@@ -15,6 +15,18 @@ import java.awt.image.BufferedImage;
 
 /**
  * 可拖拽、可缩放的图片预览面板。
+ *
+ * <p>该面板直接维护图片的缩放比例和内部平移量，不依赖 {@link JScrollPane}。
+ * 鼠标左键拖拽可平移图片；Ctrl + 鼠标滚轮缩放；普通滚轮纵向平移；Shift + 滚轮横向平移。
+ * 面板加入容器时会注册 Ctrl++、Ctrl+-、Ctrl+0 全局快捷键，移除时自动注销。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * PicturePanel panel = new PicturePanel(image, new Dimension(800, 600));
+ * panel.setZoomRange(0.2, 5.0);
+ * panel.setMouseWheelZoomStep(0.15);
+ * panel.setZoom(1.5);
+ * </code></pre>
  */
 public class PicturePanel extends QRPanel {
 	private static final boolean DEBUG_PAN = false;
@@ -94,6 +106,12 @@ public class PicturePanel extends QRPanel {
 		super.removeNotify();
 	}
 
+	/**
+	 * 设置当前显示图片和预览尺寸，并重置缩放和平移状态。
+	 *
+	 * @param image       新图片，可为 null
+	 * @param pictureSize 图片基础显示尺寸；为 null 时使用图片原始尺寸
+	 */
 	public void setImage(BufferedImage image, Dimension pictureSize) {
 		this.image = image;
 		this.pictureSize = pictureSize == null ? imageSize(image) : pictureSize;
@@ -104,10 +122,26 @@ public class PicturePanel extends QRPanel {
 		repaint();
 	}
 
+	/**
+	 * 设置缩放比例。
+	 *
+	 * <p>缩放锚点使用当前鼠标位置或面板中心，最终值会被限制在 {@link #setZoomRange(double, double)}
+	 * 设置的范围内。</p>
+	 *
+	 * @param zoom 缩放比例，1.0 表示 100%
+	 */
 	public void setZoom(double zoom) {
 		setZoom(zoom, zoomAnchor());
 	}
 
+	/**
+	 * 以指定锚点设置缩放比例。
+	 *
+	 * <p>锚点用于在缩放后尽量保持该屏幕位置对应的图片内容不变。</p>
+	 *
+	 * @param zoom   缩放比例，1.0 表示 100%
+	 * @param anchor 面板坐标中的锚点，可为 null
+	 */
 	public void setZoom(double zoom, Point anchor) {
 		double oldZoom = this.zoom;
 		double newZoom = limitZoom(zoom);
@@ -129,10 +163,19 @@ public class PicturePanel extends QRPanel {
 		zoomChanged(this.zoom);
 	}
 
+	/**
+	 * @return 当前缩放比例，1.0 表示 100%
+	 */
 	public double zoom() {
 		return zoom;
 	}
 
+	/**
+	 * 设置允许的缩放范围。
+	 *
+	 * @param minZoom 最小缩放比例，必须大于 0
+	 * @param maxZoom 最大缩放比例，必须大于等于 {@code minZoom}
+	 */
 	public void setZoomRange(double minZoom, double maxZoom) {
 		if (minZoom <= 0 || maxZoom < minZoom) {
 			throw new IllegalArgumentException("Invalid zoom range: " + minZoom + " - " + maxZoom);
@@ -142,6 +185,11 @@ public class PicturePanel extends QRPanel {
 		setZoom(zoom);
 	}
 
+	/**
+	 * 设置鼠标滚轮和快捷键每次缩放的步长。
+	 *
+	 * @param mouseWheelZoomStep 缩放步长，必须大于 0
+	 */
 	public void setMouseWheelZoomStep(double mouseWheelZoomStep) {
 		if (mouseWheelZoomStep <= 0) {
 			throw new IllegalArgumentException("Invalid mouse wheel zoom step: " + mouseWheelZoomStep);
@@ -149,14 +197,28 @@ public class PicturePanel extends QRPanel {
 		this.mouseWheelZoomStep = mouseWheelZoomStep;
 	}
 
+	/**
+	 * @return 当前横向平移量
+	 */
 	public int panX() {
 		return panX;
 	}
 
+	/**
+	 * @return 当前纵向平移量
+	 */
 	public int panY() {
 		return panY;
 	}
 
+	/**
+	 * 设置图片平移量。
+	 *
+	 * <p>设置后会自动限制在可见范围内。</p>
+	 *
+	 * @param x 横向平移量
+	 * @param y 纵向平移量
+	 */
 	public void setPan(int x, int y) {
 		this.panX = x;
 		this.panY = y;
@@ -164,6 +226,11 @@ public class PicturePanel extends QRPanel {
 		repaint();
 	}
 
+	/**
+	 * 重置平移状态。
+	 *
+	 * <p>该方法不会重置缩放比例，只把拖拽状态和平移量清零。</p>
+	 */
 	public void resetView() {
 		panX = 0;
 		panY = 0;

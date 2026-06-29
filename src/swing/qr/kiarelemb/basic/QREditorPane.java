@@ -23,10 +23,25 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 /**
+ * QR Swing 的轻量富文本编辑组件。
+ *
+ * <p>该类基于 {@link JEditorPane}，能力介于 {@link QRTextArea} 和 {@link QRTextPane} 之间：
+ * 支持通过 {@code print/println} 按字体、前景色、背景色插入文本，支持撤销重做、
+ * 事件封装、滚动面板、主题刷新和自定义光标。相比 {@link QRTextPane}，本类不提供完整的
+ * 行列索引、选区结束、文件拖入等高级能力。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QREditorPane logPane = new QREditorPane();
+ * logPane.addUndoManager();
+ * logPane.println("启动完成", QRColorsAndFonts.LIGHT_GREEN);
+ * logPane.println("读取失败", QRColorsAndFonts.RED_NORMAL);
+ * panel.add(logPane.addScrollPane());
+ * </code></pre>
+ *
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QREditorPane
- * @description 略强于 {@link QRTextArea}
  * @create 2024/7/12 下午10:51
  */
 public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCaretListenerAdd, QRFocusListenerAdd, QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
@@ -64,6 +79,12 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
         print(str, QRColorsAndFonts.TEXT_COLOR_FORE, QRColorsAndFonts.TEXT_COLOR_BACK, getDocument().getLength());
     }
 
+    /**
+     * 在末尾插入指定前景色文本。
+     *
+     * @param str       要插入的文本
+     * @param colorFore 前景色
+     */
     public final void print(String str, Color colorFore) {
         print(str, textFont, colorFore, QRColorsAndFonts.TEXT_COLOR_BACK, getDocument().getLength());
     }
@@ -103,10 +124,25 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
         print(str, attributeSet, index);
     }
 
+    /**
+     * 在末尾插入带完整样式的文本。
+     *
+     * @param str 要插入的文本
+     * @param sas 字体、颜色等样式属性
+     */
     public final void print(String str, SimpleAttributeSet sas) {
         print(str, sas, getDocument().getLength());
     }
 
+    /**
+     * 在指定位置插入带完整样式的文本。
+     *
+     * <p>插入期间会临时设置 {@link #caretBlock}，避免子类光标更新逻辑在批量写入时反复触发。</p>
+     *
+     * @param str   要插入的文本
+     * @param sas   字体、颜色等样式属性
+     * @param index 插入位置
+     */
     public void print(String str, SimpleAttributeSet sas, int index) {
         try {
             setCaretBlock();
@@ -118,6 +154,11 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
         }
     }
 
+    /**
+     * 在末尾插入文本并追加换行。
+     *
+     * @param str 要插入的文本
+     */
     public final void println(String str) {
         print(str + QRStringUtils.AN_ENTER);
     }
@@ -386,9 +427,11 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
     }
 
     /**
-     * 添加滚动条
+     * 添加滚动条。
      *
-     * @return 滚动条本身，实例是 {@link QRScrollPane}
+     * <p>重复调用会返回同一个 {@link QRScrollPane} 实例，并默认开启每次滚动 3 行的平滑滚动。</p>
+     *
+     * @return 承载当前编辑器的滚动面板
      */
     public QRScrollPane addScrollPane() {
         if (this.scrollPane == null) {
@@ -400,7 +443,9 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
     }
 
     /**
-     * 使文本框能够撤销重做
+     * 使编辑器能够撤销重做。
+     *
+     * <p>调用后会创建 {@link #undoManager}，并自动为当前文档绑定 Ctrl+Z/Ctrl+Y。</p>
      */
     public void addUndoManager() {
         this.undoManager = new QRUndoManager(this);
@@ -513,7 +558,7 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
     }
 
     /**
-     * 清除内容
+     * 清除全部文本内容。
      */
     public void clear() {
         setText("");
@@ -577,7 +622,9 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
     //region 各种设置
 
     /**
-     * 如果你不想让面板可编辑，但又想让光标处于编辑状态，那就调用这个方法吧
+     * 设置为不可编辑但保留文本光标外观。
+     *
+     * <p>适合只读日志、预览文本等场景：用户不能修改内容，但仍能看到编辑光标并进行选择/复制。</p>
      */
     public void setEditableFalseButCursorEdit() {
         setEditable(false);
@@ -585,11 +632,21 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
         QREditorPane.this.caret.setVisible(true);
     }
 
+    /**
+     * 鼠标进入组件时自动请求焦点。
+     */
     public void setEnterAutoFocus() {
         addMouseListener();
         addMouseAction(QRMouseListener.TYPE.ENTER, event -> requestFocus());
     }
 
+    /**
+     * 设置文本是否允许选择高亮。
+     *
+     * <p>关闭时会移除 highlighter，因此用户无法看到选择高亮。</p>
+     *
+     * @param selectable true 表示允许选择
+     */
     public void setSelectable(boolean selectable) {
         if (selectable) {
             var highlighter = getHighlighter();
@@ -629,10 +686,16 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
         setCursor(QRTextPane.EDIT);
     }
 
+    /**
+     * 暂时阻止子类光标更新逻辑。
+     */
     public final void setCaretBlock() {
         this.caretBlock = true;
     }
 
+    /**
+     * 恢复光标更新逻辑。
+     */
     public final void setCaretUnblock() {
         this.caretBlock = false;
     }

@@ -21,9 +21,23 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
+ * QR Swing 的标签页面板。
+ *
+ * <p>该类不是 Swing 原生 {@link JTabbedPane}，而是由一排自绘标签和一个中心内容面板组合而成。
+ * 每个标签对应一个 {@link QRTabbedContentPanel}；切换标签时会移除旧内容、添加新内容，
+ * 并触发 {@link QRTabSelectEvent}。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRTabbedPane tabs = new QRTabbedPane(BorderLayout.NORTH);
+ * tabs.addTabSelectChangedAction(event -> updateTitle(event.after()));
+ * QRTabbedContentPanel general = tabs.addTab("常规", new QRTabbedContentPanel());
+ * QRTabbedContentPanel advanced = tabs.addTab("高级", new QRTabbedContentPanel());
+ * tabs.setSelectedTab(0);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-27 14:27
  **/
 public class QRTabbedPane extends QRPanel {
@@ -105,12 +119,19 @@ public class QRTabbedPane extends QRPanel {
 
 
     /**
-     * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
+     * 添加标签切换动作。
+     *
+     * @param ar 动作，参数为 {@link QRTabSelectEvent}
      */
     public void addTabSelectChangedAction(QRActionRegister<QRTabSelectEvent> ar) {
         this.tabSelectChangedListener.add(ar);
     }
 
+    /**
+     * 标签切换回调，子类可重写。
+     *
+     * @param event 切换事件
+     */
     protected void tabSelectChangedAction(QRTabSelectEvent event) {
 
     }
@@ -127,6 +148,13 @@ public class QRTabbedPane extends QRPanel {
 
     //endregion
 
+    /**
+     * 为后续添加的标签启用关闭按钮。
+     *
+     * <p>应在 {@link #addTab(String, QRTabbedContentPanel)} 前调用。关闭按钮点击后会触发
+     * {@link #closeButtonAction(QRTabbedPaneCloseEvent)} 和注册到 {@link #closeButtonActionListener()} 的动作；
+     * 默认不会自动移除标签，调用方需在回调里处理。</p>
+     */
     public void addTabCloseButton() {
         this.loadCloseButton = true;
         this.closeButtonActionListener = new QRTabCloseListener();
@@ -162,22 +190,41 @@ public class QRTabbedPane extends QRPanel {
         this.tabFont = tabTitleFont;
     }
 
+    /**
+     * @return 当前选中内容面板索引
+     */
     public int getContentPaneIndex() {
         return getSelectedTabIndex();
     }
 
+    /**
+     * @return 当前选中标签索引，未选中时为 -1
+     */
     public int getSelectedTabIndex() {
         return this.selectedIndex;
     }
 
+    /**
+     * @return 当前选中标签面板，未选中时为 null
+     */
     public QRTabPanel getSelectedTab() {
         return this.selectedTab;
     }
 
+    /**
+     * @return 标签数量
+     */
     public int getTabSize() {
         return this.arrTabs.size();
     }
 
+    /**
+     * 添加一个无图标标签。
+     *
+     * @param title   标签标题
+     * @param content 内容面板
+     * @return 添加后的标签索引
+     */
     public int addTab(String title, QRTabbedContentPanel content) {
         return addTab(title, null, content);
     }
@@ -207,7 +254,9 @@ public class QRTabbedPane extends QRPanel {
     }
 
     /**
-     * 关闭按钮的事件
+     * 关闭按钮点击事件，子类可重写。
+     *
+     * <p>默认空实现，不会移除标签。</p>
      */
     protected void closeButtonAction(QRTabbedPaneCloseEvent e) {
 
@@ -229,6 +278,13 @@ public class QRTabbedPane extends QRPanel {
         repaint();
     }
 
+    /**
+     * 获取指定索引对应的内容面板。
+     *
+     * @param index 标签索引
+     * @return 内容面板
+     * @throws IndexOutOfBoundsException 索引超出范围时抛出
+     */
     public QRTabbedContentPanel getContentPanel(int index) {
         if (this.arrTabs.size() <= index || index < 0) {
             throw new IndexOutOfBoundsException(index);

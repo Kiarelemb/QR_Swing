@@ -13,9 +13,23 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
+ * QR Swing 标题栏菜单面板。
+ *
+ * <p>该组件用于承载多个菜单按钮。调用 {@link #add(String)} 时会根据当前系统自动创建合适的
+ * 菜单按钮实现：macOS 使用 {@link QRMenuButtonOriginal}，其他系统使用 {@link QRMenuButton}。
+ * 因此调用方通常不需要关心平台差异。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRMenuPanel menu = new QRMenuPanel();
+ * QRButton file = menu.add("文件");
+ * file.add(new QRMenuItem("打开"));
+ * file.add(new QRMenuItem("保存"));
+ * menu.setAutoExpend(true);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-04 17:11
  **/
 public class QRMenuPanel extends QRPanel {
@@ -56,6 +70,12 @@ public class QRMenuPanel extends QRPanel {
         return button;
     }
 
+    /**
+     * 按名称查找菜单按钮。
+     *
+     * @param name 按钮文本
+     * @return 匹配的按钮，未找到时为 null
+     */
     public QRButton get(String name) {
         for (QRButton button : buttons) {
             if (Objects.equals(button.getText(), name)) {
@@ -94,6 +114,11 @@ public class QRMenuPanel extends QRPanel {
         }
     }
 
+    /**
+     * 暂时禁用所有菜单按钮和当前展开菜单中的菜单项。
+     *
+     * <p>会记录禁用前状态，稍后可调用 {@link #enablesAll()} 恢复。</p>
+     */
     public void disableAll() {
         for (QRButton item : this.buttons) {
             this.enables.add(item.isEnabled());
@@ -102,6 +127,9 @@ public class QRMenuPanel extends QRPanel {
         }
     }
 
+    /**
+     * 恢复 {@link #disableAll()} 前记录的启用状态。
+     */
     public void enablesAll() {
         int index = 0;
         for (QRButton item : this.buttons) {
@@ -111,7 +139,9 @@ public class QRMenuPanel extends QRPanel {
     }
 
     /**
-     * 设置菜单按钮是否自动展开菜单栏
+     * 设置鼠标经过菜单按钮时是否自动展开菜单。
+     *
+     * @param autoExpend true 表示鼠标进入按钮就展开菜单
      */
     public void setAutoExpend(boolean autoExpend) {
         this.autoExpend = autoExpend;

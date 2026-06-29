@@ -14,9 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 左右/上下树形导航内容面板。
+ *
+ * <p>该组件由一个 {@link QRTree} 和一个中心 {@link QRScrollPane} 组成。
+ * 调用方把树节点和内容面板建立映射后，点击节点即可在中心区域显示对应面板。
+ * 适合设置窗口、分类导航、帮助文档目录等场景。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRTreeTabbedPane pane = new QRTreeTabbedPane(tree, BorderLayout.WEST);
+ * pane.setPositionVague(true);
+ * pane.addTreeNodePointToPanel(windowNode, windowPanel);
+ * pane.addTreeNodePointToPanel(shortcutNode, shortcutPanel);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-01-29 14:39
  **/
 public class QRTreeTabbedPane extends QRPanel {
@@ -88,11 +101,24 @@ public class QRTreeTabbedPane extends QRPanel {
 //		tree.add
 //	}
 
+    /**
+     * 批量添加树节点到内容面板的映射。
+     *
+     * @param map 节点与面板映射
+     */
     public void addTreeNodePointToPanel(Map<TreeNode, ? extends JPanel> map) {
         this.map.putAll(map);
         map.forEach((this::putAction));
     }
 
+    /**
+     * 添加单个树节点到内容面板的映射。
+     *
+     * <p>添加后会为该节点注册点击动作，点击节点时把中心滚动区域切换到对应面板。</p>
+     *
+     * @param node  树节点
+     * @param panel 对应内容面板
+     */
     public void addTreeNodePointToPanel(TreeNode node, JPanel panel) {
         map.put(node, panel);
         putAction(node, panel);
@@ -107,6 +133,12 @@ public class QRTreeTabbedPane extends QRPanel {
         scrollPane.setViewportView(panel);
     }
 
+    /**
+     * 获取节点对应的内容面板。
+     *
+     * @param node 树节点
+     * @return 内容面板，未映射时为 null
+     */
     public JPanel getPanel(TreeNode node) {
         return map.get(node);
     }
@@ -120,6 +152,9 @@ public class QRTreeTabbedPane extends QRPanel {
         this.treePositionFromBorderLayout = treePositionFromBorderLayout;
     }
 
+    /**
+     * @return 当前树所在的 BorderLayout 位置
+     */
     public String treePositionFromBorderLayout() {
         return treePositionFromBorderLayout;
     }
@@ -133,10 +168,16 @@ public class QRTreeTabbedPane extends QRPanel {
         this.positionVague = positionVague;
     }
 
+    /**
+     * @return 是否允许树节点点击使用最近节点模糊匹配
+     */
     public boolean positionVague() {
         return positionVague;
     }
 
+    /**
+     * @return 内部树控件
+     */
     public QRTree tree() {
         return tree;
     }

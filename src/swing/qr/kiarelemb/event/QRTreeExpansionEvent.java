@@ -6,10 +6,14 @@ import javax.swing.tree.TreePath;
 import java.util.EventObject;
 
 /**
+ * QRTree 节点展开/折叠前事件。
+ *
+ * <p>该事件由 {@link swing.qr.kiarelemb.listener.QRTreeWillExpandListener}
+ * 发出，用于在节点展开或折叠前通知调用方当前路径。</p>
+ *
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QRTreeExpansionEvent
- * @description TODO
  * @create 2026/6/4 21:37
  */
 public class QRTreeExpansionEvent  extends EventObject {
@@ -20,6 +24,9 @@ public class QRTreeExpansionEvent  extends EventObject {
 		this.path = path;
 	}
 
+	/**
+	 * @return 即将展开或折叠的树路径
+	 */
 	public TreePath getPath() {
 		return path;
 	}

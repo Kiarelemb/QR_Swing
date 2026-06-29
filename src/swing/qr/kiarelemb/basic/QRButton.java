@@ -12,7 +12,6 @@ import swing.qr.kiarelemb.inter.listener.add.QRMouseMotionListenerAdd;
 import swing.qr.kiarelemb.listener.QRActionListener;
 import swing.qr.kiarelemb.listener.QRMouseListener;
 import swing.qr.kiarelemb.listener.QRMouseMotionListener;
-import swing.qr.kiarelemb.task.QRTaskRunner;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 
 import javax.swing.*;
@@ -279,7 +278,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	/**
 	 * 推荐使用本类中的 {@link #addClickAction(QRActionRegister)} 方法
 	 */
-	@Deprecated()
+	@Deprecated
 	@Override
 	public void addActionListener(ActionListener l) {
 		super.addActionListener(l);

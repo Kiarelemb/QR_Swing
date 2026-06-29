@@ -11,9 +11,17 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
+ * 圆角样式的文件选择按钮。
+ *
+ * <p>行为与 {@link QRFileSelectButton} 基本一致，只是基类改为 {@link QRRoundButton}。
+ * 点击后打开 {@link QRFileSelectDialog}，成功时更新 {@link #selectedFile()} 和
+ * {@link #selectedFilePath()} 并执行成功回调。</p>
+ *
+ * <p>注意：当前实现会要求返回的 {@link File#exists()} 为 true，因此不适合作为
+ * {@link QRFileSelectDialog.SelectMode#SAVE_FILE} 的保存路径按钮。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-02-08 15:33
  **/
 public class QRFileSelectRoundButton extends QRRoundButton {
@@ -79,7 +87,9 @@ public class QRFileSelectRoundButton extends QRRoundButton {
     }
 
     /**
-     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@link #selectedFile}
+     * 添加选择成功动作。
+     *
+     * @param ar 其参数为当前 {@link #selectedFile}
      */
     public final void addSuccessAction(QRActionRegister<File> ar) {
         successes.add(ar);
@@ -87,38 +97,63 @@ public class QRFileSelectRoundButton extends QRRoundButton {
 
 
     /**
-     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 null
+     * 添加选择失败动作。
+     *
+     * <p>用户取消时参数为 null；如果对话框返回了无效文件，参数为该文件对象。</p>
+     *
+     * @param ar 失败动作
      */
     public final void addFailureAction(QRActionRegister<File> ar) {
         failures.add(ar);
     }
 
+    /**
+     * 用户重复选择同一路径时的处理。
+     */
     protected void sameFileSelectedAction() {
         String message = this.selectMode == QRFileSelectDialog.SelectMode.DIRECTORY_ONLY ? "该文件夹已被选中！" : "该文件已被选中！";
         QROpinionDialog.messageTellShow(this.parent, message);
     }
 
+    /**
+     * 选择成功回调，子类可重写。
+     *
+     * @param selectedFile     选择到的文件或目录
+     * @param selectedFilePath 绝对路径
+     */
     protected void successAction(File selectedFile, String selectedFilePath) {
     }
 
+    /**
+     * 选择失败回调，子类可重写。
+     */
     protected void failedAction() {
 
     }
 
     /**
-     * 获取选择的文件路径
+     * 获取最近一次成功选择的文件路径。
+     *
+     * @return 文件绝对路径；尚未成功选择时为 null
      */
     public String selectedFilePath() {
         return this.selectedFilePath;
     }
 
     /**
-     * 获取选择的文件
+     * 获取最近一次成功选择的文件。
+     *
+     * @return 文件或目录；尚未成功选择时为 null
      */
     public File selectedFile() {
         return this.selectedFile;
     }
 
+    /**
+     * 预设选择路径。
+     *
+     * @param selectedFilePath 文件或目录路径
+     */
     public void setSelectedFilePath(String selectedFilePath) {
         this.selectedFilePath = selectedFilePath;
     }

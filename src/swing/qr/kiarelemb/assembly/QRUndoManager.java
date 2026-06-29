@@ -17,9 +17,25 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 /**
+ * QR Swing 文本组件的撤销/重做管理器。
+ *
+ * <p>该类基于 Swing {@link UndoManager}，在构造时自动监听目标文本组件的文档变化，
+ * 并为目标组件绑定 Ctrl+Z 撤销和 Ctrl+Y 重做。QR Swing 文本组件通常通过
+ * {@code addUndoManager()} 创建本类实例。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRTextPane pane = new QRTextPane();
+ * pane.addUndoManager();
+ * pane.undoManager.addUndoActionListener();
+ * pane.undoManager.addAfterUndoAction(event -> updateStatus());
+ * </code></pre>
+ *
+ * <p>批量程序化修改文本时，可用 {@link #pause()} 暂停记录，完成后再调用 {@link #reStart()}。
+ * 如果希望一次快捷键撤销多个编辑单元，可通过 {@link #setTimes(int)} 设置每次操作执行次数。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-30 14:38
  **/
 public class QRUndoManager extends UndoManager implements UndoableEditListener {
@@ -83,6 +99,14 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
         }
     }
 
+    /**
+     * 为目标文本组件安装撤销/重做管理器。
+     *
+     * <p>构造后会自动监听 {@code comp.getDocument()}，并把 Ctrl+Z/Ctrl+Y 写入组件的
+     * InputMap/ActionMap。</p>
+     *
+     * @param comp 目标文本组件
+     */
     public QRUndoManager(JTextComponent comp) {
         setLimit(2000);
         undoAction = new UndoAction();
@@ -96,7 +120,9 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 添加 {@code Ctrl + Y} 事件监听器
+     * 初始化 {@code Ctrl + Y} 重做后的事件监听器。
+     *
+     * <p>如果要使用 {@link #addAfterRedoAction(QRActionRegister)} 注册回调，应先调用该方法。</p>
      */
     public void addRedoActionListener() {
         if (redoAfterActionListener == null) {
@@ -106,7 +132,9 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 添加 {@code Ctrl + Z} 事件监听器
+     * 初始化 {@code Ctrl + Z} 撤销后的事件监听器。
+     *
+     * <p>如果要使用 {@link #addAfterUndoAction(QRActionRegister)} 注册回调，应先调用该方法。</p>
      */
     public void addUndoActionListener() {
         if (undoAfterActionListener == null) {
@@ -116,7 +144,10 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 添加 {@code Ctrl + Y} 事件
+     * 添加重做完成后的动作。
+     *
+     * <p>动作参数中的编辑列表对应本次快捷键实际重做的编辑单元。调用前需先调用
+     * {@link #addRedoActionListener()}，否则动作不会被保存。</p>
      *
      * @param ar 操作
      */
@@ -127,7 +158,10 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 添加 {@code Ctrl + Z} 事件
+     * 添加撤销完成后的动作。
+     *
+     * <p>动作参数中的编辑列表对应本次快捷键实际撤销的编辑单元。调用前需先调用
+     * {@link #addUndoActionListener()}，否则动作不会被保存。</p>
      *
      * @param ar 操作
      */
@@ -152,7 +186,10 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 每个按键执行任务的次数，默认是 {@code 1} 次
+     * 设置每次快捷键触发时连续撤销/重做的编辑单元数量。
+     *
+     * <p>默认是 {@code 1}。例如某些输入法或程序化插入会产生多个小编辑单元，
+     * 可以把该值调大，让一次 Ctrl+Z 回退更符合业务感知。</p>
      *
      * @param times 次数
      */
@@ -161,21 +198,23 @@ public class QRUndoManager extends UndoManager implements UndoableEditListener {
     }
 
     /**
-     * 暂停记录
+     * 暂停记录新的文档编辑。
+     *
+     * <p>适合程序批量修改文本且不希望用户撤销这些内部修改时使用。</p>
      */
     public void pause() {
         aComponent.getDocument().removeUndoableEditListener(this);
     }
 
     /**
-     * 继续记录
+     * 恢复记录新的文档编辑。
      */
     public void reStart() {
         aComponent.getDocument().addUndoableEditListener(this);
     }
 
     /**
-     * 清除所有记录
+     * 清除所有撤销/重做历史。
      */
     public void clear() {
         discardAllEdits();

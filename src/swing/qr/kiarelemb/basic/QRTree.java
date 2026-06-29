@@ -19,9 +19,28 @@ import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
 /**
+ * QR Swing 的主题树控件。
+ *
+ * <p>该类基于 {@link JTree}，统一了主题渲染、节点展开/折叠控制、树选择事件、
+ * 节点点击事件、鼠标事件和展开前事件封装。设置窗口左侧导航、文件树、分类树等场景通常使用该类。</p>
+ *
+ * <p>如果节点使用 {@link QRMutableTreeNode}，可通过节点上的 {@code expendable/collapsable}
+ * 控制是否允许用户展开或折叠。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRMutableTreeNode root = new QRMutableTreeNode("设置");
+ * QRMutableTreeNode window = new QRMutableTreeNode("窗口");
+ * root.add(window);
+ *
+ * QRTree tree = new QRTree(root);
+ * tree.addTreeSelectionAction(event -> showPanel(event.getPath()));
+ * tree.addTreeNodeClickAction(tree.getTreePath(window), event -> showWindowPanel(), true);
+ * tree.expendAll();
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-01-28 21:39
  **/
 public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerAdd, QRMouseMotionListenerAdd, QRTreeNodeListenerAdd, QRTreeWillExpandListenerAdd, QRTreeSelectionListenerAdd {
@@ -62,16 +81,31 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		return new TreePath(nodes);
 	}
 
+	/**
+	 * 选中指定节点。
+	 *
+	 * @param node 要选中的节点
+	 */
 	public void select(TreeNode node) {
 		TreePath path = getTreePath(node);
 		setSelectionPath(path);
 	}
 
+	/**
+	 * 展开指定节点。
+	 *
+	 * @param node 要展开的节点
+	 */
 	public void expend(TreeNode node) {
 		TreePath path = getTreePath(node);
 		expandPath(path);
 	}
 
+	/**
+	 * 折叠指定节点。
+	 *
+	 * @param node 要折叠的节点
+	 */
 	public void collapse(TreeNode node) {
 		TreePath path = getTreePath(node);
 		collapsePath(path);
@@ -135,6 +169,13 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		}
 	}
 
+	/**
+	 * 添加树选择变化动作。
+	 *
+	 * <p>已自动安装内部树选择监听器。动作参数为 Swing 原生 {@link TreeSelectionEvent}。</p>
+	 *
+	 * @param ar 选择变化动作
+	 */
 	@Override
 	public void addTreeSelectionAction(QRActionRegister<TreeSelectionEvent> ar) {
 		if (this.treeSelectionListener == null) {
@@ -154,6 +195,14 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		}
 	}
 
+	/**
+	 * 添加树节点即将展开或折叠动作。
+	 *
+	 * <p>动作参数为 {@link QRTreeExpansionEvent}，可读取即将变化的 {@link TreePath}。</p>
+	 *
+	 * @param type 展开或折叠类型
+	 * @param ar   动作
+	 */
 	@Override
 	public void addTreeWillAction(QRTreeWillExpandListener.TYPE type, QRActionRegister<QRTreeExpansionEvent> ar) {
 		if (this.treeWillExpandListener == null) {
@@ -165,7 +214,10 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 	}
 
 	/**
-	 * 给树添加节点单击事件
+	 * 安装节点点击监听器。
+	 *
+	 * <p>该监听器基于鼠标点击位置计算实际命中的节点和最近节点，并封装为
+	 * {@link QRTreeNodeEvent} 分发。</p>
 	 */
 	@Override
 	public void addTreeNodeListener() {
@@ -184,7 +236,12 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 	 * 添加单击事件
 	 * 已自动添加 {@link #addTreeNodeListener()}
 	 *
-	 * @param ar 操作
+	 * <p>{@code positionVague} 为 false 时，只有点击位置正好命中 {@code path} 才触发；
+	 * 为 true 时，点击该路径附近的最近节点也可触发，适合行高较大或希望提高容错的树导航。</p>
+	 *
+	 * @param path          目标节点路径
+	 * @param ar            操作，参数为 {@link QRTreeNodeEvent}
+	 * @param positionVague 是否允许最近节点匹配
 	 */
 	@Override
 	public final void addTreeNodeClickAction(TreePath path, QRActionRegister<QRTreeNodeEvent> ar, boolean positionVague) {

@@ -13,6 +13,24 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
+ * 打开 {@link QRFileSelectDialog} 的文件选择按钮。
+ *
+ * <p>按钮点击后会弹出文件/文件夹选择对话框。选择成功后会更新
+ * {@link #selectedFile()} 和 {@link #selectedFilePath()}，并执行成功回调；
+ * 用户取消、关闭对话框或选中无效路径时执行失败回调。</p>
+ *
+ * <p>注意：当前实现会要求返回的 {@link File#exists()} 为 true，因此不适合作为
+ * {@link QRFileSelectDialog.SelectMode#SAVE_FILE} 的保存路径按钮；保存路径场景应直接使用
+ * {@link QRFileSelectDialog}。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRFileSelectButton button = new QRFileSelectButton(
+ *         "选择图片", this, QRFileSelectDialog.SelectMode.FILE_ONLY, "图片", "png", "jpg");
+ * button.addSuccessAction(file -> preview(file));
+ * button.addFailureAction(file -> QRSmallTipShow.display(this, "未选择图片"));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @description: 一个用来选择文件的按钮，可以设置文字，或设置图片
@@ -106,7 +124,9 @@ public class QRFileSelectButton extends QRButton {
     }
 
     /**
-     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 {@link #selectedFile}
+     * 添加选择成功动作。
+     *
+     * @param ar 其参数为当前 {@link #selectedFile}
      */
     public final void addSuccessAction(QRActionRegister<File> ar) {
         successes.add(ar);
@@ -114,38 +134,67 @@ public class QRFileSelectButton extends QRButton {
 
 
     /**
-     * @param ar 其参数 {@link QRActionRegister#action(Object)} 为 null
+     * 添加选择失败动作。
+     *
+     * <p>用户取消时参数为 null；如果对话框返回了无效文件，参数为该文件对象。</p>
+     *
+     * @param ar 失败动作
      */
     public final void addFailureAction(QRActionRegister<File> ar) {
         failures.add(ar);
     }
 
+    /**
+     * 用户重复选择同一路径时的处理。
+     *
+     * <p>默认弹出“该文件/文件夹已被选中”的提示；子类可重写。</p>
+     */
     protected void sameFileSelectedAction() {
         String message = this.selectMode == QRFileSelectDialog.SelectMode.DIRECTORY_ONLY ? "该文件夹已被选中！" : "该文件已被选中！";
         QROpinionDialog.messageTellShow(this.parent, message);
     }
 
+    /**
+     * 选择成功回调，子类可重写。
+     *
+     * @param selectedFile     选择到的文件或目录
+     * @param selectedFilePath 绝对路径
+     */
     protected void successAction(File selectedFile, String selectedFilePath) {
     }
 
+    /**
+     * 选择失败回调，子类可重写。
+     */
     protected void failedAction() {
 
     }
 
     /**
-     * 获取选择的文件路径
+     * 获取最近一次成功选择的文件路径。
+     *
+     * @return 文件绝对路径；尚未成功选择时为 null
      */
     public String selectedFilePath() {
         return this.selectedFilePath;
     }
 
     /**
-     * 获取选择的文件
+     * 获取最近一次成功选择的文件。
+     *
+     * @return 文件或目录；尚未成功选择时为 null
      */
     public File selectedFile() {
         return this.selectedFile;
     }
 
+    /**
+     * 预设选择路径。
+     *
+     * <p>下次打开选择对话框时会尝试定位到该路径。</p>
+     *
+     * @param selectedFilePath 文件或目录路径
+     */
     public void setSelectedFilePath(String selectedFilePath) {
         this.selectedFilePath = selectedFilePath;
     }

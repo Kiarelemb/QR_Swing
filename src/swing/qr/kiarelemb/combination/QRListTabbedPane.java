@@ -17,6 +17,21 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * 列表导航内容面板。
+ *
+ * <p>该组件由一个 {@link QRList} 和多个 {@link QRTabbedContentPanel} 组成。
+ * 左侧/上方列表显示标题，用户点击列表项时，中心区域切换到同索引的内容面板。
+ * 相比 {@link QRTabbedPane}，该组件更适合标题较多或需要纵向导航的页面。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRListTabbedPane pane = new QRListTabbedPane();
+ * QRTabbedContentPanel general = pane.addPanel("常规");
+ * QRTabbedContentPanel shortcut = pane.addPanel("快捷键");
+ * pane.addTabSelectChangedAction(event -> saveLastIndex(event.after()));
+ * pane.setSelectedTab(0);
+ * </code></pre>
+ *
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QRListTabbedPane
@@ -127,7 +142,9 @@ public class QRListTabbedPane extends QRPanel {
     }
 
     /**
-     * 传入 {@link QRActionRegister#action(Object)} 的是 {@link QRTabSelectEvent}
+     * 添加切换动作。
+     *
+     * @param ar 动作，参数为 {@link QRTabSelectEvent}
      */
     public void addTabSelectChangedAction(QRActionRegister<QRTabSelectEvent> ar) {
         this.tabSelectChangedListener.add(ar);
@@ -168,7 +185,7 @@ public class QRListTabbedPane extends QRPanel {
     }
 
     /**
-     * 可直接重写
+     * 标签切换回调，子类可直接重写。
      *
      * @param event 参数是 {@link QRTabSelectEvent}
      */
@@ -184,10 +201,16 @@ public class QRListTabbedPane extends QRPanel {
 
     //endregion
 
+    /**
+     * @return 内部导航列表
+     */
     public QRList<String> getList() {
         return list;
     }
 
+    /**
+     * @return 当前选中索引，尚未选中时为 -1
+     */
     public int selectedIndex() {
         return selectedIndex;
     }

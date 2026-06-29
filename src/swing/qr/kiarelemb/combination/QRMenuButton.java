@@ -15,6 +15,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
+ * 非 macOS 平台使用的菜单栏按钮。
+ *
+ * <p>该按钮内部使用 {@link QRPopupMenu} 承载 {@link QRMenuItem}。
+ * 一般由 {@link QRMenuPanel#add(String)} 自动创建，调用方拿到返回的 {@link QRButton}
+ * 后直接调用 {@link #add(QRMenuItem)} 添加菜单项。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @description: 适用于Windows系统的菜单栏按钮
@@ -62,6 +68,9 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         }
     }
 
+    /**
+     * 显示下拉菜单。
+     */
     @Override
     public void showPopupMenu() {
         this.jpm.show(this.menuPanel, getX(), getY() + getHeight());
@@ -77,6 +86,13 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         }
     }
 
+    /**
+     * 添加菜单项。
+     *
+     * <p>菜单项点击后会自动关闭弹出菜单，并重置所属菜单面板的按压状态。</p>
+     *
+     * @param qmi 菜单项
+     */
     @Override
     public void add(QRMenuItem qmi) {
         this.jpm.add(qmi);
@@ -91,6 +107,9 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         });
     }
 
+    /**
+     * 禁用当前菜单中的所有菜单项，并记录原启用状态。
+     */
     @Override
     public void disableAll() {
         for (QRMenuItem item : this.buttons) {
@@ -99,6 +118,9 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         }
     }
 
+    /**
+     * 恢复 {@link #disableAll()} 前记录的菜单项启用状态。
+     */
     @Override
     public void enablesAll() {
         int index = 0;
@@ -107,10 +129,16 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         }
     }
 
+    /**
+     * 添加菜单分隔线。
+     */
     public void addSeparator() {
         this.jpm.addSeparator();
     }
 
+    /**
+     * 关闭弹出菜单。
+     */
     @Override
     public void closePopupMenu() {
         this.jpm.setVisible(false);

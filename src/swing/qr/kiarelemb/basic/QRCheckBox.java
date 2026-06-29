@@ -12,9 +12,19 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
+ * QR Swing 的主题复选框。
+ *
+ * <p>该类基于 {@link JCheckBox}，使用 QR Swing 内置图片资源绘制选中、未选中、禁用、
+ * 悬停和按下状态，并通过 {@link QRActionListener} 统一分发点击动作。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRCheckBox top = new QRCheckBox("窗口置顶", QRSwing.windowAlwaysOnTop);
+ * top.addClickAction(event -> QRSwing.setWindowAlwaysOnTop(top.isSelected()));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-21 18:44
  **/
 public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRActionListenerAdd {
@@ -58,6 +68,13 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
     }
 
     //region 取得监听器
+    /**
+     * 取得内部点击监听器。
+     *
+     * <p>通常不需要直接操作监听器，外部注册点击动作请使用 {@link #addClickAction(QRActionRegister)}。</p>
+     *
+     * @return 点击监听器
+     */
     public QRActionListener getClickListener() {
         return this.clickListener;
     }
@@ -65,7 +82,7 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
 
 
     /**
-     * 给按钮添加单击事件，在实例化时已自动添加
+     * 安装内部点击监听器，在实例化时已自动添加。
      */
     @Override
     public void addActionListener() {
@@ -77,8 +94,9 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
     }
 
     /**
-     * 添加单击事件
-     * 已自动添加 {@link #addActionListener()}
+     * 添加点击动作。
+     *
+     * <p>动作会在复选框状态已经切换后执行，因此回调里可以直接读取 {@link #isSelected()}。</p>
      *
      * @param ar 操作
      */
@@ -93,7 +111,9 @@ public class QRCheckBox extends JCheckBox implements QRComponentUpdate, QRAction
     }
 
     /**
-     * 已自动添加监听器，可直接重写
+     * 点击回调，子类可直接重写。
+     *
+     * <p>外部调用方通常使用 {@link #addClickAction(QRActionRegister)}。</p>
      */
     protected void actionEvent(ActionEvent o) {
     }
