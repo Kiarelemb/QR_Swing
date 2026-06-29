@@ -10,6 +10,15 @@ import java.io.File;
 import java.util.*;
 
 /**
+ * QR Swing 主题颜色和全局字体定义。
+ *
+ * <p>框架启动后会通过 {@link #loadTheme()} 根据 {@link QRSwing#theme} 加载主题色。
+ * 基础主题内置在代码中；自定义主题文件放在 {@link QRSwing#THEME_DIRECTORY}，扩展名为
+ * {@link #THEME_FILE_EXTENSION}。控件刷新时通常读取本类的静态颜色和字体字段。</p>
+ *
+ * <p>全局字体由 {@link QRSwing#globalFont} 决定，可通过 {@link QRSwing#customFontName(String)}
+ * 或 {@link QRSwing#customFontName(Font)} 修改。新建控件或调用 {@code componentFresh()} 后会使用最新字体。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @apiNote: 颜色和字体库
@@ -100,7 +109,10 @@ public class QRColorsAndFonts {
 	public static String[] THEME_CLASS;
 
 	/**
-	 * 加载主题
+	 * 加载当前主题并刷新 Swing 全局 Tooltip 颜色。
+	 *
+	 * <p>该方法只更新本类的静态颜色字段和 {@link UIManager} 中的 Tooltip 颜色；
+	 * 已显示窗口需要调用自身的 {@code componentFresh()} 或重绘方法才能立刻体现新主题。</p>
 	 */
 	public static void loadTheme() {
 		Color[] colors = getThemeColors(QRSwing.theme);
@@ -121,6 +133,13 @@ public class QRColorsAndFonts {
 		THEME_CLASS = themes.toArray(QRStringUtils.ARR_EMPTY);
 	}
 
+	/**
+	 * 将主题颜色数组写入本类的静态颜色字段。
+	 *
+	 * <p>数组顺序必须与 {@link #COLOR_ATTRIBUTES} 一致。传入 {@code null} 时会回退到第一个基础主题。</p>
+	 *
+	 * @param colors 主题颜色数组
+	 */
 	public static void loadColors(Color[] colors) {
 		if (colors != null) {
 			int index = 0;
@@ -142,6 +161,17 @@ public class QRColorsAndFonts {
 		}
 	}
 
+	/**
+	 * 按主题名称取得颜色数组。
+	 *
+	 * <p>若 {@code themeName} 是内置中文主题名，直接返回代码内置颜色；
+	 * 否则会在 {@link QRSwing#THEME_DIRECTORY} 中查找同名主题文件。主题文件每行保存一个经
+	 * {@code QRCodePack.decrypt(line, "theme")} 解密后的 {@code 属性名=r,g,b}，属性名必须完整覆盖
+	 * {@link #COLOR_ATTRIBUTES}。</p>
+	 *
+	 * @param themeName 主题名称
+	 * @return 主题颜色数组；找不到或文件无效时返回 null
+	 */
 	public static Color[] getThemeColors(String themeName) {
 
 		LinkedList<String> themes = new LinkedList<>(Arrays.asList(BASIC_THEMES));
@@ -255,7 +285,10 @@ public class QRColorsAndFonts {
 	}
 
 	/**
-	 * 取得主题文件的文件名
+	 * 取得主题文件对应的主题名。
+	 *
+	 * @param f 主题文件
+	 * @return 去掉 {@link #THEME_FILE_EXTENSION} 后的文件名；无扩展名时返回默认名
 	 */
 	public static String getThemeFileName(File f) {
 		final String name = f.getName();
@@ -359,7 +392,9 @@ public class QRColorsAndFonts {
 	}
 
 	/**
-	 * 采用全局字体名创建字体
+	 * 采用全局字体创建指定字号的字体。
+	 *
+	 * <p>该方法不会重新加载字体，只基于 {@link QRSwing#globalFont} 派生字号。</p>
 	 *
 	 * @param size 字体大小
 	 * @return 字体

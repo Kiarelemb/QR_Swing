@@ -22,9 +22,26 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 /**
+ * QR Swing 的基础按钮。
+ *
+ * <p>该类基于 {@link JButton}，统一了主题字体、透明绘制、悬停/按下背景色、
+ * 自定义 Tooltip、点击事件封装以及鼠标事件注册。普通使用时优先调用
+ * {@link #addClickAction(QRActionRegister)} 注册点击动作，而不是直接添加 Swing 原生
+ * {@link ActionListener}。</p>
+ *
+ * <p>按钮始终以透明组件方式绘制，{@link #setOpaque(boolean)} 会被固定为 {@code false}。
+ * 如果窗口开启背景图片，按钮的悬停/按下背景会按当前窗口背景模式调整透明度。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRButton saveButton = new QRButton("保存", "Ctrl+S");
+ * saveButton.addClickAction(e -> save());
+ * QRSwing.registerGlobalAction("ctrl s", saveButton.actionRegister(), true);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @apiNote: 按扭
+ * @apiNote: 按钮
  * @create 2022-11-04 16:13
  **/
 public class QRButton extends JButton implements QRComponentUpdate, QRActionListenerAdd, QRMouseMotionListenerAdd,
@@ -71,6 +88,9 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	/**
 	 * 添加单击事件
 	 * 已自动添加 {@link #addActionListener()}
+	 *
+	 * <p>多个动作会按注册顺序执行。通过 {@link #click()}、{@link #clickInvokeLater()}、
+	 * 鼠标点击或全局快捷键触发时，都会进入同一组点击动作。</p>
 	 *
 	 * @param ar 操作
 	 */
@@ -221,6 +241,14 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 
 	//endregion
 
+	/**
+	 * 菜单按钮专用扩展点。
+	 *
+	 * <p>普通 {@code QRButton} 不支持添加菜单项；只有 {@link QRMenuButton} 和
+	 * {@link QRMenuButtonOriginal} 子类可以使用该方法。</p>
+	 *
+	 * @param qmi 菜单项
+	 */
 	public void add(QRMenuItem qmi) {
 		if (!(this instanceof QRMenuButton) && !(this instanceof QRMenuButtonOriginal)) {
 			throw new IllegalStateException("该方法只为菜单按钮而设立！");
@@ -231,6 +259,7 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	 * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
 	 * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发
 	 * <p>需要注意的是，若运行的事件中大量包含界面 UI 的绘制，那本方法可能比 {@link #click()} 更合适</p>
+	 * <p>常用于全局快捷键回调中触发按钮动作。</p>
 	 */
 	public void clickInvokeLater() {
 		SwingUtilities.invokeLater(this::click);
@@ -239,6 +268,9 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	/**
 	 * 本方法绕过鼠标点击的模拟，直接运行 {@link #clickListener} 中的 {@link QRActionListener#actionPerformed(ActionEvent)}
 	 * 方法。这就意味着，只有本类中的 {@link #actionEvent(ActionEvent)} 和调用了 {@link #addClickAction(QRActionRegister)} 中的事件将被触发
+	 *
+	 * <p>该方法会在当前线程立即执行监听器。如果当前线程不是 EDT，且监听器会更新界面，应改用
+	 * {@link #clickInvokeLater()}。</p>
 	 */
 	public void click() {
 		clickListener.actionPerformed(null);
@@ -262,6 +294,14 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 		super.doClick();
 	}
 
+	/**
+	 * 返回可注册到全局快捷键系统的按钮动作。
+	 *
+	 * <p>该动作会调用 {@link #clickInvokeLater()}，因此适合直接传给
+	 * {@link QRSwing#registerGlobalAction(String, QRActionRegister, boolean)}。</p>
+	 *
+	 * @return 快捷键动作
+	 */
 	public QRActionRegister<KeyStroke> actionRegister() {
 		return actionRegister;
 	}

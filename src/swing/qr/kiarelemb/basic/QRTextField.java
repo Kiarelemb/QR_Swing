@@ -21,13 +21,38 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 /**
+ * QR Swing 的单行文本输入框。
+ *
+ * <p>该类基于 {@link JTextField}，统一了主题字体和颜色、自定义光标、焦点边框、
+ * 键盘/鼠标/文档/光标事件注册、撤销重做以及常用输入限制。构造时会自动安装键盘和焦点监听器；
+ * 文档、鼠标和光标监听器按需通过 {@code addXXXListener()} 或 {@code addXXXAction(...)} 添加。</p>
+ *
+ * <p>输入限制由 {@link TYPE} 或 {@link #addForbiddenChar(char...)} 等方法配置。限制发生在
+ * {@link KeyEvent#KEY_TYPED} 阶段，只拦截用户键入字符；如果通过 {@link #setText(String)} 设置文本，
+ * 调用方仍需要自行保证内容合法。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRTextField scoreField = new QRTextField(QRTextField.TYPE.NUMBERS_AND_DECIMAL);
+ * scoreField.addUndoManager();
+ * scoreField.addDocumentListenerActionAll(e -> preview(scoreField.getText()));
+ *
+ * QRTextField fileName = new QRTextField(QRTextField.TYPE.FILE_NAME);
+ * fileName.addForbiddenChar('#', '%');
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-30 14:36
  **/
 public class QRTextField extends JTextField implements QRComponentUpdate, QRTextBasicActionSetting, QRCaretListenerAdd, QRFocusListenerAdd,
 		QRDocumentListenerAdd, QRKeyListenerAdd, QRMouseListenerAdd, QRMouseMotionListenerAdd {
+	/**
+	 * 内置输入类型。
+	 *
+	 * <p>这些类型只配置键入字符过滤，不做完整语义校验。例如 {@link #NUMBERS_AND_DECIMAL}
+	 * 允许输入多个小数点；如需更严格规则，可重写 {@link #meetCondition()} 或监听文本变化。</p>
+	 */
 	public enum TYPE {
 		/**
 		 * 默认
@@ -288,16 +313,31 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 */
 	@Override
 	public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar) {
+		addKeyListenerAction(type, ar, (Object[]) null);
+	}
+
+	/**
+	 * 添加按键过滤事件。
+	 * <p>已自动添加 {@link #addKeyListener()}，按键参数规则见 {@link QRKeyListener#add(QRKeyListener.TYPE, QRActionRegister, Object...)}。</p>
+	 *
+	 * @param type 类型
+	 * @param ar   操作
+	 * @param keys 按键过滤条件
+	 */
+	@Override
+	public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar, Object... keys) {
 		if (this.keyListener == null) {
 			addKeyListener();
 		}
 		if (this.keyListener != null) {
-			this.keyListener.add(type, ar);
+			this.keyListener.add(type, ar, keys);
 		}
 	}
 
 	/**
-	 * 使文本框能够撤销重做
+	 * 使文本框能够撤销重做。
+	 *
+	 * <p>调用后 {@link #undoManager} 才会被初始化，之后可通过其 Action 绑定菜单项或快捷键。</p>
 	 */
 	public void addUndoManager() {
 		this.undoManager = new QRUndoManager(this);
@@ -337,6 +377,14 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 
 	//region 输入限制
 
+	/**
+	 * 设置文本框的内置输入类型。
+	 *
+	 * <p>可在构造后再次调用。多次调用会在现有过滤规则上继续追加字符规则，
+	 * 不会清空此前通过 {@link #addForbiddenChar(char...)} 或其他类型方法添加的限制。</p>
+	 *
+	 * @param type 输入类型，不能为 {@code null}
+	 */
 	public void setType(TYPE type) {
 		switch (type) {
 			case NUMBERS -> numbersOnly();
@@ -347,7 +395,9 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	}
 
 	/**
-	 * 可检查文件路径的非法字符
+	 * 添加文件路径非法字符过滤。
+	 *
+	 * <p>会禁止 {@code * ? " < > |}，但允许目录分隔符 {@code /} 和 {@code \}。</p>
 	 */
 	public void filePathField() {
 		String illegalMarks = "*?\"<>|";
@@ -355,7 +405,9 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	}
 
 	/**
-	 * 可检查文件名的非法字符
+	 * 添加文件名非法字符过滤。
+	 *
+	 * <p>会禁止 {@code \ / : * ? " < > |}，适合保存文件名、模板名等不应包含路径分隔符的输入。</p>
 	 */
 	public void fileNameField() {
 		String illegalMarks = "\\/:*?\"<>|";
@@ -363,7 +415,9 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	}
 
 	/**
-	 * 设置为只能输入数字
+	 * 设置为只能输入数字字符 {@code 0-9}。
+	 *
+	 * <p>该限制只拦截键入字符，不会阻止通过粘贴或 {@link #setText(String)} 写入非数字内容。</p>
 	 */
 	public void numbersOnly() {
 		String numbers = "1234567890";
@@ -371,19 +425,31 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	}
 
 	/**
-	 * 允许输入数字和小数点
+	 * 允许输入数字和小数点。
+	 *
+	 * <p>该方法不保证最终文本是合法小数，例如不会限制只能出现一个小数点。</p>
 	 */
 	public void numberAndDecimal() {
 		String numbers = "1234567890.";
 		this.onlyAllowedInputChar.append(numbers);
 	}
 
+	/**
+	 * 追加禁止键入的字符。
+	 *
+	 * @param chars 禁止输入的字符列表
+	 */
 	public void addForbiddenChar(char... chars) {
 		for (char c : chars) {
 			this.forbiddenInputChar.append(c);
 		}
 	}
 
+	/**
+	 * 追加禁止键入的字符串中的每个字符。
+	 *
+	 * @param string 字符集合，null 会导致 {@link StringBuilder#append(String)} 追加字符串 "null"
+	 */
 	public void addForbiddenChar(String string) {
 		this.forbiddenInputChar.append(string);
 	}

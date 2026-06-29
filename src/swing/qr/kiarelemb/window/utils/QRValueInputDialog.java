@@ -14,11 +14,20 @@ import java.util.Objects;
 
 
 /**
+ * 单字段文本输入对话框。
+ *
+ * <p>适合重命名、跳转页码、输入少量参数等简单场景。点击“确定”且
+ * {@link #meetCondition()} 与 {@link #setAnswer(String)} 均通过后，
+ * {@link #isApproved()} 才会返回 true，调用方再通过 {@link #getAnswer()} 读取结果。</p>
+ *
+ * <p>子类可重写 {@link #meetCondition()} 做合法性检查，或重写 {@link #setAnswer(String)}
+ * 在保存结果前做格式化/转换。</p>
+ *
  * @author Kiarelemb QR
  * @create 2024.03.13
  * @apiNote 本类使用方法：
  * <pre><code>
- *     Input input = new Input(owner, textFieldTooltip, inputLabelText);
+ *     QRValueInputDialog input = new QRValueInputDialog(owner, "请输入名称", "名称");
  *     input.setVisible(true);
  *     if (!input.isApproved()) return;
  *     String answer = input.getAnswer();
@@ -93,7 +102,8 @@ public class QRValueInputDialog extends QREmptyDialog {
     }
 
     /**
-     * 设置默认值，即输入框打开时文本框的初始值
+     * 设置默认值，即输入框打开时文本框的初始值。
+     *
      * @param defaultValue 默认值
      */
     public void setDefaultValue(String defaultValue){
@@ -101,6 +111,12 @@ public class QRValueInputDialog extends QREmptyDialog {
         textField.setText(defaultValue);
     }
 
+    /**
+     * 要求用户必须修改默认值后才能点击确定。
+     *
+     * <p>应在 {@link #setDefaultValue(String)} 之后调用。若当前文本与默认值相同，
+     * 确定按钮会被禁用。</p>
+     */
     public void requireDefaultValueChange(){
         if(defaultValue != null){
             textField.addDocumentListenerActionAll(e -> {
@@ -121,7 +137,9 @@ public class QRValueInputDialog extends QREmptyDialog {
     }
 
     /**
-     * 获取用户是否点击了确定按钮
+     * 获取用户是否点击了确定按钮并通过校验。
+     *
+     * @return true 表示可以读取 {@link #getAnswer()}
      */
     public boolean isApproved() {
         return approved;
@@ -129,12 +147,25 @@ public class QRValueInputDialog extends QREmptyDialog {
 
     /**
      * 取得输入的内容。
-     * <p>经过 <pre><code>if (!input.isApproved()) return;</code></pre> 筛选之后的 <code>anaswer</code> 必定不为 <code>null</code>
+     *
+     * <p>经过 <pre><code>if (!input.isApproved()) return;</code></pre> 筛选之后的
+     * {@code answer} 必定不为 {@code null}。</p>
+     *
+     * @return 输入结果
      */
     public String getAnswer() {
         return answer;
     }
 
+    /**
+     * 保存输入结果。
+     *
+     * <p>子类可重写该方法，在写入 {@link #answer} 前做清洗、转换或额外校验。
+     * 返回 false 会阻止对话框确认关闭。</p>
+     *
+     * @param answer 输入框当前文本
+     * @return true 表示接受该输入
+     */
     protected boolean setAnswer(String answer) {
         this.answer = answer;
         return true;

@@ -21,15 +21,34 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
+ * QR Swing 常用组件工具类。
+ *
+ * <p>该类集中提供绝对布局辅助、按钮快捷添加、文本绘制、富文本属性创建、
+ * 批量执行回调、延迟执行、窗口重绘、递归遍历组件、透明背景适配以及 EDT 调度工具。
+ *
+ * <p>如果项目页面使用 {@code null} 布局，{@link #setBoundsAndAddToComponent(JComponent, JComponent, int, int, int, int)}
+ * 是最常用的添加控件方法；如果窗口开启了背景图片，{@link #componentLoopToSetOpaque(JComponent, boolean)}
+ * 和 {@link #windowFresh(JComponent)} 常配合设置项变更使用。
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-23 13:22
  **/
 public class QRComponentUtils {
 
 	/**
 	 * 向 {@code parent} 中添加 {@code comToAdd}，并设置 {@code comToAdd} 的 {@link JComponent#setBounds(int, int, int, int)}
+	 *
+	 * <p>适用于父容器使用 {@code null} 布局的设置页、工具面板和固定尺寸弹窗。
+	 * 如果父容器使用 {@link LayoutManager}，布局管理器可能会忽略这里设置的 bounds。</p>
+	 *
+	 * <pre><code>
+	 * QRPanel panel = new QRPanel(null);
+	 * QRLabel label = new QRLabel("用户名");
+	 * QRTextField field = new QRTextField();
+	 * QRComponentUtils.setBoundsAndAddToComponent(panel, label, 20, 20, 80, 30);
+	 * QRComponentUtils.setBoundsAndAddToComponent(panel, field, 110, 20, 180, 30);
+	 * </code></pre>
 	 *
 	 * @param parent   添加的父容器
 	 * @param comToAdd 子控件
@@ -46,6 +65,9 @@ public class QRComponentUtils {
 
 	/**
 	 * 向 {@code parent} 中添加 {@code comToAdd}，并设置 {@code comToAdd} 的 {@link JComponent#setLocation(int, int)}
+	 *
+	 * <p>该重载只设置位置，不设置尺寸。调用前应已通过 {@link JComponent#setSize(int, int)}、
+	 * {@link JComponent#setPreferredSize(Dimension)} 或组件自身逻辑确定尺寸。</p>
 	 *
 	 * @param parent   添加的父容器
 	 * @param comToAdd 子控件
@@ -93,6 +115,8 @@ public class QRComponentUtils {
 	/**
 	 * 横纵居中绘制文字
 	 *
+	 * <p>常用于自绘按钮、占位面板和轻量提示组件。该方法只负责绘制，不会修改组件文本属性。</p>
+	 *
 	 * @param com   控件
 	 * @param g     工具
 	 * @param text  内容
@@ -126,7 +150,30 @@ public class QRComponentUtils {
 	}
 
 	/**
+	 * 指定坐标绘制文字
+	 *
+	 * @param com   控件
+	 * @param g     工具
+	 * @param text  内容
+	 * @param font  字体
+	 * @param color 前景色
+	 * @param x     x     横位置
+	 * @param y     纵位置
+	 */
+	public static void componentStringDraw(JComponent com, Graphics g, String text, Font font, Color color, float x, float y) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				com.getClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING));
+		g2.setFont(font);
+		g2.setColor(color);
+		g2.drawString(text, x, y);
+	}
+
+	/**
 	 * 创建并返回一个具有指定字体属性的 {@link SimpleAttributeSet} 对象。
+	 *
+	 * <p>该对象可直接用于 {@link javax.swing.text.StyledDocument#insertString(int, String, javax.swing.text.AttributeSet)}
+	 * 或 {@link JTextPane#setCharacterAttributes(javax.swing.text.AttributeSet, boolean)}。</p>
 	 *
 	 * @param f         字体
 	 * @param colorFore 文本前景色，用于设置文本的颜色。
@@ -171,7 +218,11 @@ public class QRComponentUtils {
 	/**
 	 * 将 {@link QRActionRegister} 列表使用 {@code obj} 参数运行，会检查其内容是否为空
 	 *
+	 * <p>执行前会复制一份列表，允许回调过程中增删原列表中的动作。单个动作抛异常只会打印堆栈，
+	 * 不会阻断后续动作执行。</p>
+	 *
 	 * @param list 任务列表
+	 * @param obj  传递给每个动作的参数
 	 */
 	public static <T> void runActions(List<QRActionRegister<T>> list, T obj) {
 		if (list == null || list.isEmpty()) {
@@ -222,6 +273,9 @@ public class QRComponentUtils {
 	/**
 	 * 如果设置背景图片，调用此方法。窗体刷新会延迟 30 毫秒
 	 *
+	 * <p>设置项连续变化时优先使用该方法，避免立即重绘过于频繁。方法内部会查找
+	 * {@code com} 所在的顶层窗口并调用重绘。</p>
+	 *
 	 * @param com 窗体内的一控件
 	 */
 	public static void windowFresh(JComponent com) {
@@ -233,6 +287,9 @@ public class QRComponentUtils {
 
 	/**
 	 * 如果设置背景图片，调用此方法
+	 *
+	 * <p>当背景图、透明度或组件不透明状态已经更新，并且需要马上刷新窗口时调用。
+	 * 如果只是在设置面板中响应滑块/复选框变化，通常使用 {@link #windowFresh(JComponent)}。</p>
 	 *
 	 * @param com 窗体内的一控件
 	 */
@@ -246,8 +303,9 @@ public class QRComponentUtils {
 	/**
 	 * 使用定时器延迟执行指定动作。
 	 * <p>
-	 * 本方法通过创建一个Timer对象，并安排一个TimerTask在指定的延迟后执行。
-	 * 这种延迟执行的机制适用于那些不需要立即执行但又需要在特定时间点之后执行的操作。
+	 * 本方法通过创建一个 {@link Timer} 对象，并安排一个 {@link TimerTask} 在指定的延迟后执行。
+	 * 注意：动作运行在 Timer 线程，不是 EDT；如果动作会读写 Swing 组件，应在动作内部使用
+	 * {@link #runOnEdt(Runnable)} 或 {@link SwingUtilities#invokeLater(Runnable)}。
 	 *
 	 * @param millis 延迟执行的毫秒数，从现在开始计时。
 	 * @param e      注册的操作接口，包含待执行的具体操作。该操作的参数是 {@code null}
@@ -261,8 +319,9 @@ public class QRComponentUtils {
 	/**
 	 * 使用定时器延迟执行指定动作。
 	 * <p>
-	 * 本方法通过创建一个Timer对象，并安排一个TimerTask在指定的延迟后执行。
-	 * 这种延迟执行的机制适用于那些不需要立即执行但又需要在特定时间点之后执行的操作。
+	 * 本方法通过创建一个 {@link Timer} 对象，并安排一个 {@link TimerTask} 在指定的延迟后执行。
+	 * 注意：动作运行在 Timer 线程，不是 EDT；如果动作会读写 Swing 组件，应在动作内部使用
+	 * {@link #runOnEdt(Runnable)} 或 {@link SwingUtilities#invokeLater(Runnable)}。
 	 *
 	 * @param millis 延迟执行的毫秒数，从现在开始计时。
 	 * @param e      注册的操作接口，包含待执行的具体操作。
@@ -278,6 +337,17 @@ public class QRComponentUtils {
 		}, millis);
 	}
 
+	/**
+	 * 递归设置组件树中 {@link JComponent} 的不透明状态。
+	 *
+	 * <p>开启窗口背景图片时，通常需要把面板、按钮容器等组件设为透明，背景图才能透出；
+	 * 关闭背景图或需要恢复普通实色界面时，可传入 {@code true}。</p>
+	 *
+	 * <p>该方法会从给定组件向下遍历，遇到 {@link QRPanel} 时继续递归其子组件。</p>
+	 *
+	 * @param com    遍历起点
+	 * @param opaque 目标不透明状态
+	 */
 	public static void componentLoopToSetOpaque(JComponent com, boolean opaque) {
 		QRActionRegister<Component> action = e -> {
 			if (e instanceof JComponent jComponent) {
@@ -364,6 +434,14 @@ public class QRComponentUtils {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (alpha * 255));
 	}
 
+	/**
+	 * 确保动作在 Swing EDT 上执行。
+	 *
+	 * <p>如果当前线程已经是 EDT，会立即执行；否则通过 {@link SwingUtilities#invokeLater(Runnable)}
+	 * 异步排队执行。后台任务、Timer 回调或文件扫描线程需要更新 UI 时应使用该方法。</p>
+	 *
+	 * @param runnable 要在 EDT 执行的动作
+	 */
 	public static void runOnEdt(Runnable runnable) {
 		if (SwingUtilities.isEventDispatchThread()) {
 			runnable.run();

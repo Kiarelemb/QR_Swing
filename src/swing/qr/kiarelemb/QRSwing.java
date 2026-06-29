@@ -21,6 +21,28 @@ import java.util.Properties;
 import static java.io.File.separator;
 
 /**
+ * QR Swing 的框架入口和全局运行状态。
+ *
+ * <p>应用启动时应先调用 {@link #start()}、{@link #start(String)} 或
+ * {@link #start(String, String)}，再创建任何 QR Swing 窗口或控件。启动过程会加载全局配置、
+ * 设置系统外观、加载主题、创建临时目录，并在 JVM 退出时自动保存 {@link #GLOBAL_PROP}。
+ *
+ * <p>本类还集中保存窗口主题、背景图、透明度、全局字体、窗口图标和全局快捷键监听器等状态。
+ * 修改这些状态通常只会更新内存中的字段和 {@link #GLOBAL_PROP}；如需立即落盘，可调用
+ * {@link #globalPropSave()}，如需让已显示窗口立即变更外观，还需要调用窗口的
+ * {@link QRFrame#componentFresh()} 或相关刷新方法。
+ *
+ * <p>典型启动顺序：
+ * <pre><code>
+ * QRSwing.start("res/settings/setting.properties", "res/settings/window.properties");
+ * QRSwing.windowIcon = new ImageIcon("icon.png");
+ * QRSwing.customFontName("Microsoft YaHei");
+ * QRSwing.registerGlobalKeyEvents();
+ * MainWindow window = new MainWindow();
+ * QRSwing.registerGlobalEventWindow(window);
+ * window.setVisible(true);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @apiNote: 总设计类
@@ -191,7 +213,9 @@ public final class QRSwing implements Serializable {
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
-	 * <p>在调用本方法时，将使用默认的设置进行配置，其文件 {@link QRSwing#GLOBAL_PROP_PATH} 和 {@link QRSwing#WINDOW_PROP_PATH} 将会创建在程序的根目录下</p>
+	 * <p>在调用本方法时，将使用默认的设置进行配置，其文件 {@link QRSwing#GLOBAL_PROP_PATH} 和
+	 * {@link QRSwing#WINDOW_PROP_PATH} 将会创建在程序的根目录下。全局配置保存主题、字体、背景图等用户设置；
+	 * 窗口配置保存主窗口大小和位置。</p>
 	 */
 	public static void start() {
 		INSTANCE = new QRSwing("settings.properties");
@@ -202,9 +226,10 @@ public final class QRSwing implements Serializable {
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
-	 * <p>窗体位置的资源文件 {@link QRSwing#WINDOW_PROP_PATH} 将会创建在程序的根目录</p>
+	 * <p>{@code propPath} 是全局配置文件路径；窗体位置的资源文件 {@link QRSwing#WINDOW_PROP_PATH}
+	 * 仍会创建在程序根目录。</p>
 	 *
-	 * @param propPath 资源文件的路径
+	 * @param propPath 全局配置文件路径
 	 */
 	public static void start(String propPath) {
 		INSTANCE = new QRSwing(propPath);
@@ -215,8 +240,12 @@ public final class QRSwing implements Serializable {
 	/**
 	 * 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
 	 *
-	 * @param propPath       资源文件的路径
-	 * @param windowPropPath 主窗体资源文件路径
+	 * <p>{@code propPath} 用于保存全局 UI 设置，例如主题、背景图、圆角和透明度；
+	 * {@code windowPropPath} 用于保存主窗口大小和位置。两个文件都通过 QR_Method 的 properties
+	 * 工具读写，并在退出时自动保存全局配置。</p>
+	 *
+	 * @param propPath       全局配置文件路径
+	 * @param windowPropPath 主窗体大小和位置配置文件路径
 	 */
 	public static void start(String propPath, String windowPropPath) {
 		QRSwing.WINDOW_PROP_PATH = windowPropPath;
@@ -310,8 +339,11 @@ public final class QRSwing implements Serializable {
 	/**
 	 * 添加全局配置
 	 *
+	 * <p>该方法只修改内存中的 {@link #GLOBAL_PROP}，不会立即写入磁盘。框架会在 JVM 退出时保存；
+	 * 如果设置后需要马上持久化，请显式调用 {@link #globalPropSave()}。</p>
+	 *
 	 * @param key   键
-	 * @param value 值
+	 * @param value 值；为 {@code null} 时等同于 {@link #removeGlobalSetting(String)}
 	 */
 	public static void setGlobalSetting(String key, Object value) {
 		if (value == null) {
@@ -323,6 +355,8 @@ public final class QRSwing implements Serializable {
 
 	/**
 	 * 删除全局配置
+	 *
+	 * <p>该方法只修改内存中的 {@link #GLOBAL_PROP}，不会立即写入磁盘。</p>
 	 *
 	 * @param key 键
 	 */
@@ -461,13 +495,19 @@ public final class QRSwing implements Serializable {
 	/**
 	 * 添加键盘按键事件，提供多个快捷键对应一个Action的功能
 	 * <p> 方法 {@link QRSwing#registerGlobalKeyEvents()} 被调用了才生效
+	 * <p>使用例：
+	 * <pre><code>
+	 * QRSwing.registerGlobalAction("ctrl s, meta s", keyStroke -> save(), true);
+	 * QRSwing.registerGlobalAction("shift F5", keyStroke -> refresh(), false);
+	 * </code></pre>
 	 *
 	 * @param key             按键组合，不同按键组合间以英文逗号{@code ,}分割
 	 *                        <p>有+号则优先以+号分割，再以空格分割
 	 *                        <p>支持格式 {@code Ctrl + Alt + Shift + s}、{@code a}、{@code shift a}、{@code shift b,ctrl a}、
 	 *                        <p>{@code shift b, ctrl b}，但不支持 Windows 键的组合
 	 * @param ar              事件，其参数是 {@link KeyStroke}
-	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
+	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键，
+	 *                        不论主窗体是否处于焦点状态都会触发
 	 */
 	public static void registerGlobalAction(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
 		String[] keys = key.split(",");
@@ -483,7 +523,7 @@ public final class QRSwing implements Serializable {
 	 *
 	 * @param keycode         键值
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
-	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
+	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
 	public static void registerGlobalAction(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
 		var keyStroke = QRStringUtils.getKeyStroke(keycode);
@@ -497,7 +537,7 @@ public final class QRSwing implements Serializable {
 	 * @param keycode         键值
 	 * @param modifiers       特殊键
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
-	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
+	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
 	public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
 		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
@@ -510,7 +550,7 @@ public final class QRSwing implements Serializable {
 	 *
 	 * @param keyStroke       按键组合
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
-	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发。若为 {@code false}，则事件全乎全局，则不论主窗体是否处于焦点状态，都将触发事件
+	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
 	public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
 		if (QRSwing.globalKeyListener != null) {

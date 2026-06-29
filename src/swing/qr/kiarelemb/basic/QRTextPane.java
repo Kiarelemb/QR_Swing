@@ -221,11 +221,24 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	 */
 	@Override
 	public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar) {
+		addKeyListenerAction(type, ar, (Object[]) null);
+	}
+
+	/**
+	 * 添加按键过滤事件。
+	 * <p>已自动添加 {@link #addKeyListener()}，按键参数规则见 {@link QRKeyListener#add(QRKeyListener.TYPE, QRActionRegister, Object...)}。</p>
+	 *
+	 * @param type 类型
+	 * @param ar   操作
+	 * @param keys 按键过滤条件
+	 */
+	@Override
+	public final void addKeyListenerAction(QRKeyListener.TYPE type, QRActionRegister<KeyEvent> ar, Object... keys) {
 		if (this.keyListener == null) {
 			addKeyListener();
 		}
 		if (this.keyListener != null) {
-			this.keyListener.add(type, ar);
+			this.keyListener.add(type, ar, keys);
 		}
 	}
 

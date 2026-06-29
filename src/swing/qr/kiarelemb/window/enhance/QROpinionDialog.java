@@ -16,13 +16,36 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
+ * QR Swing 的模态消息确认框。
+ *
+ * <p>该类提供三类常用弹窗：普通提示 {@link #messageTellShow(Window, String)}、
+ * 确认提示 {@link #messageInfoShow(Window, String)} 和错误提示 {@link #messageErrShow(Window, String)}。
+ * 确认提示会显示“确定/取消”两个按钮，其返回值应与 {@link #OK}、{@link #CANCEL} 比较。
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QROpinionDialog.messageTellShow(this, "保存完成");
+ *
+ * int result = QROpinionDialog.messageInfoShow(this, "确认删除？");
+ * if (result == QROpinionDialog.OK) {
+ *     deleteSelected();
+ * }
+ *
+ * QROpinionDialog.messageErrShow(this, "文件读取失败");
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-21 18:58
  **/
 public final class QROpinionDialog extends QRDialog {
+    /**
+     * 用户点击“确定”或按 Enter。
+     */
     public static final int OK = 0;
+    /**
+     * 用户点击“取消”、按 Esc 或关闭窗口。
+     */
     public static final int CANCEL = 1;
     private final QRMessageLabel message;
     private final QRLabel image;
@@ -114,7 +137,9 @@ public final class QROpinionDialog extends QRDialog {
     }
 
     /**
-     * 该单向信息提示框采用的是sureOpinion()方法
+     * 显示只有“确定”按钮的普通提示框。
+     *
+     * <p>该方法会阻塞直到用户关闭弹窗；{@code message} 为 {@code null} 时直接返回。</p>
      *
      * @param parentComponent 主窗体
      * @param message         内容
@@ -129,11 +154,14 @@ public final class QROpinionDialog extends QRDialog {
     }
 
     /**
-     * 该信息提示框采用的是sureAndCancelOpinion()方法
+     * 显示带“确定/取消”按钮的确认提示框。
+     *
+     * <p>该方法会阻塞直到用户做出选择。返回 {@link #OK} 表示确认，
+     * 返回 {@link #CANCEL} 表示取消或关闭。</p>
      *
      * @param parentComponent 主窗体
      * @param message         内容
-     * @return 选译
+     * @return 用户选择结果，取值为 {@link #OK} 或 {@link #CANCEL}
      */
     public static int messageInfoShow(Window parentComponent, String message) {
         if (message == null) {
@@ -146,7 +174,9 @@ public final class QROpinionDialog extends QRDialog {
     }
 
     /**
-     * 该错误提示框采用的是sureOpinion()方法
+     * 显示只有“确定”按钮的错误提示框。
+     *
+     * <p>该方法会阻塞直到用户关闭弹窗；{@code message} 为 {@code null} 时直接返回。</p>
      *
      * @param parentComponent 主窗体
      * @param message         内容

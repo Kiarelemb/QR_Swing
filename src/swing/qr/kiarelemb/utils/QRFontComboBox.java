@@ -40,20 +40,20 @@ public class QRFontComboBox extends QRComboBox {
      */
     public QRFontComboBox(boolean showAllFont) {
         super();
-        setRenderer(new QRComboBoxRenderer(showAllFont));
+        setRenderer(new QRFontComboBoxRenderer(showAllFont));
         installLazyFontLoader(showAllFont);
     }
 
 
     /**
-     * 构造对象，并设置其渲染器为 {@link QRComboBoxRenderer}。
+     * 构造对象，并设置其渲染器为 {@link QRFontComboBoxRenderer}。
      *
      * @param fontNames 字体名称数组（立即加载）
      */
     public QRFontComboBox(String[] fontNames) {
         super(fontNames);
         fontsLoaded = true;
-        setRenderer(new QRComboBoxRenderer());
+        setRenderer(new QRFontComboBoxRenderer());
     }
 
 
@@ -66,7 +66,7 @@ public class QRFontComboBox extends QRComboBox {
     public QRFontComboBox(String[] fontNames, boolean showAllFont) {
         super(fontNames);
         fontsLoaded = true;
-        setRenderer(new QRComboBoxRenderer(showAllFont));
+        setRenderer(new QRFontComboBoxRenderer(showAllFont));
     }
 
 
@@ -99,7 +99,7 @@ public class QRFontComboBox extends QRComboBox {
                     String selected = getSelectedItem() != null ? getSelectedItem().toString() : null;
                     // 先放占位项，让用户看到即时反馈
                     setModel("正在加载字体…");
-                    setRenderer(new QRComboBoxRenderer(showAllFont));
+                    setRenderer(new QRFontComboBoxRenderer(showAllFont));
                     reopenPopupIfUserStillHere();
                     // 后台加载字体，不阻塞 EDT
                     QRTaskRunner.run(context -> QRFontUtils.getSystemFontNames())
@@ -110,7 +110,7 @@ public class QRFontComboBox extends QRComboBox {
                                     if (selected != null) {
                                         setSelectedItem(selected);
                                     }
-                                    setRenderer(new QRComboBoxRenderer(showAllFont));
+                                    setRenderer(new QRFontComboBoxRenderer(showAllFont));
                                     reopenPopupIfUserStillHere();
                                 }
 
@@ -162,17 +162,17 @@ public class QRFontComboBox extends QRComboBox {
         setFont(getSelectedItem() == null ? QRColorsAndFonts.DEFAULT_FONT_MENU : QRFontUtils.getFont(getText(), QRColorsAndFonts.DEFAULT_FONT_MENU.getSize()));
     }
 
-    static class QRComboBoxRenderer extends BasicComboBoxRenderer {
+    static class QRFontComboBoxRenderer extends BasicComboBoxRenderer {
         /**
          * 默认使得每个字体都显示为名称字体
          */
         private final boolean showAllFont;
 
-        public QRComboBoxRenderer() {
+        public QRFontComboBoxRenderer() {
             this(true);
         }
 
-        public QRComboBoxRenderer(boolean showAllFont) {
+        public QRFontComboBoxRenderer(boolean showAllFont) {
             this.showAllFont = showAllFont;
         }
 

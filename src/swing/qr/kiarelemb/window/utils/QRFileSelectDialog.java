@@ -64,6 +64,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create 2022-11-22 15:26
  **/
 public class QRFileSelectDialog extends QRDialog {
+	/**
+	 * 文件选择模式。
+	 *
+	 * <p>{@link #FILE_ONLY} 只能选择已存在文件；{@link #DIRECTORY_ONLY} 只能选择文件夹；
+	 * {@link #FILE_AND_DIRECTORY} 文件或文件夹均可；{@link #SAVE_FILE} 用于生成保存路径，
+	 * 返回的文件可以尚不存在。</p>
+	 */
 	public enum SelectMode {
 		FILE_ONLY, DIRECTORY_ONLY, FILE_AND_DIRECTORY, SAVE_FILE
 	}
@@ -118,10 +125,27 @@ public class QRFileSelectDialog extends QRDialog {
 		this(parent, SelectMode.FILE_ONLY);
 	}
 
+	/**
+	 * 创建文件选择对话框。
+	 *
+	 * @param parent     父窗体，可为 null
+	 * @param selectMode 选择模式，null 时按 {@link SelectMode#FILE_ONLY}
+	 */
 	public QRFileSelectDialog(Window parent, SelectMode selectMode) {
 		this(parent, selectMode, "文件");
 	}
 
+	/**
+	 * 创建带文件类型过滤的文件选择对话框。
+	 *
+	 * <p>{@code extension} 可带或不带英文句点，例如 {@code "png"} 和 {@code ".png"} 等价。
+	 * 在 {@link SelectMode#SAVE_FILE} 模式下，如果用户输入的文件名没有扩展名，会自动补第一个扩展名。</p>
+	 *
+	 * @param parent     父窗体，可为 null
+	 * @param selectMode 选择模式，null 时按 {@link SelectMode#FILE_ONLY}
+	 * @param fileType   状态栏显示的文件类型名称，空白时显示“文件”
+	 * @param extension  可选择的扩展名列表；为空时不过滤文件类型
+	 */
 	public QRFileSelectDialog(Window parent, SelectMode selectMode, String fileType, String... extension) {
 		super(parent);
 		this.selectMode = selectMode == null ? SelectMode.FILE_ONLY : selectMode;
@@ -134,6 +158,15 @@ public class QRFileSelectDialog extends QRDialog {
 		setCurrentDirectory(defaultDirectory());
 	}
 
+	/**
+	 * 创建带默认目录和文件类型过滤的文件选择对话框。
+	 *
+	 * @param parent           父窗体，可为 null
+	 * @param selectMode       选择模式，null 时按 {@link SelectMode#FILE_ONLY}
+	 * @param defaultDirectory 初始目录；为文件时使用其父目录，无效时使用系统默认目录
+	 * @param fileType         状态栏显示的文件类型名称，空白时显示“文件”
+	 * @param extension        可选择的扩展名列表；为空时不过滤文件类型
+	 */
 	public QRFileSelectDialog(Window parent, SelectMode selectMode, File defaultDirectory, String fileType, String... extension) {
 		this(parent, selectMode, fileType, extension);
 		setCurrentDirectory(initialDirectory(defaultDirectory));
@@ -1135,6 +1168,13 @@ public class QRFileSelectDialog extends QRDialog {
 		return new FileTreeNodeData(file, displayName(file), systemIcon(file));
 	}
 
+	/**
+	 * 显示对话框并返回本次是否成功选择。
+	 *
+	 * <p>该方法等价于先调用 {@link #setVisible(boolean)}，再调用 {@link #selectedSucceeded()}。</p>
+	 *
+	 * @return 用户点击确定且当前选择符合模式要求时返回 true
+	 */
 	public boolean showDialog() {
 		setVisible(true);
 		return selectedSucceeded();
@@ -1165,6 +1205,14 @@ public class QRFileSelectDialog extends QRDialog {
 		super.dispose();
 	}
 
+	/**
+	 * 返回本次选择是否成功。
+	 *
+	 * <p>只有用户点击“确定”并且当前选择符合 {@link SelectMode} 时才返回 true。
+	 * 取消、关闭窗口或选择了不符合模式的路径都会返回 false。</p>
+	 *
+	 * @return 是否成功选择
+	 */
 	public boolean selectedSucceeded() {
 		if (selectMode == SelectMode.SAVE_FILE) {
 			return approved && canSelectSaveTarget(selectedFile);
@@ -1172,14 +1220,34 @@ public class QRFileSelectDialog extends QRDialog {
 		return approved && canSelect(selectedFile);
 	}
 
+	/**
+	 * 返回用户选择的文件或目录。
+	 *
+	 * <p>调用方应先判断 {@link #selectedSucceeded()}。在 {@link SelectMode#SAVE_FILE}
+	 * 模式下，该路径表示保存目标，文件可以尚不存在。</p>
+	 *
+	 * @return 选择结果，未选择时为 null
+	 */
 	public File selectedFile() {
 		return selectedFile;
 	}
 
+	/**
+	 * 返回用户选择路径的绝对路径字符串。
+	 *
+	 * @return 选择结果路径，未选择时为 null
+	 */
 	public String selectedFilePath() {
 		return selectedFile == null ? null : selectedFile.getAbsolutePath();
 	}
 
+	/**
+	 * 预设当前选择。
+	 *
+	 * <p>传入目录时会切换当前目录；传入文件时会切换到文件所在目录，并在底部选择框中显示该文件。</p>
+	 *
+	 * @param selectedFile 要预设的文件或目录，可为 null
+	 */
 	public void setSelectedFile(File selectedFile) {
 		if (selectedFile == null) {
 			updateSelectedFile(null);
@@ -1193,6 +1261,11 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
+	/**
+	 * 通过路径字符串预设当前选择。
+	 *
+	 * @param selectedFilePath 文件或目录路径；无效路径会被忽略
+	 */
 	public void setSelectedFilePath(String selectedFilePath) {
 		File file = resolvePath(selectedFilePath);
 		if (file != null) {
@@ -1200,6 +1273,13 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
+	/**
+	 * 动态切换选择模式。
+	 *
+	 * <p>切换后会更新窗口标题、刷新当前目录列表，并按新模式重置当前选择。</p>
+	 *
+	 * @param selectMode 选择模式，null 时按 {@link SelectMode#FILE_ONLY}
+	 */
 	public void setSelectMode(SelectMode selectMode) {
 		this.selectMode = selectMode == null ? SelectMode.FILE_ONLY : selectMode;
 		setTitle("选择" + switch (this.selectMode) {
@@ -1214,6 +1294,14 @@ public class QRFileSelectDialog extends QRDialog {
 		updateSelectedFile(this.selectMode == SelectMode.FILE_ONLY ? null : currentDirectory);
 	}
 
+	/**
+	 * 设置可选择的文件扩展名。
+	 *
+	 * <p>扩展名可带或不带英文句点，内部统一转换为小写且带点格式。
+	 * 传入空数组或 null 表示清空过滤条件，显示全部文件。</p>
+	 *
+	 * @param extension 扩展名列表，如 {@code "pdf"}、{@code ".png"}
+	 */
 	public void setExtensions(String... extension) {
 		extensions.clear();
 		if (extension == null) {
@@ -1253,6 +1341,11 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
+	/**
+	 * 设置状态栏展示的文件类型名称。
+	 *
+	 * @param fileType 文件类型名称，空白时显示“文件”
+	 */
 	public void setFileType(String fileType) {
 		this.fileType = fileType == null || fileType.isBlank() ? "文件" : fileType;
 		if (currentDirectory != null) {
