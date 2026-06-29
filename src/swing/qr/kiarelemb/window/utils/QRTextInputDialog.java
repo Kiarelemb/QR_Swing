@@ -108,6 +108,11 @@ public class QRTextInputDialog extends QRDialog {
 		mainPanel.add(bottom, BorderLayout.SOUTH);
 	}
 
+	@Override
+	public void windowOpened(WindowEvent e) {
+		textPane.grabFocus();
+	}
+
 	/**
 	 * 在此设置 {@link #textPane} 的属性，如 {@code setLineWrap(false)}、{@code setFont(...)} 等。
 	 * <p>默认实现为空。
