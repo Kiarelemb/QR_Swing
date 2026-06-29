@@ -12,9 +12,24 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
+ * QR Swing 的主题单选按钮。
+ *
+ * <p>该类基于 {@link JRadioButton}，统一主题字体和颜色，并使用
+ * {@link QRActionListener} 分发点击动作。通常与 {@link ButtonGroup} 或
+ * {@link swing.qr.kiarelemb.assembly.QRButtonGroup} 配合使用。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRRadioButton light = new QRRadioButton("浅色", true);
+ * QRRadioButton dark = new QRRadioButton("深色");
+ * ButtonGroup group = new ButtonGroup();
+ * group.add(light);
+ * group.add(dark);
+ * dark.addClickAction(event -> QRSwing.setTheme("深色"));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-01-09 16:52
  **/
 public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QRActionListenerAdd {
@@ -32,7 +47,7 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
     }
 
     /**
-     * 给按钮添加单击事件，在实例化时已自动添加
+     * 安装内部点击监听器，在实例化时已自动添加。
      */
     @Override
     public void addActionListener() {
@@ -44,8 +59,9 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
     }
 
     /**
-     * 添加单击事件
-     * 已自动添加 {@link #addActionListener()}
+     * 添加点击动作。
+     *
+     * <p>动作会在单选按钮状态更新后执行，可直接读取 {@link #isSelected()}。</p>
      *
      * @param ar 操作
      */
@@ -60,7 +76,7 @@ public class QRRadioButton extends JRadioButton implements QRComponentUpdate, QR
     }
 
     /**
-     * 已自动添加监听器，可直接重写
+     * 点击回调，子类可直接重写。
      */
     protected void actionEvent(ActionEvent o) {
     }

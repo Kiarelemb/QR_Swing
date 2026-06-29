@@ -13,6 +13,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 
 /**
+ * 带清除按钮的文本输入组合组件。
+ *
+ * <p>该组件由一个 {@link QRTextField} 和一个清除按钮组成。默认清除按钮在右侧，
+ * 点击后清空文本。组件自身负责绘制焦点/空值/合法/非法状态边框。</p>
+ *
+ * <p>可以通过特殊构造器启用文件路径模式，此时内部文本框会使用 {@link QRFilePathTextField}，
+ * 并可联动“确定”等按钮的启用状态。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRClearableTextField field = new QRClearableTextField();
+ * field.textField.setText("hello");
+ *
+ * QRClearableTextField fileField =
+ *         new QRClearableTextField(true, true, "/tmp/a.txt", okButton);
+ * </code></pre>
+ *
  * @author Kiarelemb
  * @projectName QR_Swing
  * @className QRClearableTextField
@@ -84,8 +101,10 @@ public class QRClearableTextField extends QRPanel {
     }
 
     /**
-     * 如果 {@link #textField} 实体是 {@link QRFilePathTextField}，那么其根本的 {@link QRFilePathTextField#meetCondition()}
-     * 仍然生效。可以通过重写自定义。
+     * 判断当前文本是否符合业务条件。
+     *
+     * <p>如果 {@link #textField} 实体是 {@link QRFilePathTextField}，默认会检查文本路径对应文件是否存在。
+     * 子类可重写该方法实现自定义校验，校验结果会影响边框颜色和联动按钮状态。</p>
      *
      * @return 是否符合条件
      */
@@ -96,11 +115,19 @@ public class QRClearableTextField extends QRPanel {
         return true;
     }
 
+    /**
+     * 获得焦点时的处理，子类可重写。
+     */
     protected void focusGainedAction() {
         setEnterBorder();
     }
 
 
+    /**
+     * 清除按钮点击处理，默认清空内部文本框。
+     *
+     * @param o 点击事件
+     */
     protected void clearAction(ActionEvent o) {
         textField.clear();
     }

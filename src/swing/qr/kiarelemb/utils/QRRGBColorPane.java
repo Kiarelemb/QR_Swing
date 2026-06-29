@@ -19,6 +19,20 @@ import java.awt.*;
 import java.util.LinkedList;
 
 /**
+ * RGB 颜色选择与编辑面板。
+ *
+ * <p>该组件由颜色预览块和 R/G/B 三个输入框组成。输入框会把数值限制在 0-255；
+ * 点击颜色预览块会打开 {@link JColorChooser}；复制任一输入框时会把当前颜色复制为
+ * {@code r,g,b} 格式；粘贴支持 {@code r,g,b} 和 {@code #RRGGBB} 两种格式。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRRGBColorPane colorPane = new QRRGBColorPane(Color.RED, event -> {
+ *     Color newColor = event.to();
+ *     preview.setBackground(newColor);
+ * });
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @apiNote 一个集成多个控件的颜色选择、显示、设置的面板
  * @create 2024-03-13 11:57
@@ -203,6 +217,11 @@ public class QRRGBColorPane extends QRPanel {
         add(bt);
     }
 
+    /**
+     * 根据当前 R/G/B 输入框更新颜色，并触发颜色变化事件。
+     *
+     * <p>如果颜色没有变化，不会触发回调。</p>
+     */
     public void colorChanged() {
         if (rt == null || gt == null || bt == null) {
             return;
@@ -220,14 +239,25 @@ public class QRRGBColorPane extends QRPanel {
         colorChangedAction.action(new QRColorChangedEvent(from, to));
     }
 
+    /**
+     * @return 当前颜色
+     */
     public Color getColor() {
         return color;
     }
 
+    /**
+     * @return 颜色预览标签
+     */
     public QRLabel showColorLabel() {
         return showColorLabel;
     }
 
+    /**
+     * 设置当前颜色，并同步三个输入框和预览块。
+     *
+     * @param color 新颜色
+     */
     public void setColor(Color color) {
         this.color = color;
         rt.setValue(color.getRed());
@@ -259,10 +289,22 @@ public class QRRGBColorPane extends QRPanel {
         }
     }
 
+    /**
+     * 将颜色通道值限制到 0-255。
+     *
+     * @param value 原始值
+     * @return 限制后的颜色通道值
+     */
     public static int colorValueCheckBound(int value) {
         return Math.max(Math.min(value, 255), 0);
     }
 
+    /**
+     * 解析 6 位十六进制颜色字符串。
+     *
+     * @param hexLen 例如 {@code "FF0000"}，不包含 {@code #}
+     * @return 颜色对象
+     */
     public static Color parseColor(String hexLen) {
         final LinkedList<String> split = QRArrayUtils.splitWithLength(hexLen, 2);
         assert split.size() == 3;
@@ -274,11 +316,24 @@ public class QRRGBColorPane extends QRPanel {
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
+    /**
+     * 将颜色转换为 {@code r,g,b} 字符串。
+     *
+     * @param c 颜色
+     * @return RGB 字符串
+     */
     public static String getColor(Color c) {
         return c.getRed() + "," + c.getGreen() + "," + c.getBlue();
     }
 
 
+    /**
+     * 按指定分隔符解析 RGB 字符串。
+     *
+     * @param rgb       RGB 字符串，如 {@code "255,0,0"}
+     * @param seperator 分隔符
+     * @return 颜色对象
+     */
     public static Color parseColor(String rgb, char seperator) {
         int[] values = QRArrayUtils.splitToInt(rgb, seperator);
         return new Color(values[0], values[1], values[2]);

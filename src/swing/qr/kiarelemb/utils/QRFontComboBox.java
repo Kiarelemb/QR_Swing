@@ -14,6 +14,21 @@ import java.awt.*;
 import java.util.Objects;
 
 /**
+ * 字体选择下拉框。
+ *
+ * <p>该类继承 {@link QRComboBox}，用于选择系统字体或指定字体列表。
+ * 默认构造器采用懒加载：首次打开下拉框时先显示“正在加载字体…”，再用
+ * {@link QRTaskRunner} 后台枚举系统字体，避免阻塞 EDT。</p>
+ *
+ * <p>{@code showAllFont} 控制列表项是否用各自字体渲染。字体很多时，用各自字体渲染会更直观，
+ * 但首次绘制成本也更高。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRFontComboBox fontBox = new QRFontComboBox(QRSwing.globalFont.getFamily(), false);
+ * fontBox.addItemChangeListener(event -> QRSwing.customFontName(event.after()));
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @description: 一个加载字体的 {@link QRComboBox}，默认构造器采用懒加载，只在首次点击下拉按钮时才枚举系统字体
@@ -80,6 +95,12 @@ public class QRFontComboBox extends QRComboBox {
         setText(fontName);
     }
 
+    /**
+     * 创建对象，并设置其选择的字体和渲染方式。
+     *
+     * @param fontName    初始字体名称
+     * @param showAllFont 是否以本字体显示字体名
+     */
     public QRFontComboBox(String fontName, boolean showAllFont) {
         this(showAllFont);
         setText(fontName);
@@ -148,6 +169,13 @@ public class QRFontComboBox extends QRComboBox {
         return focusOwner == null || focusOwner == this || SwingUtilities.isDescendingFrom(focusOwner, this);
     }
 
+    /**
+     * 设置当前字体名称。
+     *
+     * <p>除了更新选中项，还会把下拉框自身字体切换为该字体，便于直接预览。</p>
+     *
+     * @param value 字体名称
+     */
     @Override
     public void setText(String value) {
         super.setText(value);

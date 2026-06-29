@@ -6,15 +6,28 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import java.awt.*;
 
 /**
+ * 分割线标签。
+ *
+ * <p>该组件继承 {@link QRLabel}，在自身中线位置绘制一条横线。可设置线条颜色、
+ * 所占宽度比例和左/中/右对齐方式，常用于设置页分组分隔。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-30 18:53
  **/
 public class QRLineSeparatorLabel extends QRLabel {
 
+    /**
+     * 居中绘制分割线。
+     */
     public static final int CENTER = 0;
+    /**
+     * 靠左绘制分割线。
+     */
     public static final int LEFT = 1;
+    /**
+     * 靠右绘制分割线。
+     */
     public static final int RIGHT = 2;
     private final Color lineColor;
     private final double portion;
@@ -64,11 +77,11 @@ public class QRLineSeparatorLabel extends QRLabel {
     }
 
     /**
-     * 分割线
+     * 创建分割线。
      *
      * @param lineColor 分割线颜色
-     * @param portion   所占大小的比例
-     * @param position  位置
+     * @param portion   所占宽度比例，如 0.5 表示一半宽度
+     * @param position  位置，取值为 {@link #LEFT}、{@link #CENTER} 或 {@link #RIGHT}
      */
     public QRLineSeparatorLabel(Color lineColor, double portion, int position) {
         this.lineColor = lineColor;

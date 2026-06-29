@@ -11,9 +11,14 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
 /**
+ * QR Swing 的主题滚动条。
+ *
+ * <p>该类基于 {@link JScrollBar}，使用 {@link QRScrollBarUI} 绘制主题滚动条，
+ * 默认透明、单位滚动 30，并支持拖动时同步其他同方向滚动条。通常由 {@link QRScrollPane}
+ * 自动创建，业务代码很少需要直接实例化。</p>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-21 22:22
  **/
 public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
@@ -45,7 +50,9 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
     }
 
     /**
-     * 该设置不会使滚动条可见，也不会使滚动条失去它本该有的功能。即，它实际存在，可通过其他方式设置值，但看不到，也不能用鼠标拖动
+     * 隐藏滚动条外观但保留滚动条对象和数值功能。
+     *
+     * <p>调用后滚动条首选尺寸为 0，用户无法通过鼠标拖动它，但代码仍可读取或设置滚动值。</p>
      */
     public void setExistButVisibleFalse() {
         setUI(new QRScrollBarUI(getOrientation() == 0) {
@@ -72,6 +79,13 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
         });
     }
 
+    /**
+     * 添加一个拖动时同步的滚动条。
+     *
+     * <p>只有方向相同的滚动条会同步值。</p>
+     *
+     * @param bar 要同步的滚动条
+     */
     public void addSynchronisedScrollBor(JScrollBar bar) {
         synchronisedScrollBor.add(bar);
     }
@@ -120,16 +134,28 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
 //        }
     }
 
+    /**
+     * 向较小方向移动滚动值。
+     *
+     * @param value 移动量
+     */
     public void minusValue(int value) {
         setValue(Math.max(getMinimum(), getValue() - value));
     }
 
+    /**
+     * 向较大方向移动滚动值。
+     *
+     * @param value 移动量
+     */
     public void plusValue(int value) {
         setValue(Math.min(getMaximum(), getValue() + value));
     }
 
     /**
-     * @param value 比例
+     * 按比例设置滚动条值。
+     *
+     * @param value 比例，{@code <= 0} 滚到最小值，{@code >= 1} 滚到最大值
      */
     public void setValue(double value) {
         if (value <= 0) {
@@ -146,6 +172,9 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
         }
     }
 
+    /**
+     * @return 当前滚动条使用的 UI 对象
+     */
     public QRScrollBarUI barUi() {
         return barUI;
     }
@@ -156,10 +185,20 @@ public class QRScrollBar extends JScrollBar implements QRComponentUpdate {
         barUI.componentFresh();
     }
 
+    /**
+     * 创建竖向 QR 滚动条。
+     *
+     * @return 竖向滚动条
+     */
     public static QRScrollBar getVerticalScrollBar() {
         return new QRScrollBar(false);
     }
 
+    /**
+     * 创建横向 QR 滚动条。
+     *
+     * @return 横向滚动条
+     */
     public static QRScrollBar getHorizontalScrollBar() {
         return new QRScrollBar(true);
     }

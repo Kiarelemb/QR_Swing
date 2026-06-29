@@ -9,9 +9,19 @@ import javax.swing.plaf.basic.BasicSpinnerUI;
 import java.awt.*;
 
 /**
+ * QR Swing 的主题数字/选项微调框。
+ *
+ * <p>该类基于 {@link JSpinner}，统一编辑框字体、前景/背景色、边框和上下按钮样式。
+ * 可传入任意 Swing {@link SpinnerModel}，例如 {@link SpinnerNumberModel}。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRSpinner spinner = new QRSpinner(new SpinnerNumberModel(10, 0, 100, 1));
+ * int value = (Integer) spinner.getValue();
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2023-01-30 13:27
  **/
 public class QRSpinner extends JSpinner implements QRComponentUpdate {

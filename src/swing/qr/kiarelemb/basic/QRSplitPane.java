@@ -8,9 +8,21 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * QR Swing 的主题分割面板。
+ *
+ * <p>该类基于 {@link JSplitPane}，使用自定义 {@link QRSplitPaneUI}，
+ * 默认透明、连续布局、10 像素分隔条，并在主题刷新时尝试刷新左右/上下子组件。</p>
+ *
+ * <p>使用例：
+ * <pre><code>
+ * QRSplitPane split = new QRSplitPane(JSplitPane.VERTICAL_SPLIT);
+ * split.setTopComponent(topPanel);
+ * split.setBottomComponent(bottomPanel);
+ * split.setDividerLocation(0.65);
+ * </code></pre>
+ *
  * @author Kiarelemb QR
  * @program: QR_Swing
- * @description:
  * @create 2022-11-22 11:09
  **/
 public class QRSplitPane extends JSplitPane implements QRComponentUpdate {
@@ -26,10 +38,18 @@ public class QRSplitPane extends JSplitPane implements QRComponentUpdate {
         componentFresh();
     }
 
+    /**
+     * 设置是否绘制边框。
+     *
+     * @param borderPaint true 表示允许绘制边框
+     */
     public void setBorderPaint(boolean borderPaint) {
         this.borderPaint = borderPaint;
     }
 
+    /**
+     * @return 当前是否绘制边框
+     */
     public boolean borderPaint() {
         return borderPaint;
     }
@@ -61,6 +81,9 @@ public class QRSplitPane extends JSplitPane implements QRComponentUpdate {
         panelLoop();
     }
 
+    /**
+     * 遍历子组件并刷新实现了 {@link QRComponentUpdate} 的组件。
+     */
     public void panelLoop() {
         final Component[] components = getComponents();
         for (Component component : components) {
