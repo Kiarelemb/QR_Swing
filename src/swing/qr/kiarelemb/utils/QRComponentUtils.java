@@ -183,7 +183,7 @@ public class QRComponentUtils {
 			try {
 				e.action(obj);
 			} catch (Exception ex) {
-				throw new RuntimeException(ex);
+				ex.printStackTrace();
 			}
 		});
 	}
@@ -213,8 +213,7 @@ public class QRComponentUtils {
 				try {
 					e.action(obj);
 				} catch (Exception ex) {
-					// 将异常转换为运行时异常，以在调用栈中抛出
-					throw new RuntimeException(ex);
+					ex.printStackTrace();
 				}
 			});
 		});

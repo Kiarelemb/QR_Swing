@@ -1,5 +1,7 @@
 package swing.qr.kiarelemb.task;
 
+import java.util.List;
+
 /**
  * 后台任务进度事件。
  *
@@ -55,6 +57,44 @@ public record QRTaskProgress(Integer percent, Integer current, Integer total, St
 		return new QRTaskProgress(null, null, null, message);
 	}
 
+	/**
+	 * 合并同一批次中的最新进度字段和最新文字字段。
+	 *
+	 * <p>{@link javax.swing.SwingWorker#publish(Object[])} 可能把短时间内发布的多条事件合并到一次
+	 * process 调用中。混合发布 message/progress 时，如果只取最后一条，会丢失另一类字段。
+	 *
+	 * @param chunks 同一批次的进度事件
+	 * @return 合并后的进度事件；没有有效字段时返回 null
+	 */
+	public static QRTaskProgress mergeLatest(List<QRTaskProgress> chunks) {
+		if (chunks == null || chunks.isEmpty()) {
+			return null;
+		}
+
+		Integer percent = null;
+		Integer current = null;
+		Integer total = null;
+		String message = null;
+
+		for (QRTaskProgress chunk : chunks) {
+			if (chunk == null) {
+				continue;
+			}
+			if (chunk.message() != null) {
+				message = chunk.message();
+			}
+			if (chunk.percent() != null) {
+				percent = chunk.percent();
+				current = chunk.current();
+				total = chunk.total();
+			}
+		}
+
+		if (percent == null && message == null) {
+			return null;
+		}
+		return new QRTaskProgress(percent, current, total, message);
+	}
 
 	private static int limit(int value) {
 		return Math.max(0, Math.min(100, value));

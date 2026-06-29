@@ -36,9 +36,9 @@ public class QRProgressDialog extends QREmptyDialog {
 	private static final int DEFAULT_WIDTH = 340;
 	private static final int DEFAULT_HEIGHT = 100;
 	private final Rectangle determinateProgressBarBounds = new Rectangle(15, 45, 230, 10);
-	private Rectangle indeterminateProgressBarBounds = null;
 	private final Rectangle determinateCancelButtonBounds = new Rectangle(265, 33, 60, 30);
-	private Rectangle indeterminateCancelButtonBounds = new Rectangle(265, 60, 60, 30);
+	private Rectangle indeterminateProgressBarBounds = null;
+	private Rectangle indeterminateCancelButtonBounds = new Rectangle(270, 60, 60, 30);
 	private final QRLabel descriptionLabel = new QRLabel("准备中...");
 	private final QRLabel progressLabel = new QRLabel("0%");
 	private final QRProgressBar progressBar = new QRProgressBar();
@@ -65,14 +65,14 @@ public class QRProgressDialog extends QREmptyDialog {
 
 		cancelButton.addClickAction(this::cancelAction);
 
-		QRComponentUtils.setBoundsAndAddToComponent(contentPane, progressLabel,15,10,200,30);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, progressLabel, 15, 10, 200, 30);
 		QRComponentUtils.setBoundsAndAddToComponent(contentPane, progressBar,
 				determinateProgressBarBounds.x, determinateProgressBarBounds.y,
 				determinateProgressBarBounds.width, determinateProgressBarBounds.height);
 		QRComponentUtils.setBoundsAndAddToComponent(contentPane, cancelButton,
 				determinateCancelButtonBounds.x, determinateCancelButtonBounds.y,
 				determinateCancelButtonBounds.width, determinateCancelButtonBounds.height);
-		QRComponentUtils.setBoundsAndAddToComponent(contentPane, descriptionLabel,15,60,240,30);
+		QRComponentUtils.setBoundsAndAddToComponent(contentPane, descriptionLabel, 15, 60, 240, 30);
 		componentFresh();
 	}
 
@@ -283,6 +283,6 @@ public class QRProgressDialog extends QREmptyDialog {
 		if (width <= 0) {
 			width = DEFAULT_WIDTH;
 		}
-		return new Rectangle(0, determinateProgressBarBounds.y-10, width, determinateProgressBarBounds.height);
+		return new Rectangle(0, determinateProgressBarBounds.y, width, determinateProgressBarBounds.height);
 	}
 }

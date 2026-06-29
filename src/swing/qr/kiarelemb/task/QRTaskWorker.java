@@ -87,10 +87,10 @@ public class QRTaskWorker<T> extends SwingWorker<T, QRTaskProgress> {
 
 	@Override
 	protected void process(List<QRTaskProgress> chunks) {
-		if (chunks == null || chunks.isEmpty()) {
+		QRTaskProgress progress = QRTaskProgress.mergeLatest(chunks);
+		if (progress == null) {
 			return;
 		}
-		QRTaskProgress progress = chunks.get(chunks.size() - 1);
 		listeners.forEach(listener -> listener.progress(progress));
 	}
 
