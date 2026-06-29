@@ -35,7 +35,7 @@ public class QRFilePathTextField extends QRTextField {
      */
     public QRFilePathTextField(JButton btn) {
         this.btn = btn;
-        final char[] notAllowed = {'*', '?', '<', '>', '|', '"', '\\', '/', ':'};
+        final char[] notAllowed = {'*', '?', '<', '>', '|', '"'};
         addForbiddenChar(notAllowed);
         setTextCenter();
         //设置使之能够撤回

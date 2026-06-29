@@ -19,10 +19,6 @@ import java.util.ArrayList;
  * {@link #selectedFile()} 和 {@link #selectedFilePath()}，并执行成功回调；
  * 用户取消、关闭对话框或选中无效路径时执行失败回调。</p>
  *
- * <p>注意：当前实现会要求返回的 {@link File#exists()} 为 true，因此不适合作为
- * {@link QRFileSelectDialog.SelectMode#SAVE_FILE} 的保存路径按钮；保存路径场景应直接使用
- * {@link QRFileSelectDialog}。</p>
- *
  * <p>使用例：
  * <pre><code>
  * QRFileSelectButton button = new QRFileSelectButton(
@@ -107,7 +103,7 @@ public class QRFileSelectButton extends QRButton {
         }
         File file = dialog.selectedFile();
 
-        if (file == null || !file.exists()) {
+        if (file == null || (this.selectMode != QRFileSelectDialog.SelectMode.SAVE_FILE && !file.exists())) {
             failedAction();
             QRComponentUtils.runActions(failures, file);
             return;

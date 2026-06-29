@@ -157,7 +157,7 @@ public class QRListTabbedPane extends QRPanel {
      * @throws IndexOutOfBoundsException 如果传入的索引超出范围，则抛出此异常
      */
     public void setSelectedTab(int selectedIndex) {
-        if (!boundCheck(selectedIndex)) {
+        if (selectedIndex < 0 || selectedIndex >= panels.size()) {
             return;
         }
         QRTabbedContentPanel tabbedContentPanel = panels.get(selectedIndex);

@@ -120,10 +120,13 @@ public class QRMenuPanel extends QRPanel {
      * <p>会记录禁用前状态，稍后可调用 {@link #enablesAll()} 恢复。</p>
      */
     public void disableAll() {
+        this.enables.clear();
         for (QRButton item : this.buttons) {
             this.enables.add(item.isEnabled());
             item.setEnabled(false);
-            ((QRMenuButtonProcess) this.preClickedItem).disableAll();
+        }
+        if (this.preClickedItem instanceof QRMenuButtonProcess process) {
+            process.disableAll();
         }
     }
 
@@ -131,10 +134,14 @@ public class QRMenuPanel extends QRPanel {
      * 恢复 {@link #disableAll()} 前记录的启用状态。
      */
     public void enablesAll() {
-        int index = 0;
-        for (QRButton item : this.buttons) {
-            item.setEnabled(this.enables.get(index++));
-            ((QRMenuButtonProcess) this.preClickedItem).enablesAll();
+        for (int i = 0; i < this.buttons.size(); i++) {
+            if (i < this.enables.size()) {
+                this.buttons.get(i).setEnabled(this.enables.get(i));
+            }
+        }
+        this.enables.clear();
+        if (this.preClickedItem instanceof QRMenuButtonProcess process) {
+            process.enablesAll();
         }
     }
 

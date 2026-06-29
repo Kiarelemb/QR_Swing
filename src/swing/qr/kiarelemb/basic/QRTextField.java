@@ -461,9 +461,12 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 		if (this.forbiddenInputChar.isEmpty() && this.onlyAllowedInputChar.isEmpty()) {
 			return false;
 		}
-		final String value = String.valueOf(e.getKeyChar());
-		if (!this.onlyAllowedInputChar.isEmpty() && this.onlyAllowedInputChar.indexOf(value) != -1) {
+		if (Character.isISOControl(e.getKeyChar())) {
 			return false;
+		}
+		final String value = String.valueOf(e.getKeyChar());
+		if (!this.onlyAllowedInputChar.isEmpty()) {
+			return this.onlyAllowedInputChar.indexOf(value) == -1;
 		}
 		return this.forbiddenInputChar.indexOf(value) != -1;
 	}

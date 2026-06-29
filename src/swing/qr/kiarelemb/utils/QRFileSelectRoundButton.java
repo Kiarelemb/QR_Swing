@@ -17,9 +17,6 @@ import java.util.ArrayList;
  * 点击后打开 {@link QRFileSelectDialog}，成功时更新 {@link #selectedFile()} 和
  * {@link #selectedFilePath()} 并执行成功回调。</p>
  *
- * <p>注意：当前实现会要求返回的 {@link File#exists()} 为 true，因此不适合作为
- * {@link QRFileSelectDialog.SelectMode#SAVE_FILE} 的保存路径按钮。</p>
- *
  * @author Kiarelemb QR
  * @program: QR_Swing
  * @create 2023-02-08 15:33
@@ -70,7 +67,7 @@ public class QRFileSelectRoundButton extends QRRoundButton {
         }
         File file = dialog.selectedFile();
 
-        if (file == null || !file.exists()) {
+        if (file == null || (this.selectMode != QRFileSelectDialog.SelectMode.SAVE_FILE && !file.exists())) {
             failedAction();
             QRComponentUtils.runActions(failures, file);
             return;
