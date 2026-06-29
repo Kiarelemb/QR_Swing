@@ -53,13 +53,17 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
     }
 
     public void setText(String value) {
+        if (value == null) {
+            setSelectedItem(null);
+            return;
+        }
         ComboBoxModel<String> cbm = getModel();
         if (cbm != null && cbm.getSize() > 0) {
             ArrayList<String> ele = new ArrayList<>();
             for (int i = 0; i < cbm.getSize(); i++) {
                 String e = cbm.getElementAt(i);
                 ele.add(e);
-                if (e.equals(value)) {
+                if (Objects.equals(e, value)) {
                     setSelectedItem(value);
                     return;
                 }
@@ -74,12 +78,15 @@ public class QRComboBox extends JComboBox<String> implements QRComponentUpdate {
     }
 
     public String getText() {
-        return Objects.requireNonNull(getSelectedItem()).toString();
+        Object selectedItem = getSelectedItem();
+        return selectedItem == null ? "" : selectedItem.toString();
     }
 
     public void setModel(String... array) {
-        if (array.length > 0) {
+        if (array != null && array.length > 0) {
             setModel(new DefaultComboBoxModel<>(array));
+        } else {
+            setModel(new DefaultComboBoxModel<>());
         }
     }
 
