@@ -8,6 +8,7 @@ import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 	private final ArrayList<Boolean> enables = new ArrayList<>();
 	JPopupMenu jpm;
 	QRMenuPanel menuPanel;
+	private boolean popupActive;
 
 	public QRMenuButtonOriginal(String text, QRMenuPanel menuPanel) {
 		super(text);
@@ -35,16 +37,19 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 		this.jpm.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				setPopupActive(true);
 				menuPanel.popupMenuOpened(QRMenuButtonOriginal.this);
 			}
 
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				setPopupActive(false);
 				menuPanel.popupMenuClosed(QRMenuButtonOriginal.this);
 			}
 
 			@Override
 			public void popupMenuCanceled(PopupMenuEvent e) {
+				setPopupActive(false);
 				menuPanel.popupMenuClosed(QRMenuButtonOriginal.this);
 			}
 		});
@@ -73,12 +78,14 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 
 	@Override
 	public void showPopupMenu() {
+		setPopupActive(true);
 		this.jpm.show(this.menuPanel, getX(), getY() + getHeight());
 	}
 
 	@Override
 	public void closePopupMenu() {
 		this.jpm.setVisible(false);
+		setPopupActive(false);
 	}
 
 	@Override
@@ -123,5 +130,25 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 		for (QRMenuItem item : this.buttons) {
 			item.setEnabled(this.enables.get(index++));
 		}
+	}
+
+	private void setPopupActive(boolean popupActive) {
+		if (this.popupActive != popupActive) {
+			this.popupActive = popupActive;
+			repaint();
+		}
+	}
+
+	@Override
+	protected void paintButtonBackground(Graphics2D g2) {
+		if (this.popupActive && isEnabled()) {
+			g2.setColor(QRColorsAndFonts.PRESS_COLOR);
+			RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.addRenderingHints(rh);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+			g2.fillRect(0, 0, getWidth(), getHeight());
+			return;
+		}
+		super.paintButtonBackground(g2);
 	}
 }

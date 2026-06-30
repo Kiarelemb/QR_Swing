@@ -31,6 +31,7 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
     private final ArrayList<Boolean> enables;
     private final QRPopupMenu jpm;
     private final QRMenuPanel menuPanel;
+    private boolean popupActive;
 
     public QRMenuButton(String text, QRMenuPanel menuPanel) {
         super(text);
@@ -39,13 +40,13 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
         this.jpm = new QRPopupMenu(SwingUtilities.getWindowAncestor(menuPanel)) {
             @Override
             public void focusGain(FocusEvent e) {
-                QRMenuButton.this.setBackground(QRColorsAndFonts.PRESS_COLOR);
+                QRMenuButton.this.setPopupActive(true);
             }
 
             @Override
             public void focusLose(FocusEvent e) {
                 super.focusLose(e);
-                QRMenuButton.this.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+                QRMenuButton.this.setPopupActive(false);
                 QRMenuButton.this.menuPanel.popupMenuClosed(QRMenuButton.this);
             }
         };
@@ -74,6 +75,7 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
      */
     @Override
     public void showPopupMenu() {
+        setPopupActive(true);
         this.menuPanel.popupMenuOpened(this);
         this.jpm.show(this.menuPanel, getX(), getY() + getHeight());
     }
@@ -144,6 +146,27 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
     @Override
     public void closePopupMenu() {
         this.jpm.setVisible(false);
+        setPopupActive(false);
         this.menuPanel.popupMenuClosed(this);
+    }
+
+    private void setPopupActive(boolean popupActive) {
+        if (this.popupActive != popupActive) {
+            this.popupActive = popupActive;
+            repaint();
+        }
+    }
+
+    @Override
+    protected void paintButtonBackground(Graphics2D g2) {
+        if (this.popupActive && isEnabled()) {
+            g2.setColor(QRColorsAndFonts.PRESS_COLOR);
+            RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.addRenderingHints(rh);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2.fillRect(0, 0, getWidth(), getHeight());
+            return;
+        }
+        super.paintButtonBackground(g2);
     }
 }

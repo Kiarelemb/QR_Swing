@@ -27,7 +27,7 @@ public class MenuTest extends QRFrame {
         // 设置主面板的布局
         this.mainPanel.setLayout(new BorderLayout());
 
-        titleMenuPanel.setAutoExpend(false);
+//        titleMenuPanel.setAutoExpend(true);
 
         QRButton fileMenu = titleMenuPanel.add("File");
         fileMenu.add(new QRMenuItem("New File", "ctrl N"));
