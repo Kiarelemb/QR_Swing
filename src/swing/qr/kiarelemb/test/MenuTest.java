@@ -1,10 +1,10 @@
 package swing.qr.kiarelemb.test;
 
-import method.qr.kiarelemb.utils.QRRandomUtils;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRMenuItem;
 import swing.qr.kiarelemb.basic.QRTextPane;
+import swing.qr.kiarelemb.combination.QRMenuButton;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
@@ -26,15 +26,39 @@ public class MenuTest extends QRFrame {
         setCloseButtonSystemExit();
         // 设置主面板的布局
         this.mainPanel.setLayout(new BorderLayout());
-        // 用循环添加菜单和子菜单
-        for (int i = 0; i < 4; i++) {
-            QRButton button = titleMenuPanel.add("Menu " + i);
-            for (int j = 0, size = QRRandomUtils.getRandomInt(2, 9); j < size; j++) {
-                button.add(new QRMenuItem(String.format("Menu %s of Button %s", i, j)));
-            }
-        }
+
+        titleMenuPanel.setAutoExpend(false);
+
+        QRButton fileMenu = titleMenuPanel.add("File");
+        fileMenu.add(new QRMenuItem("New File", "ctrl N"));
+        fileMenu.add(new QRMenuItem("Open File", "ctrl O"));
+        addSeparator(fileMenu);
+        fileMenu.add(new QRMenuItem("Save", "ctrl S"));
+        fileMenu.add(new QRMenuItem("Save As"));
+        addSeparator(fileMenu);
+        fileMenu.add(new QRMenuItem("Close"));
+
+        QRButton editMenu = titleMenuPanel.add("Edit");
+        editMenu.add(new QRMenuItem("Undo", "ctrl Z"));
+        editMenu.add(new QRMenuItem("Redo", "ctrl Y"));
+        addSeparator(editMenu);
+        editMenu.add(new QRMenuItem("Cut", "ctrl X"));
+        editMenu.add(new QRMenuItem("Copy", "ctrl C"));
+        editMenu.add(new QRMenuItem("Paste", "ctrl V"));
+
+        QRButton viewMenu = titleMenuPanel.add("View");
+        viewMenu.add(new QRMenuItem("Zoom In"));
+        viewMenu.add(new QRMenuItem("Zoom Out"));
+        viewMenu.add(new QRMenuItem("Reset Zoom"));
+
         this.mainPanel.add(new QRTextPane().addScrollPane());
 //        QRComponentUtils.componentLoopToSetOpaque(this.mainPanel, true);
+    }
+
+    private void addSeparator(QRButton button) {
+        if (button instanceof QRMenuButton menuButton) {
+            menuButton.addSeparator();
+        }
     }
 
     public static void main(String[] args) {
@@ -48,7 +72,7 @@ public class MenuTest extends QRFrame {
         window.setBackgroundImageAlpha(0.5f);
         // 设置窗体背景图
 //        window.setBackgroundImage("res/picture/background_image.png");
-        window.setBackgroundImage("/home/kylan/图片/背景图.png");
+//        window.setBackgroundImage("/home/kylan/图片/背景图.png");
         //设置窗体可见
         window.setVisible(true);
     }

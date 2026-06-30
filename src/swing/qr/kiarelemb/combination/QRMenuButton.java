@@ -46,6 +46,7 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
             public void focusLose(FocusEvent e) {
                 super.focusLose(e);
                 QRMenuButton.this.setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
+                QRMenuButton.this.menuPanel.popupMenuClosed(QRMenuButton.this);
             }
         };
         setPreferredSize(new Dimension(QRFontUtils.getTextInWidth(this, text) + 20, 32));
@@ -73,6 +74,7 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
      */
     @Override
     public void showPopupMenu() {
+        this.menuPanel.popupMenuOpened(this);
         this.jpm.show(this.menuPanel, getX(), getY() + getHeight());
     }
 
@@ -142,5 +144,6 @@ public class QRMenuButton extends QRButton implements QRMenuButtonProcess {
     @Override
     public void closePopupMenu() {
         this.jpm.setVisible(false);
+        this.menuPanel.popupMenuClosed(this);
     }
 }

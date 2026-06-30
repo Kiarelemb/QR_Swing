@@ -86,14 +86,29 @@ public class QRMenuPanel extends QRPanel {
     }
 
     private void mouseEnterAction(QRButton button) {
-        if (pressed && button.isEnabled() || autoExpend) {
-            ((QRMenuButtonProcess) button).showPopupMenu();
+        if (button.isEnabled() && (pressed || autoExpend)) {
             if (preClickedItem != button) {
-                if (preClickedItem != null) {
-                    ((QRMenuButtonProcess) preClickedItem).closePopupMenu();
-                }
+                QRButton previousItem = preClickedItem;
                 preClickedItem = button;
+                pressed = true;
+                if (previousItem != null) {
+                    ((QRMenuButtonProcess) previousItem).closePopupMenu();
+                }
             }
+            ((QRMenuButtonProcess) button).showPopupMenu();
+        }
+    }
+
+    void popupMenuClosed(QRButton button) {
+        if (preClickedItem == button) {
+            setPressed(false);
+        }
+    }
+
+    void popupMenuOpened(QRButton button) {
+        if (button.isEnabled()) {
+            pressed = true;
+            preClickedItem = button;
         }
     }
 

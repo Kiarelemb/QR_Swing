@@ -5,11 +5,15 @@ import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRMenuItem;
+import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.inter.QRActionRegister;
+import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kiarelemb QR
@@ -18,15 +22,22 @@ import java.awt.event.ActionEvent;
  * @create 2022-11-04 17:25
  **/
 public class QRPopupMenu extends QREmptyDialog  {
-    protected final int vgap = 4;
+    protected final int vgap = 5;
+    private static final int ITEM_HEIGHT = 25;
+    private static final int MENU_PADDING = 6;
     protected int itemNums;
     protected int itemMaxLen;
     protected int itemMaxTipLen;
+    private final QRPanel mainPanel;
+    private final List<Integer> separatorIndexes;
     private final QRActionRegister<ActionEvent> actionRegister;
 
     public QRPopupMenu(Window parent) {
         super(parent, false);
-        this.contentPane.setLayout(new GridLayout(0, 1, 3, this.vgap));
+        this.contentPane.setLayout(new BorderLayout());
+        this.mainPanel = new PopupMainPanel();
+        this.separatorIndexes = new ArrayList<>();
+        this.contentPane.add(this.mainPanel, BorderLayout.CENTER);
         addFocusListener();
         setFreelyMotionFailed();
         setFocusable(true);
@@ -40,7 +51,14 @@ public class QRPopupMenu extends QREmptyDialog  {
     }
 
     public void addSeparator() {
-
+        if (this.itemNums <= 0) {
+            return;
+        }
+        int index = this.itemNums;
+        if (!this.separatorIndexes.contains(index)) {
+            this.separatorIndexes.add(index);
+        }
+        this.mainPanel.repaint();
     }
 
     /**
@@ -49,7 +67,7 @@ public class QRPopupMenu extends QREmptyDialog  {
      * @param menuItem 添加的菜单按钮
      */
     public void add(QRMenuItem menuItem) {
-        this.contentPane.add(menuItem);
+        this.mainPanel.add(menuItem);
         menuItem.addClickAction(this.actionRegister);
         this.itemNums++;
         int textInWidth = QRFontUtils.getTextInWidth(menuItem, menuItem.getText());
@@ -60,7 +78,7 @@ public class QRPopupMenu extends QREmptyDialog  {
     }
 
     public void add(QRButton button) {
-        this.contentPane.add(button);
+        this.mainPanel.add(button);
         button.addClickAction(this.actionRegister);
         this.itemNums++;
         int textInWidth = QRFontUtils.getTextInWidth(button, button.getText());
@@ -74,10 +92,42 @@ public class QRPopupMenu extends QREmptyDialog  {
             y += invokerOrigin.y;
         }
         setLocation(x, y);
-        setSize(this.itemMaxLen + this.itemMaxTipLen + 30, this.itemNums * (22 + this.vgap));
+        int gapHeight = Math.max(0, this.itemNums - 1) * this.vgap;
+        setSize(this.itemMaxLen + this.itemMaxTipLen + 30,
+                this.itemNums * ITEM_HEIGHT + gapHeight + MENU_PADDING);
         if (QRSwing.windowRound) {
             QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
         }
         super.setVisible(true);
+    }
+
+    private void paintSeparators(Graphics g) {
+        if (this.separatorIndexes.isEmpty()) {
+            return;
+        }
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setColor(QRColorsAndFonts.BORDER_COLOR);
+        for (Integer index : this.separatorIndexes) {
+            if (index <= 0 || index >= this.mainPanel.getComponentCount()) {
+                continue;
+            }
+            Component prev = this.mainPanel.getComponent(index - 1);
+            Component next = this.mainPanel.getComponent(index);
+            int y = (prev.getY() + prev.getHeight() + next.getY()) / 2;
+            g2.drawLine(0, y, this.mainPanel.getWidth() - 1, y);
+        }
+        g2.dispose();
+    }
+
+    private class PopupMainPanel extends QRPanel {
+        private PopupMainPanel() {
+            super(false, new GridLayout(0, 1, 3, QRPopupMenu.this.vgap));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            QRPopupMenu.this.paintSeparators(g);
+        }
     }
 }

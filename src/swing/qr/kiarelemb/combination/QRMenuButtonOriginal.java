@@ -35,17 +35,17 @@ public class QRMenuButtonOriginal extends QRButton implements QRMenuButtonProces
 		this.jpm.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				menuPanel.setPressed(true);
+				menuPanel.popupMenuOpened(QRMenuButtonOriginal.this);
 			}
 
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				menuPanel.setPressed(false);
+				menuPanel.popupMenuClosed(QRMenuButtonOriginal.this);
 			}
 
 			@Override
 			public void popupMenuCanceled(PopupMenuEvent e) {
-				menuPanel.setPressed(false);
+				menuPanel.popupMenuClosed(QRMenuButtonOriginal.this);
 			}
 		});
 		addMouseListener();
