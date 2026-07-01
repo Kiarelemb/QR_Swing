@@ -67,9 +67,9 @@ public class QRColorsAndFonts {
 	 */
 	public static Color BORDER_COLOR = new Color(110, 110, 110);
 	/**
-	 * 打对字前景色
+	 * 禁用组件前景色
 	 */
-	public static Color CORRECT_COLOR_FORE = new Color(90, 90, 90);
+	public static Color DISABLED_COLOR_FORE = new Color(90, 90, 90);
 	/**
 	 * 打对字背景色
 	 */
@@ -102,7 +102,7 @@ public class QRColorsAndFonts {
 	 * 菜单的颜色，默认与TEXT_COLOR_FORE一致
 	 */
 	public static Color MENU_COLOR = new Color(235, 235, 235);
-	public static String[] COLOR_ATTRIBUTES = new String[]{"TEXT_COLOR_FORE", "TEXT_COLOR_BACK", "CORRECT_COLOR_FORE", "CORRECT_COLOR_BACK", "SENIOR_RANDOM_COLOR_BACK", "FRAME_COLOR_BACK", "BORDER_COLOR", "ENTER_COLOR", "PRESS_COLOR", "LINE_COLOR", "SCROLL_COLOR", "MENU_COLOR", "CARET_COLOR"};
+	public static String[] COLOR_ATTRIBUTES = new String[]{"TEXT_COLOR_FORE", "TEXT_COLOR_BACK", "DISABLED_COLOR_FORE", "CORRECT_COLOR_BACK", "SENIOR_RANDOM_COLOR_BACK", "FRAME_COLOR_BACK", "BORDER_COLOR", "ENTER_COLOR", "PRESS_COLOR", "LINE_COLOR", "SCROLL_COLOR", "MENU_COLOR", "CARET_COLOR"};
 	/**
 	 * 所有主题
 	 */
@@ -145,7 +145,7 @@ public class QRColorsAndFonts {
 			int index = 0;
 			TEXT_COLOR_FORE = colors[index++];
 			TEXT_COLOR_BACK = colors[index++];
-			CORRECT_COLOR_FORE = colors[index++];
+			DISABLED_COLOR_FORE = colors[index++];
 			CORRECT_COLOR_BACK = colors[index++];
 			SENIOR_RANDOM_COLOR_BACK = colors[index++];
 			FRAME_COLOR_BACK = colors[index++];
@@ -274,7 +274,11 @@ public class QRColorsAndFonts {
 							attr.put(split[0], parseColor(split[1], ','));
 						}
 						for (int i = 0; i < length; i++) {
-							colors[i] = attr.get(COLOR_ATTRIBUTES[i]);
+							String attribute = COLOR_ATTRIBUTES[i];
+							colors[i] = attr.get(attribute);
+							if (colors[i] == null && "DISABLED_COLOR_FORE".equals(attribute)) {
+								colors[i] = DISABLED_COLOR_FORE;
+							}
 						}
 						return colors;
 					}
@@ -342,7 +346,7 @@ public class QRColorsAndFonts {
 				}
 			}
 		}
-		return flag && attributesSet.size() == 0;
+		return flag && (attributesSet.isEmpty() || attributesSet.equals(Set.of("DISABLED_COLOR_FORE")));
 	}
 
 	/**

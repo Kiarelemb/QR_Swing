@@ -48,7 +48,7 @@ public class QRSwingThemeDesigner extends QRDialog {
     QRTextPane previewTextPane;
     QRRGBColorPane textColorForeColorValue;
     QRRGBColorPane textColorBackColorValue;
-    QRRGBColorPane correctColorForeColorValue;
+    QRRGBColorPane disabledColorForeColorValue;
     QRRGBColorPane correctColorBackColorValue;
     QRRGBColorPane seniorCorrectColorForeColorValue;
     QRRGBColorPane frameColorBackColorValue;
@@ -65,7 +65,7 @@ public class QRSwingThemeDesigner extends QRDialog {
     QRLabel showTextColorForeLabel;
     QRLabel showTextColorBackLabel;
     QRLabel showFrameColorBorderLabel;
-    QRLabel showCorrectColorForeLabel;
+    QRLabel showDisabledColorForeLabel;
     QRLabel showCorrectColorBackLabel;
     QRLabel showSeniorCorrectColorForeLabel;
     QRLabel showButtonEnterColorLabel;
@@ -435,7 +435,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         showTextColorForeLabel = new QRLabel();
         showTextColorBackLabel = new QRLabel();
         showFrameColorBorderLabel = new QRLabel();
-        showCorrectColorForeLabel = new QRLabel();
+        showDisabledColorForeLabel = new QRLabel();
         showCorrectColorBackLabel = new QRLabel();
         showSeniorCorrectColorForeLabel = new QRLabel();
         showButtonEnterColorLabel = new QRLabel();
@@ -449,7 +449,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showTextColorForeLabel, 685, 29, 30, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showTextColorBackLabel, 685, 69, 30, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showFrameColorBorderLabel, 685, 269, 30, 30);
-        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showCorrectColorForeLabel, 685, 149, 30, 30);
+        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showDisabledColorForeLabel, 685, 149, 30, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showCorrectColorBackLabel, 685, 189, 30, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showSeniorCorrectColorForeLabel, 685, 109, 30, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, showButtonEnterColorLabel, 685, 309, 30, 30);
@@ -465,7 +465,7 @@ public class QRSwingThemeDesigner extends QRDialog {
 
         textColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.TEXT_COLOR_FORE, showTextColorForeLabel, colorChangedAction);
         textColorBackColorValue = new QRRGBColorPane(QRColorsAndFonts.TEXT_COLOR_BACK, showTextColorBackLabel, colorChangedAction);
-        correctColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.CORRECT_COLOR_FORE, showCorrectColorForeLabel, colorChangedAction);
+        disabledColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.DISABLED_COLOR_FORE, showDisabledColorForeLabel, colorChangedAction);
         correctColorBackColorValue = new QRRGBColorPane(QRColorsAndFonts.CORRECT_COLOR_BACK, showCorrectColorBackLabel, colorChangedAction);
         seniorCorrectColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.SENIOR_RANDOM_COLOR_BACK, showSeniorCorrectColorForeLabel, colorChangedAction);
         frameColorBackColorValue = new QRRGBColorPane(QRColorsAndFonts.FRAME_COLOR_BACK, showFrameColorBackLabel, colorChangedAction);
@@ -477,12 +477,12 @@ public class QRSwingThemeDesigner extends QRDialog {
         menuTextColorForeColorValue = new QRRGBColorPane(QRColorsAndFonts.MENU_COLOR, showMenuTextColorForeLabel, colorChangedAction);
         caretColorColorValue = new QRRGBColorPane(QRColorsAndFonts.CARET_COLOR, showCaretColorLabel, colorChangedAction);
 
-        panes = new QRRGBColorPane[]{textColorForeColorValue, textColorBackColorValue, correctColorForeColorValue, correctColorBackColorValue, seniorCorrectColorForeColorValue, frameColorBackColorValue, frameColorBorderColorValue, ButtonEnterColorColorValue, ButtonPressColorColorValue, menuLineColorColorValue, ScrollColorColorValue, menuTextColorForeColorValue, caretColorColorValue};
+        panes = new QRRGBColorPane[]{textColorForeColorValue, textColorBackColorValue, disabledColorForeColorValue, correctColorBackColorValue, seniorCorrectColorForeColorValue, frameColorBackColorValue, frameColorBorderColorValue, ButtonEnterColorColorValue, ButtonPressColorColorValue, menuLineColorColorValue, ScrollColorColorValue, menuTextColorForeColorValue, caretColorColorValue};
 
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, textColorForeColorValue, 884, 29, 200, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, textColorBackColorValue, 884, 69, 200, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, seniorCorrectColorForeColorValue, 884, 109, 200, 30);
-        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, correctColorForeColorValue, 884, 149, 200, 30);
+        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, disabledColorForeColorValue, 884, 149, 200, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, correctColorBackColorValue, 884, 189, 200, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, frameColorBackColorValue, 884, 229, 200, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, frameColorBorderColorValue, 884, 269, 200, 30);
@@ -499,7 +499,7 @@ public class QRSwingThemeDesigner extends QRDialog {
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("跟打框面板背景色:"), 735, 69, 147, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("窗体背景色:"), 735, 229, 147, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("窗体边框色:"), 735, 269, 147, 30);
-        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("打对字前景色:"), 735, 149, 147, 30);
+        QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("禁用组件前景色:"), 735, 149, 147, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("打对字背景色:"), 735, 189, 147, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("高级随机字背景色:"), 735, 109, 147, 30);
         QRComponentUtils.setBoundsAndAddToComponent(mainPanel, new QRLabel("按钮进入填充色:"), 735, 309, 147, 30);
@@ -544,8 +544,10 @@ public class QRSwingThemeDesigner extends QRDialog {
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < panes.length; i++) {
-            String rgbValue = QRRGBColorPane.getColor(panes[i].getColor());
-            String lineText = QRColorsAndFonts.COLOR_ATTRIBUTES[i] + "=" + rgbValue;
+            String attribute = QRColorsAndFonts.COLOR_ATTRIBUTES[i];
+            Color color = "DISABLED_COLOR_FORE".equals(attribute) ? QRColorsAndFonts.DISABLED_COLOR_FORE : panes[i].getColor();
+            String rgbValue = QRRGBColorPane.getColor(color);
+            String lineText = attribute + "=" + rgbValue;
             sb.append(QRCodePack.encrypt(lineText, "theme")).append("\n");
         }
         QRFileUtils.fileWriterWithUTF8(filePath, sb.toString());

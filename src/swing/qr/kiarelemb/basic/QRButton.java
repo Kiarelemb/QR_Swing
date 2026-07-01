@@ -319,9 +319,16 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 
 	@Override
 	public void componentFresh() {
-		setForeground(QRColorsAndFonts.MENU_COLOR);
+		setForeground(isEnabled() ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.DISABLED_COLOR_FORE);
 		setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 		setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		setForeground(enabled ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.DISABLED_COLOR_FORE);
+		repaint();
 	}
 
 	@Override

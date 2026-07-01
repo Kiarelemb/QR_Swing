@@ -26,7 +26,7 @@ public class QRRoundButton extends QRButton {
     @Override
     public void componentFresh() {
         super.componentFresh();
-        setForeground(isEnabled() ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.CORRECT_COLOR_FORE);
+        setForeground(isEnabled() ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.DISABLED_COLOR_FORE);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class QRRoundButton extends QRButton {
     @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
-        setForeground(b ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.CORRECT_COLOR_FORE);
+        setForeground(b ? QRColorsAndFonts.MENU_COLOR : QRColorsAndFonts.DISABLED_COLOR_FORE);
     }
 
     @Override

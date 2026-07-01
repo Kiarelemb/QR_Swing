@@ -36,7 +36,9 @@ public class MenuTest extends QRFrame {
         fileMenu.add(new QRMenuItem("Save", "ctrl S"));
         fileMenu.add(new QRMenuItem("Save As"));
         addSeparator(fileMenu);
-        fileMenu.add(new QRMenuItem("Close"));
+        QRMenuItem closeItem = new QRMenuItem("Close", "ctrl W");
+        closeItem.setEnabled(false);
+        fileMenu.add(closeItem);
 
         QRButton editMenu = titleMenuPanel.add("Edit");
         editMenu.add(new QRMenuItem("Undo", "ctrl Z"));

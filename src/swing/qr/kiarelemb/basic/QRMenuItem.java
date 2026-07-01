@@ -76,9 +76,18 @@ public class QRMenuItem extends QRButton {
         setFont(QRColorsAndFonts.MENU_ITEM_DEFAULT_FONT);
         setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         if (tip != null) {
+            tip.setEnabled(isEnabled());
             tip.componentFresh();
         }
         repaint();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (tip != null) {
+            tip.setEnabled(enabled);
+        }
     }
 
     public String quickTip() {
