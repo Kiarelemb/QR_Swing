@@ -184,10 +184,10 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
             }
         };
 
-        addWindowListener();
-        addWindowAction(TYPE.OPEN, e -> {
+//        addWindowListener();
+//        addWindowAction(TYPE.OPEN, e -> {
 //            if (toSetOpaque) QRComponentUtils.componentLoopToSetOpaque(this.contentPane, false);
-        });
+//        });
     }
 
     /**

@@ -12,47 +12,47 @@ import java.awt.event.WindowEvent;
 
 public class MyFrame extends QRFrame {
 
-    public static void main(String[] args) {
-        // 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
-        // 在调用本方法时，将使用默认的设置进行配置，其文件 GLOBAL_PROP_PATH 和 WINDOW_PROP_PATH 将会创建在程序的根目录下
-        QRSwing.start();
-        // 注册全局键盘事件，以方便对话窗能按 ESC 关闭窗体
-        QRSwing.registerGlobalKeyEvents();
-        // 实例化主窗体
-        MyFrame frame = new MyFrame();
-        // 注册全局键盘事件的主窗体
-        QRSwing.registerGlobalEventWindow(frame);
-        // 显示窗体
-        frame.setVisible(true);
-    }
+	public static void main(String[] args) {
+		// 本工具包开始于此方法。在所有窗体或控件调用前，都必须先调用该方法
+		// 在调用本方法时，将使用默认的设置进行配置，其文件 GLOBAL_PROP_PATH 和 WINDOW_PROP_PATH 将会创建在程序的根目录下
+		QRSwing.start();
+		// 注册全局键盘事件，以方便对话窗能按 ESC 关闭窗体
+		QRSwing.registerGlobalKeyEvents();
+		// 实例化主窗体
+		MyFrame frame = new MyFrame();
+		// 注册全局键盘事件的主窗体
+		QRSwing.registerGlobalEventWindow(frame);
+		// 显示窗体
+		frame.setVisible(true);
+	}
 
-    public MyFrame() {
-        // 设置窗体标题
-        super("空白窗体");
-        // 将窗体标题居中
-        setTitleCenter();
-        // 设置单击关闭按钮后窗体淡化退出并结束程序
-        setCloseButtonSystemExit();
-        // 在最开始时，窗体大小和窗体位置是自动计算的，长宽为屏幕的 1/2 ，位置自动据此居中。
-        // 且窗体大小和位置将自动记住，并在下次启动时，会自动读取该配置，并设置窗体大小和位置。
-    }
+	public MyFrame() {
+		// 设置窗体标题
+		super("空白窗体");
+		// 将窗体标题居中
+		setTitleCenter();
+		// 设置单击关闭按钮后窗体淡化退出并结束程序
+		setCloseButtonSystemExit();
+		// 在最开始时，窗体大小和窗体位置是自动计算的，长宽为屏幕的 1/2 ，位置自动据此居中。
+		// 且窗体大小和位置将自动记住，并在下次启动时，会自动读取该配置，并设置窗体大小和位置。
+	}
  
-     /**
-     * 该方法已自动添加监听器，可直接重写
-     */
-    @Override
-    public void windowOpened(WindowEvent e) {
-        // 实例化对话窗体，并将主窗体设置为其父窗体
-        var dialog = new QRDialog(this);
-        // 设置对话窗体标题
-        dialog.setTitle("Hello World!");
-        // 设置对话窗体标题居中
-        dialog.setTitlePlace(QRDialog.CENTER);
-        // 设置对话窗体大小
-        dialog.setSize(400, 300);
-        // 显示对话窗体
-        dialog.setVisible(true);
-    }
+	 /**
+	 * 该方法已自动添加监听器，可直接重写
+	 */
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// 实例化对话窗体，并将主窗体设置为其父窗体
+		var dialog = new QRDialog(this);
+		// 设置对话窗体标题
+		dialog.setTitle("Hello World!");
+		// 设置对话窗体标题居中
+		dialog.setTitlePlace(QRDialog.CENTER);
+		// 设置对话窗体大小
+		dialog.setSize(400, 300);
+		// 显示对话窗体
+		dialog.setVisible(true);
+	}
 }
 ```
 
@@ -70,44 +70,44 @@ import java.awt.*;
 
 public class MenuTest extends QRFrame {
 
-    public MenuTest(String title) {
-        super(title);
-        //设置窗体标题居中
-        setTitlePlace(SwingConstants.CENTER);
-        //设置单击关闭按钮后窗体淡化退出并结束程序
-        setCloseButtonSystemExit();
-        // 设置主面板的布局
-        this.mainPanel.setLayout(new BorderLayout());
-        // 用循环添加菜单和子菜单
-        for (var i = 0; i < 4; i++) {
-            // 添加菜单
-            QRButton button = titleMenuPanel.add("Menu " + i);
-            for (var j = 0, size = QRRandomUtils.getRandomInt(2, 9); j < size; j++) {
-                // 添加子菜单
-                button.add(new QRMenuItem(String.format("Menu %s of Button %s", i, j)));
-            }
-        }
-        // 添加文本面板
-        var textPane = new QRTextPane();
-        // 将文本面板置于滚动条中，并将滚动条面板置于主面板中
-        this.mainPanel.add(textPane.addScrollPane());
-    }
+	public MenuTest(String title) {
+		super(title);
+		//设置窗体标题居中
+		setTitlePlace(SwingConstants.CENTER);
+		//设置单击关闭按钮后窗体淡化退出并结束程序
+		setCloseButtonSystemExit();
+		// 设置主面板的布局
+		this.mainPanel.setLayout(new BorderLayout());
+		// 用循环添加菜单和子菜单
+		for (var i = 0; i < 4; i++) {
+			// 添加菜单
+			QRButton button = titleMenuPanel.add("Menu " + i);
+			for (var j = 0, size = QRRandomUtils.getRandomInt(2, 9); j < size; j++) {
+				// 添加子菜单
+				button.add(new QRMenuItem(String.format("Menu %s of Button %s", i, j)));
+			}
+		}
+		// 添加文本面板
+		var textPane = new QRTextPane();
+		// 将文本面板置于滚动条中，并将滚动条面板置于主面板中
+		this.mainPanel.add(textPane.addScrollPane());
+	}
 
-    public static void main(String[] args) {
-        // 自定义配置文件名及其路径
-        QRSwing.start("res/settings.properties", "res/window.properties");
-        // 设置菜单置于窗体标题栏
-        QRSwing.setWindowTitleMenu(true);
-        // 取消窗体圆角
-        QRSwing.setWindowRound(false);
-        QRFrame window = new MenuTest("测试窗体");
-        // 设置窗体背景图遮罩透明度
-        window.setBackgroundImageAlpha(0.8f);
-        // 设置窗体背景图
-        window.setBackgroundImage("res/picture/background_image.png");
-        //设置窗体可见
-        window.setVisible(true);
-    }
+	public static void main(String[] args) {
+		// 自定义配置文件名及其路径
+		QRSwing.start("res/settings.properties", "res/window.properties");
+		// 设置菜单置于窗体标题栏
+		QRSwing.setWindowTitleMenu(true);
+		// 取消窗体圆角
+		QRSwing.setWindowRound(false);
+		QRFrame window = new MenuTest("测试窗体");
+		// 设置窗体背景图遮罩透明度
+		window.setBackgroundImageAlpha(0.8f);
+		// 设置窗体背景图
+		window.setBackgroundImage("res/picture/background_image.png");
+		//设置窗体可见
+		window.setVisible(true);
+	}
 }
 ```
 
@@ -137,20 +137,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Test {
-    public static void main(String[] args) {
-        JPanel panel = new JPanel();
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // do something...
-            }
+	public static void main(String[] args) {
+		JPanel panel = new JPanel();
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// do something...
+			}
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // do something...
-            }
-        });
-    }
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// do something...
+			}
+		});
+	}
 }
 ```
 而 `QRSwing` 则提供了一种更优雅的方式：为控件调用添加监听器方法，再添加你需要使用的具体方法：
@@ -159,17 +159,17 @@ import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.listener.QRMouseListener.TYPE;
 
 public class Test {
-    public static void main(String[] args) {
-        QRPanel panel = new QRPanel();
-        // 其中，参数 e 的类型是 java.awt.event.MouseEvent
-        // 类外添加操作事件，已不再需要添加监听器
-        panel.addMouseAction(TYPE.PRESS, e -> {
-            // do something...
-        });
-        panel.addMouseAction(TYPE.RELEASE, e -> {
-            // do something...
-        });
-    }
+	public static void main(String[] args) {
+		QRPanel panel = new QRPanel();
+		// 其中，参数 e 的类型是 java.awt.event.MouseEvent
+		// 类外添加操作事件，已不再需要添加监听器
+		panel.addMouseAction(TYPE.PRESS, e -> {
+			// do something...
+		});
+		panel.addMouseAction(TYPE.RELEASE, e -> {
+			// do something...
+		});
+	}
 }
 ```
 #### 2. 继承操作
@@ -181,18 +181,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class PaneTest extends JPanel {
-    public PaneTest() {
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // do something...
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // do something...
-            }
-        });
-    }
+	public PaneTest() {
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// do something...
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// do something...
+			}
+		});
+	}
 }
 ```
 
@@ -202,20 +202,20 @@ import swing.qr.kiarelemb.basic.QRPanel;
 import java.awt.event.MouseEvent;
 
 public class PaneTest extends QRPanel {
-    public PaneTest() {
+	public PaneTest() {
 		// 类内重写方法需要手动添加监听器
 		addMouseListener();
-    }
+	}
 
-    @Override
-    protected void mousePress(MouseEvent e) {
-        // do something...
-    }
+	@Override
+	protected void mousePress(MouseEvent e) {
+		// do something...
+	}
 
-    @Override
-    protected void mouseRelease(MouseEvent e) {
-        // do something...
-    }
+	@Override
+	protected void mouseRelease(MouseEvent e) {
+		// do something...
+	}
 }
 ```
 当然，你仍然可以使用外部添加事件的方法来实现你的需求，不过直接重写方法看起来也非常不错。也许你还不清楚我们所测试的这个 `QRPanel` 是什么，
@@ -232,12 +232,12 @@ public static final String[] BASIC_THEMES = {"深色", "浅色", "粉色", "棕�
 ```java
 import swing.qr.kiarelemb.window.basic.QRFrame;
 public class FrameTest {
-    public FrameTest() {
-        QRFrame mainWindow = new QRFrame();
-        // 切换主题的代码...
-        // 最后调用该方法以刷新
-        mainWindow.componentFresh();
-    }
+	public FrameTest() {
+		QRFrame mainWindow = new QRFrame();
+		// 切换主题的代码...
+		// 最后调用该方法以刷新
+		mainWindow.componentFresh();
+	}
 }
 ```
 但主题并不代表只有这些，我们也可以自定义主题。为此， `QRSwing` 提供了专门的主题设计器。虽然该主题设计器目前还在开发中，但它仍然满足大部分需求，且方便使用。
@@ -246,14 +246,14 @@ import swing.qr.kiarelemb.theme.QRSwingThemeDesigner;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
 public class FrameTest {
-    public FrameTest() {
-        QRFrame mainWindow = new QRFrame();
-        // 主窗体的操作代码....
-        
-        // 实例化主题设计器，并将主窗体传入
-        QRSwingThemeDesigner designer = new QRSwingThemeDesigner(mainWindow);
-        designer.setVisible(true);
-    }
+	public FrameTest() {
+		QRFrame mainWindow = new QRFrame();
+		// 主窗体的操作代码....
+		
+		// 实例化主题设计器，并将主窗体传入
+		QRSwingThemeDesigner designer = new QRSwingThemeDesigner(mainWindow);
+		designer.setVisible(true);
+	}
 }
 ```
 ### ③ 高档的窗体背景图
@@ -288,18 +288,18 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 import java.awt.BorderLayout;
 
 public class TextPaneTest extends QRFrame {
-    public TextPaneTest() {
-        super("QRTextPane");
-        setCloseButtonSystemExit();
-        mainPanel.setLayout(new BorderLayout());
+	public TextPaneTest() {
+		super("QRTextPane");
+		setCloseButtonSystemExit();
+		mainPanel.setLayout(new BorderLayout());
 
-        QRTextPane textPane = new QRTextPane();
-        textPane.addUndoManager();
-        textPane.println("这是第一行。");
-        textPane.println("这是第二行。");
+		QRTextPane textPane = new QRTextPane();
+		textPane.addUndoManager();
+		textPane.println("这是第一行。");
+		textPane.println("这是第二行。");
 		// 文本面板添加滚动面板也不需要再单独去实例化一个滚动面板，而是直接调用 addScrollPane() 方法
-        mainPanel.add(textPane.addScrollPane(), BorderLayout.CENTER);
-    }
+		mainPanel.add(textPane.addScrollPane(), BorderLayout.CENTER);
+	}
 }
 ```
 
@@ -311,11 +311,11 @@ import swing.qr.kiarelemb.listener.QRDocumentListener;
 QRTextPane textPane = new QRTextPane();
 
 textPane.addDocumentListenerAction(QRDocumentListener.TYPE.INSERT, e -> {
-    System.out.println("插入了文本");
+	System.out.println("插入了文本");
 });
 
 textPane.addSelectionEndAction(e -> {
-    System.out.println("当前选中的文本：" + textPane.getSelectedText());
+	System.out.println("当前选中的文本：" + textPane.getSelectedText());
 });
 ```
 
@@ -346,7 +346,7 @@ tabbedPane.addTab("第二页", second);
 tabbedPane.setSelectedTab(0);
 
 tabbedPane.addTabSelectChangedAction(e -> {
-    System.out.println("当前标签索引：" + tabbedPane.getSelectedTabIndex());
+	System.out.println("当前标签索引：" + tabbedPane.getSelectedTabIndex());
 });
 ```
 
@@ -380,20 +380,20 @@ import swing.qr.kiarelemb.basic.QRMenuItem;
 import swing.qr.kiarelemb.window.basic.QRFrame;
 
 public class MenuFrame extends QRFrame {
-    public MenuFrame() {
-        super("菜单示例");
-        setCloseButtonSystemExit();
+	public MenuFrame() {
+		super("菜单示例");
+		setCloseButtonSystemExit();
 
-        QRButton file = titleMenuPanel.add("文件");
-        QRMenuItem open = new QRMenuItem("打开");
-        QRMenuItem save = new QRMenuItem("保存");
+		QRButton file = titleMenuPanel.add("文件");
+		QRMenuItem open = new QRMenuItem("打开");
+		QRMenuItem save = new QRMenuItem("保存");
 
-        open.addClickAction(e -> System.out.println("打开"));
-        save.addClickAction(e -> System.out.println("保存"));
+		open.addClickAction(e -> System.out.println("打开"));
+		save.addClickAction(e -> System.out.println("保存"));
 
-        file.add(open);
-        file.add(save);
-    }
+		file.add(open);
+		file.add(save);
+	}
 }
 ```
 
@@ -444,30 +444,30 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
 
 public class MainWindow extends QRFrame {
-    public static void main(String[] args) {
-        QRSwing.start();
-        QRSwing.registerGlobalKeyEvents();
+	public static void main(String[] args) {
+		QRSwing.start();
+		QRSwing.registerGlobalKeyEvents();
 
-        MainWindow window = new MainWindow();
-        QRSwing.registerGlobalEventWindow(window);
-        window.setVisible(true);
-    }
+		MainWindow window = new MainWindow();
+		QRSwing.registerGlobalEventWindow(window);
+		window.setVisible(true);
+	}
 
-    public MainWindow() {
-        super("主窗体");
-        setTitlePlace(SwingConstants.CENTER);
-        setCloseButtonSystemExit();
-        mainPanel.setLayout(new BorderLayout());
+	public MainWindow() {
+		super("主窗体");
+		setTitlePlace(SwingConstants.CENTER);
+		setCloseButtonSystemExit();
+		mainPanel.setLayout(new BorderLayout());
 
-        QRTextPane textPane = new QRTextPane();
-        textPane.println("主面板 mainPanel 可以像普通 Swing 容器一样添加控件。");
-        mainPanel.add(textPane.addScrollPane(), BorderLayout.CENTER);
-    }
+		QRTextPane textPane = new QRTextPane();
+		textPane.println("主面板 mainPanel 可以像普通 Swing 容器一样添加控件。");
+		mainPanel.add(textPane.addScrollPane(), BorderLayout.CENTER);
+	}
 
-    @Override
-    public void windowOpened(WindowEvent e) {
-        System.out.println("窗体已打开");
-    }
+	@Override
+	public void windowOpened(WindowEvent e) {
+		System.out.println("窗体已打开");
+	}
 }
 ```
 
@@ -491,7 +491,7 @@ frame.setMinEnable(true);
 
 // 关闭前执行动作。参数为 true 时，表示本次关闭希望退出程序
 frame.addActionBeforeDispose(systemExit -> {
-    System.out.println("准备关闭，是否退出程序：" + systemExit);
+	System.out.println("准备关闭，是否退出程序：" + systemExit);
 });
 
 // 背景图
@@ -509,15 +509,15 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 QRSwing.setWindowTitleMenu(false);
 
 public class MenuWindow extends QRFrame {
-    public MenuWindow() {
-        super("菜单窗体");
+	public MenuWindow() {
+		super("菜单窗体");
 		// 手动添加标题菜单栏
-        setTitlePanel();
+		setTitlePanel();
 
-        QRButton file = titleMenuPanel.add("文件");
-        file.add(new QRMenuItem("打开"));
-        file.add(new QRMenuItem("保存"));
-    }
+		QRButton file = titleMenuPanel.add("文件");
+		file.add(new QRMenuItem("打开"));
+		file.add(new QRMenuItem("保存"));
+	}
 }
 ```
 
@@ -536,25 +536,25 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 public class ConfirmDialog extends QRDialog {
-    public ConfirmDialog(Window parent) {
-        super(parent);
-        setTitle("确认操作");
-        setTitlePlace(QRDialog.CENTER);
-        setSize(360, 180);
+	public ConfirmDialog(Window parent) {
+		super(parent);
+		setTitle("确认操作");
+		setTitlePlace(QRDialog.CENTER);
+		setSize(360, 180);
 
-        QRLabel label = new QRLabel("是否继续执行？");
-        label.setBounds(105, 35, 160, 30);
-        mainPanel.add(label);
+		QRLabel label = new QRLabel("是否继续执行？");
+		label.setBounds(105, 35, 160, 30);
+		mainPanel.add(label);
 
-        QRRoundButton button = new QRRoundButton("确定");
-        button.setBounds(145, 90, 70, 32);
-        button.addClickAction(this::sureAction);
-        mainPanel.add(button);
-    }
+		QRRoundButton button = new QRRoundButton("确定");
+		button.setBounds(145, 90, 70, 32);
+		button.addClickAction(this::sureAction);
+		mainPanel.add(button);
+	}
 
-    protected void sureAction(ActionEvent e) {
-        dispose();
-    }
+	protected void sureAction(ActionEvent e) {
+		dispose();
+	}
 }
 ```
 
@@ -567,13 +567,13 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 
 public class TipDialog extends QRDialog {
-    public TipDialog(Window parent) {
-        super(parent);
-        setTitle("提示");
-        setSize(420, 220);
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(new QRLabel("使用布局管理器也没有问题。"), BorderLayout.CENTER);
-    }
+	public TipDialog(Window parent) {
+		super(parent);
+		setTitle("提示");
+		setSize(420, 220);
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(new QRLabel("使用布局管理器也没有问题。"), BorderLayout.CENTER);
+	}
 }
 ```
 
@@ -627,7 +627,7 @@ QROpinionDialog.messageErrShow(parentWindow, "文件读取失败。");
 // 确认消息，返回 QROpinionDialog.OK 或 QROpinionDialog.CANCEL
 int result = QROpinionDialog.messageInfoShow(parentWindow, "是否覆盖已有文件？");
 if (result == QROpinionDialog.OK) {
-    System.out.println("用户选择了确定");
+	System.out.println("用户选择了确定");
 }
 ```
 

@@ -12,6 +12,7 @@ import swing.qr.kiarelemb.data.QRInternalScrollBarData;
 import swing.qr.kiarelemb.data.QRMousePointIndexData;
 import swing.qr.kiarelemb.drag.QRFileTransferHandler;
 import swing.qr.kiarelemb.event.QRTextSelectionEndEvent;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRInternalScrollbarUpdate;
@@ -64,6 +65,7 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	public Font textFont = QRColorsAndFonts.STANDARD_FONT_TEXT;
 	protected QRScrollPane scrollPane;
 	protected QRInternalScrollPane internalScrollPane;
+	protected QRPopupMenu popupMenu;
 	protected char blankMark = ' ';
 	protected char lineMark = '\n';
 	protected boolean caretBlock = false;
@@ -591,6 +593,21 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	 */
 	public void addUndoManager() {
 		this.undoManager = new QRUndoManager(this);
+	}
+
+
+	/**
+	 * 为文本面板创建并绑定右键菜单。
+	 *
+	 * <p>重复调用会返回同一个 {@link QRPopupMenu} 实例。调用方可继续向返回的菜单中添加菜单项。</p>
+	 *
+	 * @return 绑定当前文本面板的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu() {
+		if (this.popupMenu == null) {
+			this.popupMenu = new QRPopupMenu(SwingUtilities.getWindowAncestor(this)).bind(this);
+		}
+		return this.popupMenu;
 	}
 	//endregion
 

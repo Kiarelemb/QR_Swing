@@ -1,21 +1,16 @@
 package swing.qr.kiarelemb.window.utils;
 
 import method.qr.kiarelemb.utils.QRSystemUtils;
-import swing.qr.kiarelemb.basic.QRButton;
-import swing.qr.kiarelemb.basic.QRLabel;
-import swing.qr.kiarelemb.basic.QRList;
-import swing.qr.kiarelemb.basic.QRPanel;
-import swing.qr.kiarelemb.basic.QRRoundButton;
-import swing.qr.kiarelemb.basic.QRScrollPane;
-import swing.qr.kiarelemb.basic.QRTextField;
-import swing.qr.kiarelemb.basic.QRTree;
+import swing.qr.kiarelemb.basic.*;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRDocumentListener;
 import swing.qr.kiarelemb.listener.QRKeyListener;
 import swing.qr.kiarelemb.listener.QRMouseListener;
+import swing.qr.kiarelemb.listener.QRWindowListener;
 import swing.qr.kiarelemb.task.QRTaskListener;
 import swing.qr.kiarelemb.task.QRTaskWorker;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
+import swing.qr.kiarelemb.utils.QRComponentUtils;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 import swing.qr.kiarelemb.window.enhance.QROpinionDialog;
 
@@ -208,15 +203,23 @@ public class QRFileSelectDialog extends QRDialog {
 		topPanel.add(pathPanel, BorderLayout.NORTH);
 		topPanel.add(sortPanel, BorderLayout.CENTER);
 
-		QRPanel centerPanel = new QRPanel(true, new BorderLayout(8, 0));
+		QRSplitPane splitPane = new QRSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setDividerSize(3);
+//		QRPanel centerPanel = new QRPanel(true, new BorderLayout(8, 0));
 		QRScrollPane treeScrollPane = new QRScrollPane();
 		treeScrollPane.setViewportView(directoryTree);
-		treeScrollPane.setPreferredSize(new Dimension(245, 360));
+		treeScrollPane.setPreferredSize(new Dimension(200, 360));
 
+//		directoryTree.setOpaque(true);
+//		treeScrollPane.getViewport().setOpaque(true);
+//		treeScrollPane.getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
 //		listScrollPane.setBorderPaint(true);
 //		listScrollPane.getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-		centerPanel.add(treeScrollPane, BorderLayout.WEST);
-		centerPanel.add(fileList.addScrollPane(), BorderLayout.CENTER);
+
+		splitPane.setTopComponent(treeScrollPane);
+		splitPane.setBottomComponent(fileList.addScrollPane());
+//		centerPanel.add(treeScrollPane, BorderLayout.WEST);
+//		centerPanel.add(fileList.addScrollPane(), BorderLayout.CENTER);
 
 		QRPanel bottomPanel = new QRPanel(new BorderLayout(8, 8));
 		boolean isSaveFile = selectMode == SelectMode.SAVE_FILE;
@@ -239,7 +242,8 @@ public class QRFileSelectDialog extends QRDialog {
 		bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		mainPanel.add(topPanel, BorderLayout.NORTH);
-		mainPanel.add(centerPanel, BorderLayout.CENTER);
+//		mainPanel.add(centerPanel, BorderLayout.CENTER);
+		mainPanel.add(splitPane, BorderLayout.CENTER);
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
 		parentButton.addClickAction(e -> gotoParentDirectory());
@@ -249,7 +253,9 @@ public class QRFileSelectDialog extends QRDialog {
 		sortSizeButton.addClickAction(e -> setSortType(SortType.SIZE));
 		updateSortButtonText();
 
-		QRSystemUtils.setWindowTrans(this, 0.99f);
+		QRSystemUtils.setWindowTrans(this, 0.98f);
+		QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true);
+
 	}
 
 	private void initTree() {
@@ -616,9 +622,12 @@ public class QRFileSelectDialog extends QRDialog {
 			updateSelectedFile(selectMode == SelectMode.FILE_ONLY ? null : currentDirectory);
 			return;
 		}
+		if (item.parent) {
+			return;
+		}
 		if (selectMode == SelectMode.SAVE_FILE) {
 			updateSelectedFile(item.file);
-			if (approve && !item.parent && item.file.isFile()) {
+			if (approve && item.file.isFile()) {
 				approveSelection();
 			}
 			return;
@@ -628,9 +637,7 @@ public class QRFileSelectDialog extends QRDialog {
 			updateSelectedFile(currentDirectory);
 			return;
 		}
-		if (item.parent) {
-			updateSelectedFile(item.file);
-		} else if (canSelect(item.file)) {
+		if (canSelect(item.file)) {
 			updateSelectedFile(item.file);
 			if (approve) {
 				approveSelection();
@@ -649,7 +656,7 @@ public class QRFileSelectDialog extends QRDialog {
 		} else if (file.isFile()) {
 			selectedPathField.setText(file.getName());
 		} else {
-			selectedPathField.setText(file.getAbsolutePath());
+			selectedPathField.setText(displayName(file));
 		}
 		sureButton.setEnabled(canSelect(file));
 	}

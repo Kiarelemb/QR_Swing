@@ -12,6 +12,8 @@ import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +50,36 @@ public class QRPopupMenu extends QREmptyDialog  {
      * 子类重写其中被选重时的操作
      */
     protected void buttonSelectAction(ActionEvent event) {
+    }
+
+    /**
+     * 将当前菜单绑定到指定组件，组件触发系统右键菜单事件时显示该菜单。
+     *
+     * <p>同时监听 {@code mousePressed} 和 {@code mouseReleased}，用于兼容不同平台
+     * 对 {@link MouseEvent#isPopupTrigger()} 的触发时机差异。</p>
+     *
+     * @param component 触发右键菜单的组件
+     * @return 当前 {@link QRPopupMenu} 实例
+     */
+    public QRPopupMenu bind(Component component) {
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showPopupMenuIfNeeded(component, e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopupMenuIfNeeded(component, e);
+            }
+        });
+        return this;
+    }
+
+    private void showPopupMenuIfNeeded(Component component, MouseEvent e) {
+        if (e.isPopupTrigger()) {
+            show(component, e.getX(), e.getY());
+        }
     }
 
     public void addSeparator() {
