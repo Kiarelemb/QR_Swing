@@ -232,22 +232,33 @@ public class QRProgressDialog extends QREmptyDialog {
 			}
 
 			@Override
+			public void succeeded(T result) {
+				autoClose(autoClose);
+			}
+
+			@Override
 			public void cancelled() {
 				setProgressDescription("已取消");
+				autoClose(autoClose);
 			}
 
 			@Override
 			public void failed(Throwable throwable) {
 				setProgressDescription("处理失败");
+				autoClose(autoClose);
 			}
 
 			@Override
 			public void finished(QRTaskResult<T> result) {
-				if (autoClose) {
-					dispose();
-				}
+				autoClose(autoClose);
 			}
 		});
+	}
+
+	private void autoClose(boolean autoClose) {
+		if (autoClose) {
+			dispose();
+		}
 	}
 
 	protected void cancelAction(ActionEvent e) {

@@ -71,11 +71,11 @@ public final class QRTaskRunner {
 	public static <T> QRTaskWorker<T> run(QRTaskOptions options, QRTask<T> task) {
 		QRTaskOptions actualOptions = options == null ? new QRTaskOptions() : options;
 		QRTaskWorker<T> worker = new QRTaskWorker<>(task);
-		bindOptionCallbacks(actualOptions, worker);
 		QRProgressDialog dialog = null;
 		if (actualOptions.showProgressDialog()) {
 			dialog = createProgressDialog(actualOptions, worker);
 		}
+		bindOptionCallbacks(actualOptions, worker);
 		worker.execute();
 		showProgressDialog(worker, dialog);
 		return worker;
