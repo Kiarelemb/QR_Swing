@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
  * panel.setZoom(1.5);
  * </code></pre>
  */
-public class PicturePanel extends QRPanel {
+public class QRPicturePanel extends QRPanel {
 	private static final boolean DEBUG_PAN = false;
 	protected BufferedImage image;
 	protected Dimension pictureSize;
@@ -44,11 +44,11 @@ public class PicturePanel extends QRPanel {
 	private final QRActionRegister<KeyStroke> zoomOutAction = e -> setZoom(zoom - mouseWheelZoomStep);
 	private final QRActionRegister<KeyStroke> zoomResetAction = e -> setZoom(1.0);
 
-	public PicturePanel() {
+	public QRPicturePanel() {
 		this(null, null);
 	}
 
-	public PicturePanel(BufferedImage image, Dimension pictureSize) {
+	public QRPicturePanel(BufferedImage image, Dimension pictureSize) {
 		this.image = image;
 		this.pictureSize = pictureSize == null ? imageSize(image) : pictureSize;
 		if (this.pictureSize != null) {

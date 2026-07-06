@@ -351,6 +351,19 @@ public class QRButton extends JButton implements QRComponentUpdate, QRActionList
 	}
 
 	protected void paintButtonContent(Graphics g) {
-		super.paintComponent(g);
+		if (isEnabled()) {
+			super.paintComponent(g);
+			return;
+		}
+		ButtonModel model = getModel();
+		model.setEnabled(true);
+		Color oldForeground = getForeground();
+		setForeground(QRColorsAndFonts.DISABLED_COLOR_FORE);
+		try {
+			super.paintComponent(g);
+		} finally {
+			setForeground(oldForeground);
+			model.setEnabled(false);
+		}
 	}
 }

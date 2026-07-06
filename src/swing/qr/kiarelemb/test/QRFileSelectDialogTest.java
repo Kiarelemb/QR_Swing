@@ -40,10 +40,9 @@ public class QRFileSelectDialogTest {
 
         // 创建父窗口（不显示）
         QRFrame parent = new QRFrame("Parent");
-        parent.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // 创建对话框
         QRFileSelectDialog dialog = new QRFileSelectDialog(parent);
+        // 创建对话框
         dialog.pack();
 
         // 递归查找 treeScrollPane
@@ -72,19 +71,6 @@ public class QRFileSelectDialogTest {
 
         // 父容器 (centerPanel) 信息
         Container parentOfScroll = treeScrollPane.getParent();
-        System.out.println("\n► treeScrollPane 的直接父容器");
-        if (parentOfScroll != null) {
-            System.out.printf("  class                  = %s%n", parentOfScroll.getClass().getName());
-            System.out.printf("  layout                 = %s%n", parentOfScroll.getLayout().getClass().getName());
-            System.out.printf("  isOpaque()             = %b%n", parentOfScroll.isOpaque());
-            System.out.printf("  getBackground()        = %s%n", colorToHex(parentOfScroll.getBackground()));
-            System.out.printf("  getBounds()            = %s%n", parentOfScroll.getBounds());
-
-            if (parentOfScroll.getLayout() instanceof BorderLayout bl) {
-                System.out.printf("  BorderLayout.hgap      = %d%n", bl.getHgap());
-                System.out.printf("  BorderLayout.vgap      = %d%n", bl.getVgap());
-            }
-        }
 
         // 顶层容器 (mainPanel) 信息
         Container mainPanel = parentOfScroll != null ? parentOfScroll.getParent() : null;

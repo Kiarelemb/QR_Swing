@@ -2,7 +2,7 @@ package swing.qr.kiarelemb.window.utils;
 
 import method.qr.kiarelemb.utils.QRSystemUtils;
 import swing.qr.kiarelemb.basic.*;
-import swing.qr.kiarelemb.utils.PicturePanel;
+import swing.qr.kiarelemb.utils.QRPicturePanel;
 import swing.qr.kiarelemb.window.basic.QRDialog;
 
 import javax.imageio.ImageIO;
@@ -44,7 +44,7 @@ public class QRPicturePreviewDialog extends QRDialog {
 	private static final int MAX_ZOOM = 400;
 	private BufferedImage image;
 	private Dimension previewSize;
-	private PicturePanel picturePanel;
+	private QRPicturePanel picturePanel;
 	private final QRSlider zoomSlider = new QRSlider();
 	private boolean confirmed = false;
 
@@ -102,8 +102,8 @@ public class QRPicturePreviewDialog extends QRDialog {
 		setResizable(false);
 	}
 
-	private PicturePanel createPicturePanel() {
-		return new PicturePanel(this.image, this.previewSize) {
+	private QRPicturePanel createPicturePanel() {
+		return new QRPicturePanel(this.image, this.previewSize) {
 			@Override
 			protected void zoomChanged(double zoom) {
 				int value = (int) Math.round(zoom * 100);

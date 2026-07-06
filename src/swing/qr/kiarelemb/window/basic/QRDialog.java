@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.window.basic;
 
 import method.qr.kiarelemb.utils.QRStringUtils;
 import method.qr.kiarelemb.utils.QRSystemUtils;
+import swing.qr.kiarelemb.QRGlobalAction;
 import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.assembly.QRWindowMouseAdapter;
 import swing.qr.kiarelemb.basic.QRLabel;
@@ -12,7 +13,6 @@ import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRParentWindowMove;
 import swing.qr.kiarelemb.inter.listener.add.QRWindowListenerAdd;
 import swing.qr.kiarelemb.listener.QRWindowListener;
-import swing.qr.kiarelemb.listener.QRWindowListener.TYPE;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.utils.QRCloseButton;
 
@@ -56,6 +56,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
     private boolean resizable = false;
     private QRWindowListener windowListener;
     protected final QRActionRegister<KeyStroke> disposeAction;
+    private final QRGlobalAction escapeAction;
     /**
      * 该字段用于设置窗体打开时，是否遍历组件，为 <code>true</code> 则设置组件透明
      */
@@ -178,11 +179,10 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
         this.contentPane.addMouseListener(adapte);
         this.contentPane.addMouseMotionListener(adapte);
         this.contentPane.setBorder(new EmptyBorder(1, 1, 5, 1));
-        this.disposeAction = e -> {
-            if (QRDialog.this.isFocused()) {
-                QRDialog.this.dispose();
-            }
-        };
+        this.disposeAction = e -> QRDialog.this.dispose();
+        this.escapeAction = new QRGlobalAction(this.disposeAction)
+                .key(KeyEvent.VK_ESCAPE)
+                .window(this);
 
 //        addWindowListener();
 //        addWindowAction(TYPE.OPEN, e -> {
@@ -289,9 +289,9 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
             }
         }
         if (b) {
-            QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, this.disposeAction, false);
+            this.escapeAction.load();
         } else {
-            QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), this.disposeAction, false);
+            this.escapeAction.close();
         }
         super.setVisible(b);
     }
@@ -347,7 +347,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
      */
     @Override
     public void dispose() {
-        QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), this.disposeAction, false);
+        this.escapeAction.close();
         if (parent instanceof QRFrame frame) {
             frame.removeChildWindow(this);
         }

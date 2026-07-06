@@ -1,6 +1,6 @@
 package swing.qr.kiarelemb.window.utils;
 
-import swing.qr.kiarelemb.QRSwing;
+import swing.qr.kiarelemb.QRGlobalAction;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.basic.QRTextField;
@@ -40,6 +40,8 @@ public class QRValueInputDialog extends QREmptyDialog {
     protected String answer;
     protected boolean approved = false;
     private String defaultValue;
+    private final QRGlobalAction enterAction;
+    private final QRGlobalAction escapeAction;
 
     /**
      * @param owner            父窗体
@@ -83,6 +85,12 @@ public class QRValueInputDialog extends QREmptyDialog {
                 }
             }
         });
+        enterAction = new QRGlobalAction(e -> sureButton.clickInvokeLater())
+                .key(KeyEvent.VK_ENTER)
+                .window(this);
+        escapeAction = new QRGlobalAction(e -> cancelButton.clickInvokeLater())
+                .key(KeyEvent.VK_ESCAPE)
+                .window(this);
 
         setSize(width, height);
         setLocationRelativeTo(owner);
@@ -91,14 +99,14 @@ public class QRValueInputDialog extends QREmptyDialog {
 
     @Override
     public void windowOpened(WindowEvent e) {
-        QRSwing.registerGlobalAction(KeyEvent.VK_ENTER, e1 -> sureButton.clickInvokeLater(), true);
-        QRSwing.registerGlobalAction(KeyEvent.VK_ESCAPE, e1 -> cancelButton.clickInvokeLater(), true);
+        enterAction.load();
+        escapeAction.load();
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
-        QRSwing.registerGlobalActionRemove(KeyEvent.VK_ENTER, true);
-        QRSwing.registerGlobalActionRemove(KeyEvent.VK_ESCAPE, true);
+        enterAction.close();
+        escapeAction.close();
     }
 
     /**

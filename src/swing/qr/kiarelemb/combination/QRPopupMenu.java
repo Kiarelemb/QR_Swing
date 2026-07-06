@@ -10,6 +10,7 @@ import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.theme.QRColorsAndFonts;
 import swing.qr.kiarelemb.window.basic.QREmptyDialog;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -50,30 +51,6 @@ public class QRPopupMenu extends QREmptyDialog  {
      * 子类重写其中被选重时的操作
      */
     protected void buttonSelectAction(ActionEvent event) {
-    }
-
-    /**
-     * 将当前菜单绑定到指定组件，组件触发系统右键菜单事件时显示该菜单。
-     *
-     * <p>同时监听 {@code mousePressed} 和 {@code mouseReleased}，用于兼容不同平台
-     * 对 {@link MouseEvent#isPopupTrigger()} 的触发时机差异。</p>
-     *
-     * @param component 触发右键菜单的组件
-     * @return 当前 {@link QRPopupMenu} 实例
-     */
-    public QRPopupMenu bind(Component component) {
-        component.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                showPopupMenuIfNeeded(component, e);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                showPopupMenuIfNeeded(component, e);
-            }
-        });
-        return this;
     }
 
     private void showPopupMenuIfNeeded(Component component, MouseEvent e) {
@@ -124,13 +101,24 @@ public class QRPopupMenu extends QREmptyDialog  {
             y += invokerOrigin.y;
         }
         setLocation(x, y);
-        int gapHeight = Math.max(0, this.itemNums - 1) * this.vgap;
+        int visibleItemCount = visibleItemCount();
+        int gapHeight = Math.max(0, visibleItemCount - 1) * this.vgap;
         setSize(this.itemMaxLen + this.itemMaxTipLen + 30,
-                this.itemNums * ITEM_HEIGHT + gapHeight + MENU_PADDING);
+                visibleItemCount * ITEM_HEIGHT + gapHeight + MENU_PADDING);
         if (QRSwing.windowRound) {
             QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
         }
         super.setVisible(true);
+    }
+
+    private int visibleItemCount() {
+        int count = 0;
+        for (Component component : this.mainPanel.getComponents()) {
+            if (component.isVisible()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void paintSeparators(Graphics g) {
@@ -143,23 +131,150 @@ public class QRPopupMenu extends QREmptyDialog  {
             if (index <= 0 || index >= this.mainPanel.getComponentCount()) {
                 continue;
             }
-            Component prev = this.mainPanel.getComponent(index - 1);
-            Component next = this.mainPanel.getComponent(index);
+            Component prev = visibleComponentBefore(index);
+            Component next = visibleComponentAfter(index);
+            if (prev == null || next == null) {
+                continue;
+            }
             int y = (prev.getY() + prev.getHeight() + next.getY()) / 2;
             g2.drawLine(0, y, this.mainPanel.getWidth() - 1, y);
         }
         g2.dispose();
     }
 
+    private Component visibleComponentBefore(int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            Component component = this.mainPanel.getComponent(i);
+            if (component.isVisible()) {
+                return component;
+            }
+        }
+        return null;
+    }
+
+    private Component visibleComponentAfter(int index) {
+        for (int i = index; i < this.mainPanel.getComponentCount(); i++) {
+            Component component = this.mainPanel.getComponent(i);
+            if (component.isVisible()) {
+                return component;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 将当前菜单绑定到指定组件，组件触发系统右键菜单事件时显示该菜单。
+     *
+     * <p>同时监听 {@code mousePressed} 和 {@code mouseReleased}，用于兼容不同平台
+     * 对 {@link MouseEvent#isPopupTrigger()} 的触发时机差异。</p>
+     *
+     * @param component 触发右键菜单的组件
+     * @return 当前 {@link QRPopupMenu} 实例
+     */
+    public QRPopupMenu bind(Component component) {
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showPopupMenuIfNeeded(component, e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopupMenuIfNeeded(component, e);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * 创建并绑定右键菜单。
+     *
+     * @param component 触发右键菜单的组件
+     * @return 绑定后的菜单实例
+     */
+    public static QRPopupMenu createAndBind(Component component) {
+        return createAndBind(component, null);
+    }
+
+    /**
+     * 创建并绑定右键菜单，并在显示前执行回调。
+     *
+     * @param component  触发右键菜单的组件
+     * @param beforeShow 显示菜单前的回调，可为 null
+     * @return 绑定后的菜单实例
+     */
+    public static QRPopupMenu createAndBind(Component component, QRActionRegister<MouseEvent> beforeShow) {
+        QRPopupMenu popupMenu = new QRPopupMenu(SwingUtilities.getWindowAncestor(component));
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showIfNeeded(component, popupMenu, beforeShow, e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showIfNeeded(component, popupMenu, beforeShow, e);
+            }
+        });
+        return popupMenu;
+    }
+
+    private static void showIfNeeded(Component component, QRPopupMenu popupMenu,
+                                     QRActionRegister<MouseEvent> beforeShow, MouseEvent e) {
+        if (!e.isPopupTrigger()) {
+            return;
+        }
+        if (beforeShow != null) {
+            beforeShow.action(e);
+        }
+        popupMenu.show(component, e.getX(), e.getY());
+    }
+
+
     private class PopupMainPanel extends QRPanel {
         private PopupMainPanel() {
-            super(false, new GridLayout(0, 1, 3, QRPopupMenu.this.vgap));
+            super(false, new VisibleMenuLayout());
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             QRPopupMenu.this.paintSeparators(g);
+        }
+    }
+
+    private class VisibleMenuLayout implements LayoutManager {
+        @Override
+        public void addLayoutComponent(String name, Component comp) {
+        }
+
+        @Override
+        public void removeLayoutComponent(Component comp) {
+        }
+
+        @Override
+        public Dimension preferredLayoutSize(Container parent) {
+            int visibleItemCount = visibleItemCount();
+            int gapHeight = Math.max(0, visibleItemCount - 1) * QRPopupMenu.this.vgap;
+            return new Dimension(QRPopupMenu.this.itemMaxLen + QRPopupMenu.this.itemMaxTipLen + 30,
+                    visibleItemCount * ITEM_HEIGHT + gapHeight + MENU_PADDING);
+        }
+
+        @Override
+        public Dimension minimumLayoutSize(Container parent) {
+            return preferredLayoutSize(parent);
+        }
+
+        @Override
+        public void layoutContainer(Container parent) {
+            int y = MENU_PADDING / 2;
+            for (Component component : parent.getComponents()) {
+                if (!component.isVisible()) {
+                    continue;
+                }
+                component.setBounds(0, y, parent.getWidth(), ITEM_HEIGHT);
+                y += ITEM_HEIGHT + QRPopupMenu.this.vgap;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.basic;
 
 import swing.qr.kiarelemb.assembly.QRToolTip;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.listener.QRMouseListener;
@@ -42,6 +43,7 @@ import java.util.List;
  **/
 public class QRList<T> extends JList<T> implements QRComponentUpdate {
 	protected QRScrollPane scrollPane;
+	protected QRPopupMenu popupMenu;
 	protected final LinkedList<T> contents = new LinkedList<>();
 	/**
 	 * true 表示不允许重复元素。
@@ -252,6 +254,16 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
 		return parent instanceof JViewport && parent.getHeight() > getPreferredSize().height;
 	}
 
+	@Override
+	public int locationToIndex(Point location) {
+		int index = super.locationToIndex(location);
+		if (index < 0) {
+			return -1;
+		}
+		Rectangle bounds = getCellBounds(index, index);
+		return bounds != null && bounds.contains(location) ? index : -1;
+	}
+
 	/**
 	 * 添加鼠标移动事件
 	 */
@@ -323,6 +335,49 @@ public class QRList<T> extends JList<T> implements QRComponentUpdate {
 			this.scrollPane.setViewportView(this);
 		}
 		return this.scrollPane;
+	}
+
+	/**
+	 * 为列表创建并绑定右键菜单。
+	 *
+	 * <p>重复调用会返回同一个 {@link QRPopupMenu} 实例。右键显示前会先选中鼠标所在列表项；
+	 * 如果右键位置不在任何单元格内，则保持当前选择不变。</p>
+	 *
+	 * @return 绑定当前列表的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu() {
+		return addPopupMenu(null);
+	}
+
+	/**
+	 * 为列表创建并绑定右键菜单，并在显示前执行回调。
+	 *
+	 * <p>回调执行前会先尝试选中鼠标所在列表项，调用方可在回调中根据当前选中项刷新菜单状态。</p>
+	 *
+	 * @param beforeShow 菜单显示前的回调，可为 null
+	 * @return 绑定当前列表的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu(QRActionRegister<MouseEvent> beforeShow) {
+		if (this.popupMenu == null) {
+			this.popupMenu = QRPopupMenu.createAndBind(this, e -> {
+				selectPopupTarget(e);
+				if (beforeShow != null) {
+					beforeShow.action(e);
+				}
+			});
+		}
+		return this.popupMenu;
+	}
+
+	private void selectPopupTarget(MouseEvent e) {
+		int index = locationToIndex(e.getPoint());
+		if (index < 0) {
+			return;
+		}
+		Rectangle bounds = getCellBounds(index, index);
+		if (bounds != null && bounds.contains(e.getPoint()) && !isSelectedIndex(index)) {
+			setSelectedIndex(index);
+		}
 	}
 
 

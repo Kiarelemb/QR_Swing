@@ -1,7 +1,10 @@
 package swing.qr.kiarelemb.window.utils;
 
 import method.qr.kiarelemb.utils.QRSystemUtils;
+import swing.qr.kiarelemb.QRGlobalAction;
+import swing.qr.kiarelemb.QRSwing;
 import swing.qr.kiarelemb.basic.*;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.listener.QRDocumentListener;
 import swing.qr.kiarelemb.listener.QRKeyListener;
@@ -25,7 +28,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -101,6 +112,19 @@ public class QRFileSelectDialog extends QRDialog {
 	private final QRButton sortTimeButton = new QRButton();
 	private final QRButton sortSizeButton = new QRButton();
 	private final Icon parentDirectoryIcon = UIManager.getIcon("FileChooser.upFolderIcon");
+	private QRPopupMenu fileListPopupMenu;
+	private QRMenuItem openMenuItem;
+	private QRMenuItem selectMenuItem;
+	private QRMenuItem approveMenuItem;
+	private QRMenuItem copyMenuItem;
+	private QRMenuItem pasteMenuItem;
+	private QRMenuItem cutMenuItem;
+	private QRMenuItem newDirectoryMenuItem;
+	private QRMenuItem refreshMenuItem;
+	private QRMenuItem copyPathMenuItem;
+	private FileItem popupFileItem;
+	private File clipboardFile;
+	private boolean clipboardCut;
 
 	private SelectMode selectMode;
 	private SortType sortType = SortType.NAME;
@@ -112,6 +136,7 @@ public class QRFileSelectDialog extends QRDialog {
 	private File selectedFile;
 	private QRTaskWorker<ArrayList<FileTreeNodeData>> rootLoadWorker;
 	private QRTaskWorker<FileListSnapshot> fileListWorker;
+	private QRGlobalAction refreshAction;
 	private boolean approved = false;
 	private boolean treeSelectionChanging = false;
 	private int treePathSelectionVersion = 0;
@@ -185,7 +210,7 @@ public class QRFileSelectDialog extends QRDialog {
 		QRPanel topPanel = new QRPanel(new BorderLayout(8, 6));
 		QRPanel pathPanel = new QRPanel(new BorderLayout(8, 0));
 		QRButton parentButton = new QRButton("上一级");
-		QRButton refreshButton = new QRButton("刷新");
+		QRButton refreshButton = new QRButton("刷新", "F5");
 		pathField.setToolTipText("输入路径后按 Enter");
 		pathPanel.add(new QRLabel("路径"), BorderLayout.WEST);
 		pathPanel.add(pathField, BorderLayout.CENTER);
@@ -204,22 +229,13 @@ public class QRFileSelectDialog extends QRDialog {
 		topPanel.add(sortPanel, BorderLayout.CENTER);
 
 		QRSplitPane splitPane = new QRSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setDividerSize(3);
-//		QRPanel centerPanel = new QRPanel(true, new BorderLayout(8, 0));
+		splitPane.setDividerSize(5);
 		QRScrollPane treeScrollPane = new QRScrollPane();
 		treeScrollPane.setViewportView(directoryTree);
 		treeScrollPane.setPreferredSize(new Dimension(200, 360));
 
-//		directoryTree.setOpaque(true);
-//		treeScrollPane.getViewport().setOpaque(true);
-//		treeScrollPane.getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-//		listScrollPane.setBorderPaint(true);
-//		listScrollPane.getViewport().setBackground(QRColorsAndFonts.FRAME_COLOR_BACK);
-
 		splitPane.setTopComponent(treeScrollPane);
 		splitPane.setBottomComponent(fileList.addScrollPane());
-//		centerPanel.add(treeScrollPane, BorderLayout.WEST);
-//		centerPanel.add(fileList.addScrollPane(), BorderLayout.CENTER);
 
 		QRPanel bottomPanel = new QRPanel(new BorderLayout(8, 8));
 		boolean isSaveFile = selectMode == SelectMode.SAVE_FILE;
@@ -242,7 +258,6 @@ public class QRFileSelectDialog extends QRDialog {
 		bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		mainPanel.add(topPanel, BorderLayout.NORTH);
-//		mainPanel.add(centerPanel, BorderLayout.CENTER);
 		mainPanel.add(splitPane, BorderLayout.CENTER);
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -253,6 +268,9 @@ public class QRFileSelectDialog extends QRDialog {
 		sortSizeButton.addClickAction(e -> setSortType(SortType.SIZE));
 		updateSortButtonText();
 
+		refreshAction = new QRGlobalAction(e1 -> refreshButton.clickInvokeLater())
+				.key(KeyEvent.VK_F5)
+				.window(this);
 		QRSystemUtils.setWindowTrans(this, 0.98f);
 		QRComponentUtils.componentLoopToSetOpaque(this.contentPane, true);
 
@@ -352,6 +370,11 @@ public class QRFileSelectDialog extends QRDialog {
 				updateSelectedFromList(false);
 			}
 		});
+		fileList.addMouseListener(QRMouseListener.TYPE.PRESS, e -> {
+			if (fileList.locationToIndex(e.getPoint()) < 0) {
+				fileList.clearSelection();
+			}
+		});
 		fileList.addMouseListener(QRMouseListener.TYPE.CLICK, e -> {
 			if (e.getClickCount() < 2) {
 				return;
@@ -383,14 +406,346 @@ public class QRFileSelectDialog extends QRDialog {
 				}
 			}
 		});
+		initFileListPopupMenu();
+	}
+
+	private void initFileListPopupMenu() {
+		fileListPopupMenu = fileList.addPopupMenu(this::beforeShowFileListPopupMenu);
+
+		openMenuItem = new QRMenuItem("打开");
+		selectMenuItem = new QRMenuItem("选择");
+		approveMenuItem = new QRMenuItem("确定选择");
+		copyMenuItem = new QRMenuItem("复制", "ctrl c");
+		pasteMenuItem = new QRMenuItem("粘贴", "ctrl v");
+		cutMenuItem = new QRMenuItem("剪切", "ctrl x");
+		newDirectoryMenuItem = new QRMenuItem("新建文件夹");
+		refreshMenuItem = new QRMenuItem("刷新", "F5");
+		copyPathMenuItem = new QRMenuItem("复制路径", "ctrl shift c");
+
+		openMenuItem.addClickAction(e -> openPopupFileItem());
+		selectMenuItem.addClickAction(e -> selectPopupFileItem(false));
+		approveMenuItem.addClickAction(e -> selectPopupFileItem(true));
+		copyMenuItem.addClickAction(e -> copyPopupFileItem());
+		pasteMenuItem.addClickAction(e -> pastePopupFileItem());
+		cutMenuItem.addClickAction(e -> cutPopupFileItem());
+		newDirectoryMenuItem.addClickAction(e -> createDirectoryFromPopup());
+		refreshMenuItem.addClickAction(e -> refreshCurrentDirectory());
+		copyPathMenuItem.addClickAction(e -> copyPopupPath());
+
+		fileListPopupMenu.add(openMenuItem);
+		fileListPopupMenu.add(selectMenuItem);
+		fileListPopupMenu.add(approveMenuItem);
+		fileListPopupMenu.addSeparator();
+		fileListPopupMenu.add(copyMenuItem);
+		fileListPopupMenu.add(pasteMenuItem);
+		fileListPopupMenu.add(cutMenuItem);
+		fileListPopupMenu.add(newDirectoryMenuItem);
+		fileListPopupMenu.addSeparator();
+		fileListPopupMenu.add(refreshMenuItem);
+		fileListPopupMenu.add(copyPathMenuItem);
+	}
+
+	private void beforeShowFileListPopupMenu(MouseEvent e) {
+		popupFileItem = fileItemAt(e.getPoint());
+		if (popupFileItem == null) {
+			fileList.clearSelection();
+		}
+		updateFileListPopupMenuState();
+	}
+
+	private FileItem fileItemAt(Point point) {
+		int index = fileList.locationToIndex(point);
+		if (index < 0) {
+			return null;
+		}
+		Rectangle cellBounds = fileList.getCellBounds(index, index);
+		if (cellBounds == null || !cellBounds.contains(point)) {
+			return null;
+		}
+		return fileListModel.getElementAt(index);
+	}
+
+	private void updateFileListPopupMenuState() {
+		boolean hasItem = popupFileItem != null;
+		boolean isParent = hasItem && popupFileItem.parent;
+		boolean isDirectory = hasItem && !isParent && popupFileItem.file.isDirectory();
+		boolean selectable = canSelectPopupFileItem(popupFileItem);
+
+		openMenuItem.setEnabled(isParent || isDirectory);
+		selectMenuItem.setEnabled(selectable);
+		approveMenuItem.setEnabled(selectable);
+		refreshMenuItem.setEnabled(currentDirectory != null);
+		copyPathMenuItem.setEnabled(hasItem || currentDirectory != null);
+		copyMenuItem.setVisible(hasItem && !isParent);
+		cutMenuItem.setVisible(hasItem && !isParent);
+		pasteMenuItem.setVisible(canPasteIntoPopupTarget());
+		newDirectoryMenuItem.setVisible(!hasItem && currentDirectory != null);
+		copyMenuItem.setEnabled(hasItem && !isParent);
+		cutMenuItem.setEnabled(hasItem && !isParent);
+		pasteMenuItem.setEnabled(canPasteIntoPopupTarget());
+		newDirectoryMenuItem.setEnabled(currentDirectory != null);
+	}
+
+	private boolean canSelectPopupFileItem(FileItem item) {
+		if (item == null || item.parent) {
+			return false;
+		}
+		if (selectMode == SelectMode.SAVE_FILE) {
+			return item.file.isFile() && acceptExtension(item.file);
+		}
+		return canSelect(item.file);
+	}
+
+	private void openPopupFileItem() {
+		if (popupFileItem == null) {
+			return;
+		}
+		if (popupFileItem.parent) {
+			gotoParentDirectory();
+		} else if (popupFileItem.file.isDirectory()) {
+			setCurrentDirectory(popupFileItem.file);
+			if (selectMode == SelectMode.DIRECTORY_ONLY || selectMode == SelectMode.SAVE_FILE) {
+				updateSelectedFile(currentDirectory);
+			}
+		}
+	}
+
+	private void selectPopupFileItem(boolean approve) {
+		if (!canSelectPopupFileItem(popupFileItem)) {
+			return;
+		}
+		updateSelectedFile(popupFileItem.file);
+		if (approve) {
+			approveSelection();
+		}
+	}
+
+	private void copyPopupPath() {
+		File file = popupFileItem == null ? currentDirectory : popupFileItem.file;
+		if (file != null) {
+			QRSystemUtils.putTextToClipboard(file.getAbsolutePath());
+		}
+	}
+
+	private void copyPopupFileItem() {
+		if (popupFileItem == null || popupFileItem.parent) {
+			return;
+		}
+		clipboardFile = popupFileItem.file;
+		clipboardCut = false;
+		statusLabel.setText("已复制：" + displayName(clipboardFile));
+	}
+
+	private void cutPopupFileItem() {
+		if (popupFileItem == null || popupFileItem.parent) {
+			return;
+		}
+		clipboardFile = popupFileItem.file;
+		clipboardCut = true;
+		statusLabel.setText("已剪切：" + displayName(clipboardFile));
+	}
+
+	private void pastePopupFileItem() {
+		File targetDirectory = popupPasteTargetDirectory();
+		if (!canPasteInto(targetDirectory)) {
+			return;
+		}
+		Path source = clipboardFile.toPath();
+		Path target = targetDirectory.toPath().resolve(clipboardFile.getName());
+		try {
+			boolean pasted;
+			if (clipboardCut) {
+				pasted = moveClipboardSource(source, target);
+				if (pasted) {
+					clipboardFile = null;
+					clipboardCut = false;
+				}
+			} else {
+				pasted = copyClipboardSource(source, target);
+			}
+			if (pasted) {
+				refreshCurrentDirectory();
+				statusLabel.setText("粘贴完成  " + fileTypeText());
+			}
+		} catch (IOException ex) {
+			QROpinionDialog.messageErrShow(parent, "粘贴失败：" + ex.getMessage());
+		}
+	}
+
+	private void createDirectoryFromPopup() {
+		if (currentDirectory == null) {
+			return;
+		}
+		QRValueInputDialog inputDialog = new QRValueInputDialog(parent, "请输入文件夹名称", "文件夹名称") {
+			@Override
+			public boolean meetCondition() {
+				String name = textField().getText().trim();
+				if (name.isEmpty()) {
+					return false;
+				}
+				if (hasIllegalFileNameChar(name)) {
+					QROpinionDialog.messageErrShow(this, "文件夹名称不能包含 \\ / : * ? \" < > |");
+					return false;
+				}
+				File directory = new File(currentDirectory, name);
+				if (directory.exists()) {
+					QROpinionDialog.messageErrShow(this, "同名文件或文件夹已存在");
+					return false;
+				}
+				return true;
+			}
+		};
+		inputDialog.setVisible(true);
+		if (!inputDialog.isApproved()) {
+			return;
+		}
+		File directory = new File(currentDirectory, inputDialog.getAnswer().trim());
+		if (!directory.mkdir()) {
+			QROpinionDialog.messageErrShow(parent, "新建文件夹失败");
+			return;
+		}
+		refreshCurrentDirectory();
+		statusLabel.setText("已新建文件夹：" + directory.getName());
+	}
+
+	private boolean canPasteIntoPopupTarget() {
+		return canPasteInto(popupPasteTargetDirectory());
+	}
+
+	private boolean canPasteInto(File targetDirectory) {
+		return clipboardFile != null && clipboardFile.exists() && targetDirectory != null
+				&& targetDirectory.isDirectory() && targetDirectory.canWrite();
+	}
+
+	private File popupPasteTargetDirectory() {
+		if (popupFileItem != null && !popupFileItem.parent && popupFileItem.file.isDirectory()) {
+			return popupFileItem.file;
+		}
+		return currentDirectory;
+	}
+
+	private boolean copyClipboardSource(Path source, Path target) throws IOException {
+		if (Files.exists(target) && Files.isSameFile(source, target)) {
+			target = copyNamePath(target);
+		}
+		if (Files.isDirectory(source) && target.toAbsolutePath().normalize().startsWith(source.toAbsolutePath().normalize())) {
+			throw new IOException("不能将文件夹复制到自身内部");
+		}
+		if (!prepareTarget(source, target)) {
+			return false;
+		}
+		if (Files.isDirectory(source)) {
+			copyDirectory(source, target);
+		} else {
+			Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+		}
+		return true;
+	}
+
+	private boolean moveClipboardSource(Path source, Path target) throws IOException {
+		if (Files.exists(target) && Files.isSameFile(source, target)) {
+			QROpinionDialog.messageErrShow(parent, "不能剪切到原位置");
+			return false;
+		}
+		if (Files.isDirectory(source) && target.toAbsolutePath().normalize().startsWith(source.toAbsolutePath().normalize())) {
+			throw new IOException("不能将文件夹剪切到自身内部");
+		}
+		if (!prepareTarget(source, target)) {
+			return false;
+		}
+		try {
+			Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException ex) {
+			if (Files.isDirectory(source)) {
+				copyDirectory(source, target);
+				deleteRecursively(source);
+			} else {
+				throw ex;
+			}
+		}
+		return true;
+	}
+
+	private boolean prepareTarget(Path source, Path target) throws IOException {
+		if (!Files.exists(target)) {
+			return true;
+		}
+		if (QROpinionDialog.messageInfoShow(parent, "目标已存在，是否覆盖？\n" + target.getFileName()) != QROpinionDialog.OK) {
+			return false;
+		}
+		if (!Files.isSameFile(source, target)) {
+			deleteRecursively(target);
+		}
+		return true;
+	}
+
+	private Path copyNamePath(Path target) {
+		Path parentPath = target.getParent();
+		String fileName = target.getFileName().toString();
+		String name = fileName;
+		String extension = "";
+		int dotIndex = fileName.lastIndexOf('.');
+		if (dotIndex > 0) {
+			name = fileName.substring(0, dotIndex);
+			extension = fileName.substring(dotIndex);
+		}
+		Path copyPath = parentPath.resolve(name + " - 副本" + extension);
+		int index = 2;
+		while (Files.exists(copyPath)) {
+			copyPath = parentPath.resolve(name + " - 副本 (" + index++ + ")" + extension);
+		}
+		return copyPath;
+	}
+
+	private void copyDirectory(Path source, Path target) throws IOException {
+		Files.walkFileTree(source, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				Path targetDirectory = target.resolve(source.relativize(dir));
+				Files.createDirectories(targetDirectory);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.COPY_ATTRIBUTES,
+						StandardCopyOption.REPLACE_EXISTING);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	private void deleteRecursively(Path path) throws IOException {
+		if (!Files.exists(path)) {
+			return;
+		}
+		Files.walkFileTree(path, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.delete(file);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				if (exc != null) {
+					throw exc;
+				}
+				Files.delete(dir);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	private boolean hasIllegalFileNameChar(String name) {
+		return name.contains("\\") || name.contains("/") || name.contains(":") || name.contains("*")
+				|| name.contains("?") || name.contains("\"") || name.contains("<")
+				|| name.contains(">") || name.contains("|");
 	}
 
 	private void initActions() {
-		pathField.addKeyListenerAction(QRKeyListener.TYPE.PRESS, e -> {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				applyPathField();
-			}
-		});
+		pathField.addKeyListenerAction(QRKeyListener.TYPE.PRESS, e -> applyPathField(), KeyEvent.VK_ENTER);
+		pathField.addKeyListenerAction(QRKeyListener.TYPE.RELEASE, e -> applyPathField(), "ctrl v");
 
 		selectedPathField.addDocumentListenerActionAll(e -> {
 			if (selectMode == SelectMode.SAVE_FILE) {
@@ -797,6 +1152,9 @@ public class QRFileSelectDialog extends QRDialog {
 		if (currentDirectory == null) {
 			return;
 		}
+		if (fileListPopupMenu != null && fileListPopupMenu.isVisible()) {
+			fileListPopupMenu.setVisible(false);
+		}
 		fillFileList(currentDirectory);
 		refreshTreeNode(currentDirectory);
 	}
@@ -1191,12 +1549,20 @@ public class QRFileSelectDialog extends QRDialog {
 	public void setVisible(boolean b) {
 		if (b) {
 			approved = false;
+			if (refreshAction != null) {
+				refreshAction.load();
+			}
+		} else if (refreshAction != null) {
+			refreshAction.close();
 		}
 		super.setVisible(b);
 	}
 
 	@Override
 	public void dispose() {
+		if (refreshAction != null) {
+			refreshAction.close();
+		}
 		if (fileListWorker != null && !fileListWorker.isDone()) {
 			fileListWorker.cancel(true);
 		}

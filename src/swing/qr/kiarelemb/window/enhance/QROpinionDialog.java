@@ -1,7 +1,6 @@
 package swing.qr.kiarelemb.window.enhance;
 
-import method.qr.kiarelemb.utils.QRStringUtils;
-import swing.qr.kiarelemb.QRSwing;
+import swing.qr.kiarelemb.QRGlobalAction;
 import swing.qr.kiarelemb.basic.QRLabel;
 import swing.qr.kiarelemb.basic.QRRoundButton;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -55,6 +54,7 @@ public final class QROpinionDialog extends QRDialog {
     private final static String MSG = "信息";
 
     private final QRActionRegister<KeyStroke> sureDisposeAction;
+    private final QRGlobalAction sureGlobalAction;
 
     private QROpinionDialog(Window parent) {
         super(parent);
@@ -64,13 +64,10 @@ public final class QROpinionDialog extends QRDialog {
         message.setForeground(QRColorsAndFonts.DEFAULT_COLOR_LABEL);
         mainPanel.add(message);
         image = new QRLabel();
-        sureDisposeAction = e -> {
-            if (QROpinionDialog.this.isFocused()) {
-                sure();
-            }
-        };
-        KeyStroke keyStroke = QRStringUtils.getKeyStroke(KeyEvent.VK_ENTER);
-        QRSwing.registerGlobalAction(keyStroke, sureDisposeAction, false);
+        sureDisposeAction = e -> sure();
+        sureGlobalAction = new QRGlobalAction(sureDisposeAction)
+                .key(KeyEvent.VK_ENTER)
+                .window(this);
     }
 
     private void setImage(String imageFileName) {
@@ -92,10 +89,19 @@ public final class QROpinionDialog extends QRDialog {
     }
 
     @Override
+    public void setVisible(boolean b) {
+        if (b) {
+            sureGlobalAction.load();
+        } else {
+            sureGlobalAction.close();
+        }
+        super.setVisible(b);
+    }
+
+    @Override
     public void dispose() {
         setVisible(false);
-        QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ESCAPE), disposeAction, false);
-        QRSwing.registerGlobalActionRemove(QRStringUtils.getKeyStroke(KeyEvent.VK_ENTER), sureDisposeAction, false);
+        sureGlobalAction.close();
     }
 
     private int getSelection() {

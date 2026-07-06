@@ -1,7 +1,5 @@
 package swing.qr.kiarelemb;
 
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
 import method.qr.kiarelemb.utils.*;
 import swing.qr.kiarelemb.event.QRNativeKeyEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -138,11 +136,6 @@ public final class QRSwing implements Serializable {
 	 */
 	public static Font globalFont = QRFontUtils.getFontInSize(18);
 	public static String GLOBAL_PROP_PATH;
-	/**
-	 * 获取该监听器请调用 {@link #getGlobalKeyListener()}
-	 */
-	private static QRNativeKeyListener globalKeyListener;
-
 	/**以下是一个项目级别的开始案例：
 	 * <pre><Code>
 	 * // 初始化 JDK 自带的 Logger
@@ -439,16 +432,9 @@ public final class QRSwing implements Serializable {
 	 *
 	 * @see #registerGlobalEventWindow(Window)
 	 */
+	@Deprecated
 	public static void registerGlobalKeyEvents() {
-		if (globalKeyListener == null) {
-			try {
-				GlobalScreen.registerNativeHook();
-			} catch (NativeHookException e) {
-				throw new RuntimeException(e);
-			}
-			globalKeyListener = new QRNativeKeyListener();
-			GlobalScreen.addNativeKeyListener(globalKeyListener);
-		}
+		QRGlobalAction.registerGlobalKeyEvents();
 	}
 
 	/**
@@ -465,8 +451,9 @@ public final class QRSwing implements Serializable {
 	 * @param window 主窗体
 	 * @see #registerGlobalKeyEvents()
 	 */
+	@Deprecated
 	public static void registerGlobalEventWindow(Window window) {
-		globalKeyListener.registerMainWindow(window);
+		QRGlobalAction.registerGlobalEventWindow(window);
 	}
 
 	/**
@@ -474,22 +461,14 @@ public final class QRSwing implements Serializable {
 	 *
 	 * @param globalKeyListener 已设置的监听器
 	 */
+	@Deprecated
 	public static void setGlobalKeyEventsListener(QRNativeKeyListener globalKeyListener) {
-		if (QRSwing.globalKeyListener == null && globalKeyListener != null) {
-			QRSwing.globalKeyListener = globalKeyListener;
-			try {
-				GlobalScreen.registerNativeHook();
-			} catch (NativeHookException e) {
-				throw new RuntimeException(e);
-			}
-		}
+		QRGlobalAction.setGlobalKeyEventsListener(globalKeyListener);
 	}
 
+	@Deprecated
 	public static QRNativeKeyListener getGlobalKeyListener() {
-		if (globalKeyListener == null) {
-			throw new NullPointerException("全局键盘监听器为空，请先调用 QRSwing.registerGlobalKeyEvents() 或 setGlobalKeyEventsListener(QRNativeKeyListener) 方法");
-		}
-		return globalKeyListener;
+		return QRGlobalAction.getGlobalKeyListener();
 	}
 
 	/**
@@ -509,12 +488,13 @@ public final class QRSwing implements Serializable {
 	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键，
 	 *                        不论主窗体是否处于焦点状态都会触发
 	 */
+	@Deprecated
 	public static void registerGlobalAction(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		String[] keys = key.split(",");
-		for (String k : keys) {
-			var keyStroke = QRStringUtils.getKeyStroke(k);
-			registerGlobalAction(keyStroke, ar, mainWindowFocus);
-		}
+		QRGlobalAction.registerGlobalAction(key, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalAction(String key, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.registerGlobalAction(key, ar, focusWindow);
 	}
 
 	/**
@@ -525,9 +505,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
 	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
+	@Deprecated
 	public static void registerGlobalAction(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode);
-		registerGlobalAction(keyStroke, ar, mainWindowFocus);
+		QRGlobalAction.registerGlobalAction(keycode, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalAction(int keycode, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.registerGlobalAction(keycode, ar, focusWindow);
 	}
 
 	/**
@@ -539,9 +523,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
 	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
+	@Deprecated
 	public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
-		registerGlobalAction(keyStroke, ar, mainWindowFocus);
+		QRGlobalAction.registerGlobalAction(keycode, modifiers, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalAction(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.registerGlobalAction(keycode, modifiers, ar, focusWindow);
 	}
 
 	/**
@@ -552,10 +540,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件，其参数是 {@link QRNativeKeyEvent}，从外部运行时，其参数是 {@link KeyStroke}
 	 * @param mainWindowFocus 事件是否只在已注册主窗体处于焦点时触发。若为 {@code false}，则为系统级全局快捷键
 	 */
+	@Deprecated
 	public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		if (QRSwing.globalKeyListener != null) {
-			QRSwing.globalKeyListener.addEvent(QRNativeKeyListener.TYPE.PRESSED, mainWindowFocus, keyStroke, ar);
-		}
+		QRGlobalAction.registerGlobalAction(keyStroke, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalAction(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.registerGlobalAction(keyStroke, ar, focusWindow);
 	}
 
 	/**
@@ -564,10 +555,13 @@ public final class QRSwing implements Serializable {
 	 * @param keyStroke       按键组合
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(KeyStroke keyStroke, boolean mainWindowFocus) {
-		if (QRSwing.globalKeyListener != null) {
-			QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
-		}
+		QRGlobalAction.removeGlobalAction(keyStroke, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(KeyStroke keyStroke, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keyStroke, focusWindow);
 	}
 
 	/**
@@ -577,10 +571,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		if (QRSwing.globalKeyListener != null) {
-			QRSwing.globalKeyListener.removeEvent(QRNativeKeyListener.TYPE.PRESSED, keyStroke, ar, mainWindowFocus);
-		}
+		QRGlobalAction.removeGlobalAction(keyStroke, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(KeyStroke keyStroke, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keyStroke, ar, focusWindow);
 	}
 
 	/**
@@ -589,12 +586,13 @@ public final class QRSwing implements Serializable {
 	 * @param key             按键组合，格式同 {@link #registerGlobalAction(String, QRActionRegister, boolean)}
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(String key, boolean mainWindowFocus) {
-		String[] keys = key.split(",");
-		for (String k : keys) {
-			var keyStroke = QRStringUtils.getKeyStroke(k);
-			registerGlobalActionRemove(keyStroke, mainWindowFocus);
-		}
+		QRGlobalAction.removeGlobalAction(key, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(String key, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(key, focusWindow);
 	}
 
 	/**
@@ -604,12 +602,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(String key, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		String[] keys = key.split(",");
-		for (String k : keys) {
-			var keyStroke = QRStringUtils.getKeyStroke(k);
-			registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
-		}
+		QRGlobalAction.removeGlobalAction(key, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(String key, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(key, ar, focusWindow);
 	}
 
 	/**
@@ -618,9 +617,13 @@ public final class QRSwing implements Serializable {
 	 * @param keycode         键值
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(int keycode, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode);
-		registerGlobalActionRemove(keyStroke, mainWindowFocus);
+		QRGlobalAction.removeGlobalAction(keycode, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(int keycode, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keycode, focusWindow);
 	}
 
 	/**
@@ -630,9 +633,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(int keycode, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode);
-		registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
+		QRGlobalAction.removeGlobalAction(keycode, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(int keycode, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keycode, ar, focusWindow);
 	}
 
 	/**
@@ -642,9 +649,13 @@ public final class QRSwing implements Serializable {
 	 * @param modifiers       特殊键
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(int keycode, int modifiers, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
-		registerGlobalActionRemove(keyStroke, mainWindowFocus);
+		QRGlobalAction.removeGlobalAction(keycode, modifiers, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(int keycode, int modifiers, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keycode, modifiers, focusWindow);
 	}
 
 	/**
@@ -655,9 +666,13 @@ public final class QRSwing implements Serializable {
 	 * @param ar              事件
 	 * @param mainWindowFocus 事件是否是在主窗体处于焦点时才触发
 	 */
+	@Deprecated
 	public static void registerGlobalActionRemove(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, boolean mainWindowFocus) {
-		var keyStroke = QRStringUtils.getKeyStroke(keycode, modifiers);
-		registerGlobalActionRemove(keyStroke, ar, mainWindowFocus);
+		QRGlobalAction.removeGlobalAction(keycode, modifiers, ar, mainWindowFocus);
+	}
+
+	public static void registerGlobalActionRemove(int keycode, int modifiers, QRActionRegister<KeyStroke> ar, Window focusWindow) {
+		QRGlobalAction.removeGlobalAction(keycode, modifiers, ar, focusWindow);
 	}
 
 	/**
@@ -666,10 +681,13 @@ public final class QRSwing implements Serializable {
 	 * @param keyStroke       快捷键
 	 * @param mainWindowFocus 主窗体是否在焦点
 	 */
+	@Deprecated
 	public static void invokeAction(Window window, KeyStroke keyStroke, boolean mainWindowFocus) {
-		if (QRSwing.globalKeyListener != null) {
-			QRSwing.globalKeyListener.invokeAction(window, QRNativeKeyListener.TYPE.PRESSED, keyStroke, mainWindowFocus);
-		}
+		QRGlobalAction.invokeGlobalAction(window, keyStroke, mainWindowFocus);
+	}
+
+	public static void invokeAction(Window focusWindow, KeyStroke keyStroke) {
+		QRGlobalAction.invokeGlobalAction(focusWindow, keyStroke);
 	}
 
 	/**
