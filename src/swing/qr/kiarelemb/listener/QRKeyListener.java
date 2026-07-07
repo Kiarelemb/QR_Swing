@@ -7,13 +7,9 @@ import swing.qr.kiarelemb.utils.QRComponentUtils;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 按键监听器，将 Swing 的 {@link KeyListener} 事件分发到已注册的 {@link QRActionRegister}。
@@ -119,7 +115,7 @@ public class QRKeyListener implements KeyListener {
 		if (store == null) {
 			return;
 		}
-		for (KeyStroke keyStroke : parseKeys(keys)) {
+		for (KeyStroke keyStroke : QRComponentUtils.parseKeyStrokes(keys)) {
 			String value = keyValue(keyStroke);
 			if (value != null) {
 				store.keyed.computeIfAbsent(value, k -> new LinkedList<>()).add(ar);
@@ -161,7 +157,7 @@ public class QRKeyListener implements KeyListener {
 		if (store == null) {
 			return;
 		}
-		for (KeyStroke keyStroke : parseKeys(keys)) {
+		for (KeyStroke keyStroke : QRComponentUtils.parseKeyStrokes(keys)) {
 			String value = keyValue(keyStroke);
 			LinkedList<QRActionRegister<KeyEvent>> list = value == null ? null : store.keyed.get(value);
 			if (list != null) {
@@ -194,35 +190,6 @@ public class QRKeyListener implements KeyListener {
 			case PRESS -> this.press;
 			case RELEASE -> this.release;
 		};
-	}
-
-	private List<KeyStroke> parseKeys(Object... keys) {
-		ArrayList<KeyStroke> keyStrokes = new ArrayList<>();
-		Set<String> values = new HashSet<>();
-		if (keys == null) {
-			return keyStrokes;
-		}
-		for (Object key : keys) {
-			if (key instanceof KeyStroke keyStroke) {
-				addKeyStroke(keyStrokes, values, keyStroke);
-			} else if (key instanceof String str) {
-				for (String split : str.split(",")) {
-					addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(split));
-				}
-			} else if (key instanceof int[] valuesArray) {
-				addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(valuesArray));
-			} else if (key instanceof Integer value) {
-				addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(value));
-			}
-		}
-		return keyStrokes;
-	}
-
-	private void addKeyStroke(List<KeyStroke> keyStrokes, Set<String> values, KeyStroke keyStroke) {
-		String value = keyValue(keyStroke);
-		if (value != null && values.add(value)) {
-			keyStrokes.add(keyStroke);
-		}
 	}
 
 	private String keyValue(KeyStroke keyStroke) {

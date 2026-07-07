@@ -108,7 +108,22 @@ public class QRPopupMenu extends QREmptyDialog  {
         if (QRSwing.windowRound) {
             QRSystemUtils.setWindowRound(this, QRSwing.windowTransparency);
         }
+        loadMenuItemGlobalActions();
         super.setVisible(true);
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        if (!b) {
+            closeMenuItemGlobalActions();
+        }
+        super.setVisible(b);
+    }
+
+    @Override
+    public void dispose() {
+        closeMenuItemGlobalActions();
+        super.dispose();
     }
 
     private int visibleItemCount() {
@@ -119,6 +134,22 @@ public class QRPopupMenu extends QREmptyDialog  {
             }
         }
         return count;
+    }
+
+    private void loadMenuItemGlobalActions() {
+        for (Component component : this.mainPanel.getComponents()) {
+            if (component instanceof QRMenuItem menuItem && component.isVisible() && component.isEnabled()) {
+                menuItem.loadGlobalActions();
+            }
+        }
+    }
+
+    private void closeMenuItemGlobalActions() {
+        for (Component component : this.mainPanel.getComponents()) {
+            if (component instanceof QRMenuItem menuItem) {
+                menuItem.closeGlobalActions();
+            }
+        }
     }
 
     private void paintSeparators(Graphics g) {

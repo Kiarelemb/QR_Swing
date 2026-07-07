@@ -1,6 +1,7 @@
 package swing.qr.kiarelemb.utils;
 
 import method.qr.kiarelemb.utils.QRFontUtils;
+import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.basic.QRButton;
 import swing.qr.kiarelemb.basic.QRPanel;
 import swing.qr.kiarelemb.basic.QRRoundButton;
@@ -13,10 +14,9 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -489,6 +489,45 @@ public class QRComponentUtils {
 						onError.accept(throwable == null ? null : throwable.getMessage());
 					}
 				});
+	}
+
+	/**
+	 * 将常用按键参数解析为 {@link KeyStroke} 列表。
+	 *
+	 * <p>支持 {@link KeyStroke}、{@link String}、{@link Integer} 和 {@code int[]}。
+	 * 字符串可用英文逗号分隔多个按键，例如 {@code "shift b, ctrl b"}。
+	 * 无法识别或解析失败的参数会被跳过，重复按键只保留第一次出现的位置。</p>
+	 *
+	 * @param keys 按键参数
+	 * @return 解析后的按键列表
+	 */
+	public static List<KeyStroke> parseKeyStrokes(Object... keys) {
+		ArrayList<KeyStroke> keyStrokes = new ArrayList<>();
+		Set<String> values = new HashSet<>();
+		if (keys == null) {
+			return keyStrokes;
+		}
+		for (Object key : keys) {
+			if (key instanceof KeyStroke keyStroke) {
+				addKeyStroke(keyStrokes, values, keyStroke);
+			} else if (key instanceof String str) {
+				for (String split : str.split(",")) {
+					addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(split));
+				}
+			} else if (key instanceof int[] valuesArray) {
+				addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(valuesArray));
+			} else if (key instanceof Integer value) {
+				addKeyStroke(keyStrokes, values, QRStringUtils.getKeyStroke(value));
+			}
+		}
+		return keyStrokes;
+	}
+
+	private static void addKeyStroke(List<KeyStroke> keyStrokes, Set<String> values, KeyStroke keyStroke) {
+		String value = keyStroke == null ? null : QRStringUtils.getKeyStrokeValue(keyStroke);
+		if (value != null && values.add(value)) {
+			keyStrokes.add(keyStroke);
+		}
 	}
 
 	/**

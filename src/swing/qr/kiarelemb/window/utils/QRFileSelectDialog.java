@@ -27,6 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -580,13 +581,6 @@ public class QRFileSelectDialog extends QRDialog {
 			@Override
 			public boolean meetCondition() {
 				String name = textField().getText().trim();
-				if (name.isEmpty()) {
-					return false;
-				}
-				if (hasIllegalFileNameChar(name)) {
-					QROpinionDialog.messageErrShow(this, "文件夹名称不能包含 \\ / : * ? \" < > |");
-					return false;
-				}
 				File directory = new File(currentDirectory, name);
 				if (directory.exists()) {
 					QROpinionDialog.messageErrShow(this, "同名文件或文件夹已存在");
@@ -595,6 +589,7 @@ public class QRFileSelectDialog extends QRDialog {
 				return true;
 			}
 		};
+		inputDialog.textField.fileNameField();
 		inputDialog.setVisible(true);
 		if (!inputDialog.isApproved()) {
 			return;
@@ -735,12 +730,6 @@ public class QRFileSelectDialog extends QRDialog {
 				return FileVisitResult.CONTINUE;
 			}
 		});
-	}
-
-	private boolean hasIllegalFileNameChar(String name) {
-		return name.contains("\\") || name.contains("/") || name.contains(":") || name.contains("*")
-				|| name.contains("?") || name.contains("\"") || name.contains("<")
-				|| name.contains(">") || name.contains("|");
 	}
 
 	private void initActions() {
