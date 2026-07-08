@@ -50,6 +50,8 @@ public class QRValueInputDialog extends QREmptyDialog {
      */
     public QRValueInputDialog(Window owner, String textFieldTooltip, String inputLabelText) {
         super(owner);
+        setAlwaysOnTop(true);
+
         var width = 320;
         var height = 160;
 

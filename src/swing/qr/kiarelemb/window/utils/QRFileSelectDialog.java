@@ -1726,7 +1726,7 @@ public class QRFileSelectDialog extends QRDialog {
 		fileList.repaint();
 	}
 
-	private class FileTreeCellRenderer extends QRTree.QRTreeCellRenderer {
+	private static class FileTreeCellRenderer extends QRTree.QRTreeCellRenderer {
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
 		                                              boolean leaf, int row, boolean hasFocus) {
@@ -1739,7 +1739,7 @@ public class QRFileSelectDialog extends QRDialog {
 		}
 	}
 
-	private class FileItemCellRenderer extends DefaultListCellRenderer {
+	private static class FileItemCellRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 		                                              boolean cellHasFocus) {
