@@ -604,8 +604,22 @@ public class QRTextPane extends JTextPane implements QRComponentUpdate, QRCaretL
 	 * @return 绑定当前文本面板的右键菜单
 	 */
 	public QRPopupMenu addPopupMenu() {
+		return addPopupMenu(null);
+	}
+
+	/**
+	 * 为文本面板创建并绑定右键菜单，并在显示前执行回调。
+	 *
+	 * <p>显示前回调适合根据当前选区、可编辑状态等信息动态更新菜单项状态。
+	 * 重复调用始终返回首次创建的 {@link QRPopupMenu} 实例；只有首次创建菜单时传入的
+	 * {@code beforeShow} 会被绑定。</p>
+	 *
+	 * @param beforeShow 菜单显示前的回调，可为 null
+	 * @return 绑定当前文本面板的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu(QRActionRegister<MouseEvent> beforeShow) {
 		if (this.popupMenu == null) {
-			this.popupMenu = new QRPopupMenu(SwingUtilities.getWindowAncestor(this)).bind(this);
+			this.popupMenu = QRPopupMenu.createAndBind(this, beforeShow);
 		}
 		return this.popupMenu;
 	}

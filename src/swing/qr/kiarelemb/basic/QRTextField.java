@@ -4,6 +4,7 @@ import method.qr.kiarelemb.utils.QRStringUtils;
 import swing.qr.kiarelemb.assembly.QRCaret;
 import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.QRTextBasicActionSetting;
@@ -86,6 +87,7 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 * 使用前请先调用 {@link #addUndoManager()}
 	 */
 	public QRUndoManager undoManager;
+	protected QRPopupMenu popupMenu;
 	private QRDocumentListener documentListener;
 	private QRCaretListener caretListener;
 	private QRFocusListener focusListener;
@@ -341,6 +343,30 @@ public class QRTextField extends JTextField implements QRComponentUpdate, QRText
 	 */
 	public void addUndoManager() {
 		this.undoManager = new QRUndoManager(this);
+	}
+
+	/**
+	 * 为文本框创建并绑定右键菜单。重复调用返回同一实例。
+	 *
+	 * @return 绑定当前文本框的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu() {
+		return addPopupMenu(null);
+	}
+
+	/**
+	 * 为文本框创建并绑定右键菜单，并在显示前执行回调。
+	 *
+	 * <p>回调可用于动态更新菜单状态。只有首次创建菜单时传入的回调会被绑定。</p>
+	 *
+	 * @param beforeShow 菜单显示前的回调，可为 null
+	 * @return 绑定当前文本框的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu(QRActionRegister<MouseEvent> beforeShow) {
+		if (this.popupMenu == null) {
+			this.popupMenu = QRPopupMenu.createAndBind(this, beforeShow);
+		}
+		return this.popupMenu;
 	}
 	//endregion
 

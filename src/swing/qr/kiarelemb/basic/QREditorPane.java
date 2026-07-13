@@ -5,6 +5,7 @@ import swing.qr.kiarelemb.assembly.QRCaret;
 import swing.qr.kiarelemb.assembly.QRHighlighter;
 import swing.qr.kiarelemb.assembly.QRToolTip;
 import swing.qr.kiarelemb.assembly.QRUndoManager;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.inter.QRActionRegister;
 import swing.qr.kiarelemb.inter.QRComponentUpdate;
 import swing.qr.kiarelemb.inter.listener.add.*;
@@ -54,6 +55,7 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
     protected boolean caretBlock = false;
     protected boolean lineWrap = true;
     protected QRScrollPane scrollPane;
+    protected QRPopupMenu popupMenu;
     private QRCaretListener caretListener;
     private QRDocumentListener documentListener;
     private QRKeyListener keyListener;
@@ -440,6 +442,30 @@ public class QREditorPane extends JEditorPane implements QRComponentUpdate, QRCa
             this.scrollPane.setScrollSmoothly(3);
         }
         return this.scrollPane;
+    }
+
+    /**
+     * 为编辑器创建并绑定右键菜单。重复调用返回同一实例。
+     *
+     * @return 绑定当前编辑器的右键菜单
+     */
+    public QRPopupMenu addPopupMenu() {
+        return addPopupMenu(null);
+    }
+
+    /**
+     * 为编辑器创建并绑定右键菜单，并在显示前执行回调。
+     *
+     * <p>回调可用于动态更新菜单状态。只有首次创建菜单时传入的回调会被绑定。</p>
+     *
+     * @param beforeShow 菜单显示前的回调，可为 null
+     * @return 绑定当前编辑器的右键菜单
+     */
+    public QRPopupMenu addPopupMenu(QRActionRegister<MouseEvent> beforeShow) {
+        if (this.popupMenu == null) {
+            this.popupMenu = QRPopupMenu.createAndBind(this, beforeShow);
+        }
+        return this.popupMenu;
     }
 
     /**

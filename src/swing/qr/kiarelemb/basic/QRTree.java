@@ -2,6 +2,7 @@ package swing.qr.kiarelemb.basic;
 
 import swing.qr.kiarelemb.assembly.QRMutableTreeNode;
 import swing.qr.kiarelemb.assembly.QRToolTip;
+import swing.qr.kiarelemb.combination.QRPopupMenu;
 import swing.qr.kiarelemb.event.QRTreeExpansionEvent;
 import swing.qr.kiarelemb.event.QRTreeNodeEvent;
 import swing.qr.kiarelemb.inter.QRActionRegister;
@@ -46,6 +47,7 @@ import java.util.Enumeration;
 public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerAdd, QRMouseMotionListenerAdd, QRTreeNodeListenerAdd, QRTreeWillExpandListenerAdd, QRTreeSelectionListenerAdd {
 
 	protected final QRTreeCellRenderer renderer;
+	protected QRPopupMenu popupMenu;
 	private QRMouseMotionListener mouseMotionListener;
 	private QRMouseListener mouseListener;
 	private QRTreeNodeClickListener treeNodeClickListener;
@@ -314,6 +316,30 @@ public class QRTree extends JTree implements QRComponentUpdate, QRMouseListenerA
 		if (this.mouseListener != null) {
 			this.mouseListener.add(type, ar);
 		}
+	}
+
+	/**
+	 * 为树创建并绑定右键菜单。重复调用返回同一实例。
+	 *
+	 * @return 绑定当前树的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu() {
+		return addPopupMenu(null);
+	}
+
+	/**
+	 * 为树创建并绑定右键菜单，并在显示前执行回调。
+	 *
+	 * <p>回调可用于动态更新菜单状态。只有首次创建菜单时传入的回调会被绑定。</p>
+	 *
+	 * @param beforeShow 菜单显示前的回调，可为 null
+	 * @return 绑定当前树的右键菜单
+	 */
+	public QRPopupMenu addPopupMenu(QRActionRegister<MouseEvent> beforeShow) {
+		if (this.popupMenu == null) {
+			this.popupMenu = QRPopupMenu.createAndBind(this, beforeShow);
+		}
+		return this.popupMenu;
 	}
 	//endregion
 
