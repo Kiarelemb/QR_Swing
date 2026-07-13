@@ -5,6 +5,8 @@ import swing.qr.kiarelemb.window.basic.QRFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -15,14 +17,28 @@ public abstract class QRWindowMouseAdapter extends MouseAdapter {
     protected int width = 0;
     protected Point p = null;
     private ResizeDirection resizeDirection = ResizeDirection.NONE;
+    private boolean nativeMotionActive;
+    private boolean nativeMoveListenerInstalled;
+    private Point lastNativeLocation;
 
     @Override
     public void mousePressed(MouseEvent e) {
+        this.nativeMotionActive = false;
         this.p = getWindowPoint(e);
+        Point windowPoint = getWindowPoint(e);
+        if (resizeDirection == ResizeDirection.NONE
+                && windowPoint.y < moveAreaHeight()
+                && QRGnomeWindowMove.begin(window(), e)) {
+            installNativeMoveListener();
+            this.lastNativeLocation = window().getLocation();
+            this.nativeMotionActive = true;
+            window().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        this.nativeMotionActive = false;
         clear();
         window().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         windowReleased(e);
@@ -30,6 +46,9 @@ public abstract class QRWindowMouseAdapter extends MouseAdapter {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (this.nativeMotionActive) {
+            return;
+        }
         if (beforeDragged(e)) {
             return;
         }
@@ -48,7 +67,8 @@ public abstract class QRWindowMouseAdapter extends MouseAdapter {
             int x = e.getXOnScreen() - this.p.x;
             int y = e.getYOnScreen() - this.p.y;
             window().setLocation(x, y);
-            windowMoved(x, y);
+            Point actual = window().getLocation();
+            windowMoved(actual.x, actual.y);
         }
     }
 
@@ -178,6 +198,27 @@ public abstract class QRWindowMouseAdapter extends MouseAdapter {
 
     protected Point getWindowPoint(MouseEvent e) {
         return SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), window());
+    }
+
+    private void installNativeMoveListener() {
+        if (this.nativeMoveListenerInstalled) {
+            return;
+        }
+        window().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                if (!nativeMotionActive) {
+                    return;
+                }
+                Point actual = window().getLocation();
+                if (actual.equals(lastNativeLocation)) {
+                    return;
+                }
+                lastNativeLocation = actual;
+                windowMoved(actual.x, actual.y);
+            }
+        });
+        this.nativeMoveListenerInstalled = true;
     }
 
     private void setResizeDirection(ResizeDirection resizeDirection) {

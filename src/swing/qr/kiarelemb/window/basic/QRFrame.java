@@ -734,6 +734,11 @@ public class QRFrame extends JFrame implements QRComponentUpdate, QRWindowListen
 		}
 
 		@Override
+		protected void windowMoved(int x, int y) {
+			childWindowLocationUpdate(new Point(x, y));
+		}
+
+		@Override
 		protected boolean beforeDragged(MouseEvent e) {
 			//鼠标相对屏幕的x坐标
 			int eXOnScreen = e.getXOnScreen();

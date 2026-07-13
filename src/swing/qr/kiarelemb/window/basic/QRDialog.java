@@ -265,6 +265,7 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
 
     @Override
     public void ownerMoved(Point parentWindowLocation) {
+
     }
 
     @Override
@@ -287,8 +288,6 @@ public class QRDialog extends JDialog implements QRParentWindowMove, QRComponent
             if (this.parent != null && this.parent instanceof QRFrame frame) {
                 frame.addChildWindow(this);
             }
-        }
-        if (b) {
             this.escapeAction.load();
         } else {
             this.escapeAction.close();
